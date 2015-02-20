@@ -16,3 +16,4 @@ before_script:
   - cmake .. -DNO_CXX11=ON
 script: 
   - cmake --build .
+  - test/libkafka_asio_test
