@@ -19,7 +19,7 @@ namespace detail
 {
 
 // Convert the given 64 bit integer to big endian.
-inline Int64 betoh64(Int64 ll)
+inline Int64 be_to_host_64(Int64 ll)
 {
 #ifdef BOOST_LITTLE_ENDIAN
   ll = (ll >> 56) |
@@ -36,9 +36,9 @@ inline Int64 betoh64(Int64 ll)
 
 // Convert the 64 Bit integer back to node specific endianess, which might be
 // little endian.
-inline Int64 htobe64(Int64 ll)
+inline Int64 host_to_be_64(Int64 ll)
 {
-  return betoh64(ll);
+  return be_to_host_64(ll);
 }
 
 }  // detail

@@ -45,7 +45,7 @@ inline Int64 ReadInt64(std::istream& is)
 {
   Int64 result = 0;
   is.read(reinterpret_cast<char *>(&result), sizeof(Int64));
-  result = betoh64(result);
+  result = be_to_host_64(result);
   return result;
 }
 

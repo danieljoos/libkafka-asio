@@ -88,7 +88,7 @@ inline void WriteInt32(Int32 value, std::ostream& os)
 
 inline void WriteInt64(Int64 value, std::ostream& os)
 {
-  value = htobe64(value);
+  value = host_to_be_64(value);
   os.write( reinterpret_cast<char*>(&value), sizeof(Int64) );
 }
 
