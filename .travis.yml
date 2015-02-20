@@ -1,10 +1,14 @@
 language: cpp
 compiler:
   - gcc
-  - clang
-before_script:
+install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo add-apt-repository ppa:boost-latest -y
   - sudo apt-get update -qq
-  - sudo apt-get install -y libboost-dev libgtest-dev
+  - sudo apt-get install g++-4.9 boost1.55 libgtest-dev
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
+before_script:
   - mkdir build
   - cd build
   - cmake ..
