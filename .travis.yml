@@ -3,6 +3,8 @@ compiler:
   - gcc
   - clang
 before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libboost-dev libgtest-dev
   - mkdir build
   - cd build
   - cmake ..
