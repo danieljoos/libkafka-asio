@@ -14,7 +14,7 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -DNO_CXX11=ON -DCMAKE_C_COMPILER=$CXX -DCMAKE_CXX_COMPILER=$CXX ..
+  - cmake -DNO_CXX11=ON -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX ..
 script: 
   - cmake --build .
   - test/libkafka_asio_test
