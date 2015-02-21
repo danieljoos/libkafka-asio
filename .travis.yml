@@ -1,6 +1,7 @@
 language: cpp
 compiler:
   - gcc
+  - clang
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo add-apt-repository ppa:boost-latest -y
@@ -13,7 +14,7 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DNO_CXX11=ON
+  - cmake -DNO_CXX11=ON -DCMAKE_C_COMPILER=$CXX -DCMAKE_CXX_COMPILER=$CXX ..
 script: 
   - cmake --build .
   - test/libkafka_asio_test
