@@ -31,8 +31,12 @@ inline void ClientConfiguration::AddBrokerFromString(const std::string& str)
   }
   else
   {
-    broker.hostname = str;
+    broker.hostname = str.substr(0, delimiter_position);
     broker.service = constants::DefaultKafkaService();
+  }
+  if (broker.hostname.empty() || broker.service.empty())
+  {
+    return;
   }
   broker_list.push_back(broker);
 }
