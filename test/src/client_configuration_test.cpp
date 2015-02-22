@@ -1,3 +1,12 @@
+//
+// client_configuration_test.cpp
+// -----------------------------
+//
+// Copyright (c) 2015 Daniel Joos
+//
+// Distributed under MIT license. (See file LICENSE)
+//
+
 #include <gtest/gtest.h>
 #include <libkafka_asio/libkafka_asio.h>
 #include "../../lib/libkafka_asio/client_configuration.h"
