@@ -1,0 +1,9 @@
+---
+site_name: libkafka-asio
+theme: readthedocs
+pages:
+    - ['reference/metadata.md', 'Reference', 'Metadata API']
+    - ['reference/produce.md', 'Reference', 'Produce API']
+    - ['reference/fetch.md', 'Reference', 'Fetch API']
+    - ['reference/offset.md', 'Reference', 'Offset API']
+    

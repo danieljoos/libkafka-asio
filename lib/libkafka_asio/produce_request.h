@@ -64,14 +64,13 @@ public:
   // Time out (in milliseconds) to wait for required acknowledgements
   void set_timeout(Int32 timeout);
 
-  // Add (or replace) a byte array value for the given topic-partition in this
-  // produce request.
+  // Add a byte array value for the given topic-partition in this produce
+  // request.
   void AddValue(const Bytes& value,
                 const String& topic_name,
                 Int32 partition = 0);
 
-  // Add (or replace) a string value for the given topic-partition in this
-  // produce request.
+  // Add a string value for the given topic-partition in this produce request.
   void AddValue(const String& value,
                 const String& topic_name,
                 Int32 partition = 0);
