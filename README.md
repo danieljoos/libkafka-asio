@@ -2,6 +2,7 @@
 C++ Kafka Client Library using Boost Asio
 
 [![Build Status](https://travis-ci.org/danieljoos/libkafka-asio.svg?branch=master)](https://travis-ci.org/danieljoos/libkafka-asio)
+[![Documentation Status](https://readthedocs.org/projects/libkafka-asio/badge/?version=latest)](https://readthedocs.org/projects/libkafka-asio/?badge=latest)
 
 ## Introduction
 
@@ -23,6 +24,8 @@ Add the [`lib`](lib/) directory to your include paths and:
 #include <libkafka_asio/libkafka_asio.h>
 ```
 Please see the [`examples`](examples/) directory for some examples on how to use the library.
+
+Also consult the documentation: [libkafka-asio Reference](http://libkafka-asio.rtfd.org/)
 
 ## Dependencies
 
