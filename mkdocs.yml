@@ -2,8 +2,16 @@
 site_name: libkafka-asio
 theme: readthedocs
 pages:
-    - ['reference/metadata.md', 'Reference', 'Metadata API']
-    - ['reference/produce.md', 'Reference', 'Produce API']
-    - ['reference/fetch.md', 'Reference', 'Fetch API']
-    - ['reference/offset.md', 'Reference', 'Offset API']
+    - ['index.md', 'Introduction']
+    - ['primitives.md', 'Primitive Types']
+    - ['client.md', 'Client', 'Client']
+    - ['client_configuration.md', 'Client', 'ClientConfiguration']
+    - ['metadata_request.md', 'Metadata API', 'MetadataRequest']
+    - ['metadata_response.md', 'Metadata API', 'MetadataResponse']
+    - ['produce_request.md', 'Produce API', 'ProduceRequest']
+    - ['produce_response.md', 'Produce API', 'ProduceResponse']
+    - ['fetch_request.md', 'Fetch API', 'FetchRequest']
+    - ['fetch_response.md', 'Fetch API', 'FetchResponse']
+    - ['offset_request.md', 'Offset API', 'OffsetRequest']
+    - ['offset_response.md', 'Offset API', 'OffsetResponse']
     
