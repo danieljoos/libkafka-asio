@@ -30,6 +30,7 @@ public:
 
   struct Broker
   {
+    typedef boost::optional<Broker> OptionalType;
     Int32 node_id;
     String host;
     Int32 port;
@@ -58,14 +59,13 @@ public:
 
   typedef std::vector<Broker> BrokerVector;
   typedef std::vector<TopicMetadata> TopicMetadataVector;
-  typedef boost::optional<Broker> OptionalBrokerType;
 
   const BrokerVector& broker() const;
 
   const TopicMetadataVector& topic_metadata() const;
 
-  OptionalBrokerType PartitionLeader(const String& topic,
-                                     Int32 partition) const;
+  Broker::OptionalType PartitionLeader(const String& topic,
+                                       Int32 partition) const;
 
 private:
   BrokerVector broker_;

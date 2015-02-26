@@ -42,7 +42,7 @@ TEST_F(MetadataResponseTest, PartitionLeader)
   response.mutable_topic_metadata().push_back(metadata);
   ASSERT_EQ(1, response.response().topic_metadata().size());
 
-  MetadataResponse::OptionalBrokerType leader =
+  MetadataResponse::Broker::OptionalType leader =
     response.response().PartitionLeader("foo", 1);
   ASSERT_TRUE(leader);
   ASSERT_EQ(456, leader->node_id);
@@ -59,7 +59,7 @@ TEST_F(MetadataResponseTest, PartitionLeader_InElection)
   response.mutable_topic_metadata().push_back(metadata);
   ASSERT_EQ(1, response.response().topic_metadata().size());
 
-  MetadataResponse::OptionalBrokerType leader =
+  MetadataResponse::Broker::OptionalType leader =
     response.response().PartitionLeader("foo", 1);
   ASSERT_FALSE(leader);
 }

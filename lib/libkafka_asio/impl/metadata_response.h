@@ -37,14 +37,14 @@ MutableMetadataResponse::mutable_topic_metadata()
   return response_.topic_metadata_;
 }
 
-inline MetadataResponse::OptionalBrokerType
+inline MetadataResponse::Broker::OptionalType
 MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
 {
   TopicMetadataVector::const_iterator topic_iter =
     detail::FindTopicByName(topic, topic_metadata_);
   if (topic_iter == topic_metadata_.end())
   {
-    return OptionalBrokerType();
+    return Broker::OptionalType();
   }
   TopicMetadata::PartitionMetadataVector::const_iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition,
@@ -52,7 +52,7 @@ MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
   if (partition_iter == topic_iter->partition_metadata.end() ||
     partition_iter->leader == constants::kMetadataLeaderUndecided)
   {
-    return OptionalBrokerType();
+    return Broker::OptionalType();
   }
   BrokerVector::const_iterator broker_iter =
     detail::FindBrokerById(partition_iter->leader, broker_);
@@ -60,7 +60,7 @@ MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
   {
     return *broker_iter;
   }
-  return OptionalBrokerType();
+  return Broker::OptionalType();
 }
 
 }  // namespace libkafka_asio

@@ -20,7 +20,8 @@ when invoking a metadata request.
 Member Functions
 ----------------
 
-### OptionalBrokerType **PartitionLeader** (const String& topic, Int32 partition) const
+### Broker::OptionalType **PartitionLeader** (const String& topic, Int32
+partition) const
 
 Returns the broker, which is currently acting as leader for the given topic
 partition. The function basically looks for the given topic and partition in
@@ -34,7 +35,8 @@ in the data of this metadata response object.
 // Assume the response is an argument of the request handler function
 MetadataResponse::OptionalType response;
 
-MetadataResponse::OptionalBrokerType leader = response->PartitionLeader("foo", 1);
+MetadataResponse::Broker::OptionalType leader = response->PartitionLeader
+("foo", 1);
 if (leader)
 {
     std::cout << "Found leader: " << leader->host << ":" << leader->port << std::endl;
@@ -99,6 +101,6 @@ Set of brokers.
 ### typedef std::vector<TopicMetadata\> **TopicMetadataVector**
 Set of topic metadata structures.
 
-### typedef boost::optional<Broker\> **OptionalBrokerType**
+### typedef boost::optional<Broker\> **Broker::OptionalType**
 Broker data structure wrapped using _Boost optional_.
    

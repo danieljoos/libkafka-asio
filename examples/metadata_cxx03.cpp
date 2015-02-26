@@ -33,7 +33,7 @@ void HandleRequest(const Client::ErrorCodeType& err,
     return;
   }
   // Find the leader for topic 'mytopic' and partition 1
-  MetadataResponse::OptionalBrokerType leader =
+  MetadataResponse::Broker::OptionalType leader =
     response->PartitionLeader("mytopic", 1);
   if (!leader)
   {
