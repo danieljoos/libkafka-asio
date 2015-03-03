@@ -42,6 +42,7 @@ enum Defaults
   kDefaultFetchOffset = 0,
   kDefaultFetchMaxBytes = 32768,
   kDefaultOffsetMaxNumberOfOffsets = 1,
+  kDefaultOffsetCommitTimestampNow = -1,
   kDefaultCorrelationId = 0,
   kDefaultMessageMaxBytes = 4194304,
   kDefaultSocketTimeout = 60000
