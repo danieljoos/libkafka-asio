@@ -30,6 +30,8 @@ class FetchRequest;
 
 class OffsetRequest;
 
+class ConsumerMetadataRequest;
+
 namespace detail
 {
 
@@ -51,6 +53,8 @@ Int32 RequestMessageWireSize(const ProduceRequest& request);
 Int32 RequestMessageWireSize(const FetchRequest& request);
 
 Int32 RequestMessageWireSize(const OffsetRequest& request);
+
+Int32 RequestMessageWireSize(const ConsumerMetadataRequest& request);
 
 void WriteInt8(Int8 value, std::ostream& os);
 
@@ -79,6 +83,9 @@ void WriteRequestMessage(const ProduceRequest& request, std::ostream& os);
 void WriteRequestMessage(const FetchRequest& request, std::ostream& os);
 
 void WriteRequestMessage(const OffsetRequest& request, std::ostream& os);
+
+void WriteRequestMessage(const ConsumerMetadataRequest& request, 
+                         std::ostream& os);
 
 }  // namespace detail
 }  // namespace libkafka_asio
