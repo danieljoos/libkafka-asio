@@ -49,6 +49,18 @@ struct ClientConfiguration
   // Example: localhost:9092
   //
   void AddBrokerFromString(const std::string& str);
+
+  // Add a broker from using the given data structure.
+  // The broker's address is determined by the fields:
+  //     - host
+  //     - port
+  // A lexical cast is done on both fields.
+  template< typename T >
+  void AddBroker(const T& broker);
+
+  // Add an existing BrokerAddress data structure.
+  // This is the same as simply pushing the given object to the broker_list.
+  void AddBroker(const BrokerAddress& broker_address);
 };
 
 }  // namespace libkafka_asio
