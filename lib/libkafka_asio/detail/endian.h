@@ -11,6 +11,7 @@
 #define ENDIAN_H_6E481133_65F6_495C_A384_557C81B0C628
 
 #include <libkafka_asio/primitives.h>
+#include <boost/asio.hpp>
 #include <boost/detail/endian.hpp>
 
 namespace libkafka_asio
@@ -22,15 +23,9 @@ namespace detail
 inline Int64 be_to_host_64(Int64 ll)
 {
 #ifdef BOOST_LITTLE_ENDIAN
-  ll = (ll >> 56) |
-    ((ll << 40) & UINT64_C(0x00FF000000000000)) |
-    ((ll << 24) & UINT64_C(0x0000FF0000000000)) |
-    ((ll << 8) & UINT64_C(0x000000FF00000000)) |
-    ((ll >> 8) & UINT64_C(0x00000000FF000000)) |
-    ((ll >> 24) & UINT64_C(0x0000000000FF0000)) |
-    ((ll >> 40) & UINT64_C(0x000000000000FF00)) |
-    (ll << 56);
-#endif
+  ll = (((uint64_t)htonl((uint32_t)((ll << 32) >> 32))) << 32) |
+    (uint32_t)htonl((uint32_t)(ll >> 32));
+#endif  // LITTLE_ENDIAN
   return ll;
 }
 
