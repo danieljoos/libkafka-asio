@@ -15,6 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/fetch_response.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -27,25 +28,17 @@ class FetchRequest :
 
   static Int16 ApiKey();
 
-public:
-  typedef FetchResponse ResponseType;
-  typedef MutableFetchResponse MutableResponseType;
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    Int32 partition;
     Int64 fetch_offset;
     Int32 max_bytes;
   };
 
-  struct Topic
-  {
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef FetchResponse ResponseType;
+  typedef MutableFetchResponse MutableResponseType;
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
   Int32 replica_id() const;
 

@@ -15,6 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
 #include <libkafka_asio/detail/functional.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -27,27 +28,15 @@ class ProduceResponse :
 {
   friend class MutableProduceResponse;
 
-public:
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    typedef boost::optional<const TopicPartition> OptionalType;
-
-    Int32 partition;
     Int16 error_code;
     Int64 offset;
   };
 
-  struct Topic
-  {
-    typedef boost::optional<const Topic> OptionalType;
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
   const TopicVector& topics() const
   {
@@ -56,12 +45,12 @@ public:
 
   Topic::OptionalType FindTopic(const String& topic_name) const;
 
-  TopicPartition::OptionalType FindTopicPartition(const String& topic_name,
-                                                  Int32 partition) const;
+  Topic::Partition::OptionalType FindTopicPartition(const String& topic_name,
+                                                    Int32 partition) const;
 
 private:
   typedef detail::IsTopicWithName<Topic> IsTopicWithName;
-  typedef detail::IsTopicPartition<TopicPartition> IsTopicPartition;
+  typedef detail::IsTopicPartition<Topic::Partition> IsTopicPartition;
 
   TopicVector topics_;
 };

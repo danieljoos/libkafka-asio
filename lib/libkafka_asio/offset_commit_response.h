@@ -10,35 +10,29 @@
 #ifndef OFFSET_COMMIT_RESPONSE_H_96791A91_0B01_4306_BB23_70B03D36B8F3
 #define OFFSET_COMMIT_RESPONSE_H_96791A91_0B01_4306_BB23_70B03D36B8F3
 
-#include <vector>
 #include <libkafka_asio/response.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
 
 class MutableOffsetCommitResponse;
 
+// Kafka Offset Commit/Fetch API response implementation:
+// Offset commit response
 class OffsetCommitResponse :
   public Response<OffsetCommitResponse>
 {
   friend class MutableOffsetCommitResponse;
 
-public:
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    Int32 partition;
     Int16 error_code;
   };
 
-  struct Topic
-  {
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
   const TopicVector& topics() const;
 

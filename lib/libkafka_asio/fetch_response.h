@@ -14,6 +14,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
 #include <libkafka_asio/detail/fetch_response_iterator.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -26,24 +27,16 @@ class FetchResponse :
 {
   friend class MutableFetchResponse;
 
-public:
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    Int32 partition;
     Int16 error_code;
     Int64 highwater_mark_offset;
     MessageSet messages;
   };
 
-  struct Topic
-  {
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
   typedef detail::FetchResponseIterator<TopicVector> const_iterator;
 
   const TopicVector& topics() const;

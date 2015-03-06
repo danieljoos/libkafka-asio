@@ -30,7 +30,7 @@ class FetchResponseIterator :
   typedef FetchResponseIterator<TTopicVector> TMy;
 public:
   typedef typename TTopicVector::value_type Topic;
-  typedef typename Topic::TopicPartitionVector TopicPartitionVector;
+  typedef typename Topic::PartitionVector TopicPartitionVector;
   typedef typename TopicPartitionVector::value_type TopicPartition;
 
   FetchResponseIterator() :

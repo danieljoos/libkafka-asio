@@ -14,6 +14,7 @@
 #include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -26,31 +27,22 @@ class OffsetResponse :
 {
   friend class MutableOffsetResponse;
 
-public:
-
-  struct PartitionOffset
+  struct TopicPartitionProperties
   {
-    typedef boost::optional<PartitionOffset> OptionalType;
     typedef std::vector<Int64> OffsetVector;
-    Int32 partition;
     Int16 error_code;
     OffsetVector offsets;
   };
 
-  struct Topic
-  {
-    typedef std::vector<PartitionOffset> PartitionOffsetVector;
-    String topic_name;
-    PartitionOffsetVector partition_offsets;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
   const TopicVector& topics() const;
 
   // Search for offset data inside this response object for the given topic
   // and partition. If no such data can be found, the return value is empty.
-  PartitionOffset::OptionalType TopicPartitionOffset(
+  Topic::Partition::OptionalType TopicPartitionOffset(
     const String& topic_name, Int32 partition) const;
 
 private:

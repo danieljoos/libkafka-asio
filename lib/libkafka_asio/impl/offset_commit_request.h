@@ -46,7 +46,7 @@ inline void OffsetCommitRequest::CommitOffset(const String& topic_name,
 {
   TopicVector::iterator topic_iter =
     detail::FindTopicByName(topic_name, topics_);
-  Topic::TopicPartitionVector::iterator partition_iter =
+  Topic::PartitionVector::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
   partition_iter->offset = offset;
   partition_iter->timestamp = timestamp;

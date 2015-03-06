@@ -14,10 +14,13 @@
 #include <libkafka_asio/constants.h>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/offset_commit_response.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
 
+// Kafka Offset Commit/Fetch API request implementation:
+// Offset commit request
 class OffsetCommitRequest :
   public Request<OffsetCommitRequest>
 {
@@ -25,26 +28,18 @@ class OffsetCommitRequest :
 
   static Int16 ApiKey();
 
-public:
-  typedef OffsetCommitResponse ResponseType;
-  typedef MutableOffsetCommitResponse MutableResponseType;
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    Int32 partition;
     Int64 offset;
     Int64 timestamp;
     String metadata;
   };
 
-  struct Topic
-  {
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef OffsetCommitResponse ResponseType;
+  typedef MutableOffsetCommitResponse MutableResponseType;
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
   const String& consumer_group() const;
 

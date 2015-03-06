@@ -79,7 +79,7 @@ inline void ProduceRequest::AddMessage(const Message& message,
   TopicVector::iterator topic_iter =
     detail::FindTopicByName(topic_name, topics_);
 
-  Topic::TopicPartitionVector::iterator partition_iter =
+  Topic::PartitionVector::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
 
   MessageAndOffset message_and_offset(message, 0);

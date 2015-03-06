@@ -59,7 +59,7 @@ inline void FetchRequest::FetchTopic(
 {
   TopicVector::iterator topic_iter =
     detail::FindTopicByName(topic_name, topics_);
-  Topic::TopicPartitionVector::iterator partition_iter =
+  Topic::PartitionVector::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
 
   partition_iter->fetch_offset = fetch_offset;

@@ -36,7 +36,7 @@ inline void ReadResponseMessage(std::istream& is,
     Int32 partition_size = ReadInt32(is);
     for (Int32 j = 0; j < partition_size; ++j)
     {
-      ProduceResponse::TopicPartition topic_partition;
+      ProduceResponse::Topic::Partition topic_partition;
       topic_partition.partition = ReadInt32(is);
       topic_partition.error_code = ReadInt16(is);
       topic_partition.offset = ReadInt64(is);

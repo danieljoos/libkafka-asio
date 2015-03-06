@@ -24,16 +24,18 @@ inline void ReadResponseMessage(std::istream& is,
 {
   // Topic array
   Int32 topics_size = ReadInt32(is);
+  response.mutable_topics().resize(topics_size);
   for (Int32 i = 0; i < topics_size; ++i)
   {
-    FetchResponse::Topic topic;
+    FetchResponse::Topic& topic = response.mutable_topics()[i];
     topic.topic_name = ReadString(is);
 
     // Partitions array
     Int32 partitions_size = ReadInt32(is);
+    topic.partitions.resize(partitions_size);
     for (Int32 j = 0; j < partitions_size; ++j)
     {
-      FetchResponse::TopicPartition partition;
+      FetchResponse::Topic::Partition& partition = topic.partitions[j];
       partition.partition = ReadInt32(is);
       partition.error_code = ReadInt16(is);
       partition.highwater_mark_offset = ReadInt64(is);
@@ -47,10 +49,7 @@ inline void ReadResponseMessage(std::istream& is,
       // MessageSet
       Int32 message_set_size = ReadInt32(is);
       ReadMessageSet(is, partition.messages, message_set_size);
-
-      topic.partitions.push_back(partition);
     }
-    response.mutable_topics().push_back(topic);
   }
 }
 

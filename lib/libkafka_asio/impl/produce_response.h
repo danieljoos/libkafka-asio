@@ -27,20 +27,21 @@ inline ProduceResponse::Topic::OptionalType ProduceResponse::FindTopic(
   return Topic::OptionalType();
 }
 
-inline ProduceResponse::TopicPartition::OptionalType ProduceResponse::
-FindTopicPartition(const String& topic_name, Int32 partition) const
+inline ProduceResponse::Topic::Partition::OptionalType
+ProduceResponse::FindTopicPartition(const String& topic_name,
+                                    Int32 partition) const
 {
   Topic::OptionalType topic = FindTopic(topic_name);
   if (topic)
   {
-    Topic::TopicPartitionVector::const_iterator iter =
+    Topic::PartitionVector::const_iterator iter =
       detail::FindTopicPartitionByNumber(partition, topic->partitions);
     if (iter != topic->partitions.end())
     {
       return *iter;
     }
   }
-  return TopicPartition::OptionalType();
+  return Topic::Partition::OptionalType();
 }
 
 }  // namespace libkafka_asio

@@ -32,7 +32,7 @@ inline void ReadResponseMessage(std::istream& is,
     topic.partitions.resize(partitions_size);
     for (Int32 j = 0; j < partitions_size; ++j)
     {
-      OffsetCommitResponse::TopicPartition& partition = topic.partitions[j];
+      OffsetCommitResponse::Topic::Partition& partition = topic.partitions[j];
       partition.partition = ReadInt32(is);
       partition.error_code = ReadInt16(is);
     }

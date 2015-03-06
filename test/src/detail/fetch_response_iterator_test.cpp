@@ -29,7 +29,7 @@ TEST(FetchResponseIteratorTest, MultiplePartitionMessages)
   test_response_builder.mutable_topics().resize(1);
   FetchResponse::Topic& test_topic = test_response_builder.mutable_topics()[0];
   test_topic.partitions.resize(1);
-  FetchResponse::TopicPartition& test_partition = test_topic.partitions[0];
+  FetchResponse::Topic::Partition& test_partition = test_topic.partitions[0];
   test_partition.messages.resize(3);
   test_partition.messages[0].set_offset(1);
   test_partition.messages[1].set_offset(2);
@@ -55,9 +55,9 @@ TEST(FetchResponseIteratorTest, MultiplePartitions)
   test_response_builder.mutable_topics().resize(1);
   FetchResponse::Topic& test_topic = test_response_builder.mutable_topics()[0];
   test_topic.partitions.resize(3);
-  FetchResponse::TopicPartition& test_partition1 = test_topic.partitions[0];
-  FetchResponse::TopicPartition& test_partition2 = test_topic.partitions[1];
-  FetchResponse::TopicPartition& test_partition3 = test_topic.partitions[2];
+  FetchResponse::Topic::Partition& test_partition1 = test_topic.partitions[0];
+  FetchResponse::Topic::Partition& test_partition2 = test_topic.partitions[1];
+  FetchResponse::Topic::Partition& test_partition3 = test_topic.partitions[2];
   test_partition1.partition = 1;
   test_partition1.messages.resize(1);
   test_partition1.messages[0].set_offset(1);
@@ -98,9 +98,9 @@ TEST(FetchResponseIteratorTest, MultipleTopics)
   test_topic2.topic_name = "Topic2";
   test_topic3.partitions.resize(1);
   test_topic3.topic_name = "Topic3";
-  FetchResponse::TopicPartition& test_partition1 = test_topic1.partitions[0];
-  FetchResponse::TopicPartition& test_partition2 = test_topic2.partitions[0];
-  FetchResponse::TopicPartition& test_partition3 = test_topic3.partitions[0];
+  FetchResponse::Topic::Partition& test_partition1 = test_topic1.partitions[0];
+  FetchResponse::Topic::Partition& test_partition2 = test_topic2.partitions[0];
+  FetchResponse::Topic::Partition& test_partition3 = test_topic3.partitions[0];
   test_partition1.partition = 1;
   test_partition1.messages.resize(1);
   test_partition1.messages[0].set_offset(1);

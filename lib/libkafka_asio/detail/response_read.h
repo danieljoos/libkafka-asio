@@ -34,6 +34,8 @@ class MutableConsumerMetadataResponse;
 
 class MutableOffsetCommitResponse;
 
+class MutableOffsetFetchResponse;
+
 namespace detail
 {
 
@@ -80,6 +82,10 @@ void ReadResponseMessage(std::istream& is,
 
 void ReadResponseMessage(std::istream& is,
                          MutableOffsetCommitResponse& response,
+                         boost::system::error_code& ec);
+
+void ReadResponseMessage(std::istream& is,
+                         MutableOffsetFetchResponse& response,
                          boost::system::error_code& ec);
 
 }  // namespace detail

@@ -15,6 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/offset_response.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -27,25 +28,17 @@ class OffsetRequest :
 
   static Int16 ApiKey();
 
-public:
-  typedef OffsetResponse ResponseType;
-  typedef MutableOffsetResponse MutableResponseType;
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    Int32 partition;
     Int64 time;
     Int32 max_number_of_offsets;
   };
 
-  struct Topic
-  {
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
-
-  typedef std::vector<Topic> TopicVector;
+public:
+  typedef OffsetResponse ResponseType;
+  typedef MutableOffsetResponse MutableResponseType;
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
   Int32 replica_id() const;
 

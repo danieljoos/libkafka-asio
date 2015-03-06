@@ -30,7 +30,7 @@ inline void ReadResponseMessage(std::istream & is,
     Int32 partitions_size = ReadInt32(is);
     for (Int32 j = 0; j < partitions_size; ++j)
     {
-      OffsetResponse::PartitionOffset partition_offset;
+      OffsetResponse::Topic::Partition partition_offset;
       partition_offset.partition = ReadInt32(is);
       partition_offset.error_code = ReadInt16(is);
 
@@ -46,7 +46,7 @@ inline void ReadResponseMessage(std::istream & is,
         partition_offset.offsets.push_back(ReadInt64(is));
       }
 
-      topic.partition_offsets.push_back(partition_offset);
+      topic.partitions.push_back(partition_offset);
     }
     response.mutable_topics().push_back(topic);
   }

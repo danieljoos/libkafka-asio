@@ -20,7 +20,7 @@ inline const OffsetResponse::TopicVector& OffsetResponse::topics() const
   return topics_;
 }
 
-inline OffsetResponse::PartitionOffset::OptionalType
+inline OffsetResponse::Topic::Partition::OptionalType
 OffsetResponse::TopicPartitionOffset(const String& topic_name,
                                      Int32 partition) const
 {
@@ -28,14 +28,13 @@ OffsetResponse::TopicPartitionOffset(const String& topic_name,
     detail::FindTopicByName(topic_name, topics_);
   if (topic_iter == topics_.end())
   {
-    return PartitionOffset::OptionalType();
+    return Topic::Partition::OptionalType();
   }
-  Topic::PartitionOffsetVector::const_iterator partition_iter =
-    detail::FindTopicPartitionByNumber(partition,
-                                       topic_iter->partition_offsets);
-  if (partition_iter == topic_iter->partition_offsets.end())
+  Topic::PartitionVector::const_iterator partition_iter =
+    detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
+  if (partition_iter == topic_iter->partitions.end())
   {
-    return PartitionOffset::OptionalType();
+    return Topic::Partition::OptionalType();
   }
   return *partition_iter;
 }

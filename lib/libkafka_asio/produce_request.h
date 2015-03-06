@@ -16,6 +16,7 @@
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/produce_response.h>
 #include <libkafka_asio/detail/functional.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -28,26 +29,18 @@ class ProduceRequest :
 
   static Int16 ApiKey();
 
-public:
-  typedef ProduceResponse ResponseType;
-  typedef MutableProduceResponse MutableResponseType;
-
-  ProduceRequest();
-
-  struct TopicPartition
+  struct TopicPartitionProperties
   {
-    Int32 partition;
     MessageSet messages;
   };
 
-  struct Topic
-  {
-    typedef std::vector<TopicPartition> TopicPartitionVector;
-    String topic_name;
-    TopicPartitionVector partitions;
-  };
+public:
+  typedef ProduceResponse ResponseType;
+  typedef MutableProduceResponse MutableResponseType;
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
-  typedef std::vector<Topic> TopicVector;
+  ProduceRequest();
 
   Int16 required_acks() const;
 
@@ -101,7 +94,7 @@ public:
 
 private:
   typedef detail::IsTopicWithName<Topic> IsTopicWithName;
-  typedef detail::IsTopicPartition<TopicPartition> IsTopicPartition;
+  typedef detail::IsTopicPartition<Topic::Partition> IsTopicPartition;
 
   Int16 required_acks_;
   Int32 timeout_;
