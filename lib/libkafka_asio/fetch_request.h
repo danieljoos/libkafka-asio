@@ -63,8 +63,7 @@ public:
   // If such entry already exists in this Fetch request, it gets overridden.
   // Optionally, the offset to start the Fetch operation from, as well as the
   // maximum number of bytes to fetch, can be specified.
-  void FetchTopic(const String& topic_name,
-                  Int32 partition = constants::kDefaultPartition,
+  void FetchTopic(const String& topic_name, Int32 partition,
                   Int64 fetch_offset = constants::kDefaultFetchOffset,
                   Int32 max_bytes = constants::kDefaultFetchMaxBytes);
 
