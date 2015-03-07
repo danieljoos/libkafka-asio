@@ -134,7 +134,7 @@ TEST_F(RequestWriteTest, RequestMessageWireSize)
   }
   { // Fetch Request
     FetchRequest req;
-    req.FetchTopic("foo");
+    req.FetchTopic("foo", 0);
     size_t expected_size =
       4 +  // ReplicaId
         4 +  // MaxWaitTime
