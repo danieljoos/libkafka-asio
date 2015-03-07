@@ -15,48 +15,47 @@
 namespace libkafka_asio
 {
 
-inline const MetadataResponse::BrokerVector& MetadataResponse::broker() const
+inline const MetadataResponse::BrokerVector& MetadataResponse::brokers() const
 {
-  return broker_;
+  return brokers_;
 }
 
-inline const MetadataResponse::TopicMetadataVector&
-MetadataResponse::topic_metadata() const
+inline const MetadataResponse::TopicVector&
+MetadataResponse::topics() const
 {
-  return topic_metadata_;
+  return topics_;
 }
 
-inline MetadataResponse::BrokerVector& MutableMetadataResponse::mutable_broker()
+inline MetadataResponse::BrokerVector&
+MutableMetadataResponse::mutable_brokers()
 {
-  return response_.broker_;
+  return response_.brokers_;
 }
 
-inline MetadataResponse::TopicMetadataVector&
-MutableMetadataResponse::mutable_topic_metadata()
+inline MetadataResponse::TopicVector& MutableMetadataResponse::mutable_topics()
 {
-  return response_.topic_metadata_;
+  return response_.topics_;
 }
 
 inline MetadataResponse::Broker::OptionalType
 MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
 {
-  TopicMetadataVector::const_iterator topic_iter =
-    detail::FindTopicByName(topic, topic_metadata_);
-  if (topic_iter == topic_metadata_.end())
+  TopicVector::const_iterator topic_iter =
+    detail::FindTopicByName(topic, topics_);
+  if (topic_iter == topics_.end())
   {
     return Broker::OptionalType();
   }
-  TopicMetadata::PartitionMetadataVector::const_iterator partition_iter =
-    detail::FindTopicPartitionByNumber(partition,
-                                       topic_iter->partition_metadata);
-  if (partition_iter == topic_iter->partition_metadata.end() ||
+  Topic::PartitionVector::const_iterator partition_iter =
+    detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
+  if (partition_iter == topic_iter->partitions.end() ||
     partition_iter->leader == constants::kMetadataLeaderUndecided)
   {
     return Broker::OptionalType();
   }
   BrokerVector::const_iterator broker_iter =
-    detail::FindBrokerById(partition_iter->leader, broker_);
-  if (broker_iter != broker_.end())
+    detail::FindBrokerById(partition_iter->leader, brokers_);
+  if (broker_iter != brokers_.end())
   {
     return *broker_iter;
   }

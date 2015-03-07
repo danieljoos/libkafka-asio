@@ -14,6 +14,7 @@
 #include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
+#include <libkafka_asio/detail/topic_partition_block.h>
 
 namespace libkafka_asio
 {
@@ -26,6 +27,21 @@ class MetadataResponse :
 {
   friend class MutableMetadataResponse;
 
+  struct TopicPartitionProperties
+  {
+    typedef std::vector<Int32> ReplicasVector;
+    typedef std::vector<Int32> IsrVector;
+    Int16 error_code;
+    Int32 leader;
+    ReplicasVector replicas;
+    IsrVector isr;
+  };
+
+  struct TopicProperties
+  {
+    Int16 error_code;
+  };
+
 public:
 
   struct Broker
@@ -36,49 +52,30 @@ public:
     Int32 port;
   };
 
-  struct PartitionMetaData
-  {
-    typedef std::vector<Int32> ReplicasVector;
-    typedef std::vector<Int32> IsrVector;
-
-    Int16 partition_error_code;
-    Int32 partition;
-    Int32 leader;
-    ReplicasVector replicas;
-    IsrVector isr;
-  };
-
-  struct TopicMetadata
-  {
-    typedef std::vector<PartitionMetaData> PartitionMetadataVector;
-
-    Int16 topic_error_code;
-    String topic_name;
-    PartitionMetadataVector partition_metadata;
-  };
-
   typedef std::vector<Broker> BrokerVector;
-  typedef std::vector<TopicMetadata> TopicMetadataVector;
+  typedef detail::TopicPartitionBlock<TopicPartitionProperties,
+                                      TopicProperties> Topic;
+  typedef Topic::VectorType TopicVector;
 
-  const BrokerVector& broker() const;
+  const BrokerVector& brokers() const;
 
-  const TopicMetadataVector& topic_metadata() const;
+  const TopicVector& topics() const;
 
   Broker::OptionalType PartitionLeader(const String& topic,
                                        Int32 partition) const;
 
 private:
-  BrokerVector broker_;
-  TopicMetadataVector topic_metadata_;
+  BrokerVector brokers_;
+  TopicVector topics_;
 };
 
 class MutableMetadataResponse :
   public MutableResponse<MetadataResponse>
 {
 public:
-  MetadataResponse::BrokerVector& mutable_broker();
+  MetadataResponse::BrokerVector& mutable_brokers();
 
-  MetadataResponse::TopicMetadataVector& mutable_topic_metadata();
+  MetadataResponse::TopicVector& mutable_topics();
 };
 
 }  // namespace libkafka_asio

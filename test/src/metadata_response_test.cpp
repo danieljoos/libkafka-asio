@@ -22,7 +22,7 @@ protected:
     broker.host = host;
     broker.node_id = node_id;
     broker.port = port;
-    response.mutable_broker().push_back(broker);
+    response.mutable_brokers().push_back(broker);
   }
 
   MutableMetadataResponse response;
@@ -33,14 +33,14 @@ TEST_F(MetadataResponseTest, PartitionLeader)
 {
   AddBroker("localhost", 123, 49152);
   AddBroker("example.com", 456, 49152);
-  ASSERT_EQ(2, response.response().broker().size());
-  MetadataResponse::TopicMetadata metadata;
+  ASSERT_EQ(2, response.response().brokers().size());
+  MetadataResponse::Topic metadata;
   metadata.topic_name = "foo";
-  metadata.partition_metadata.resize(1);
-  metadata.partition_metadata[0].partition = 1;
-  metadata.partition_metadata[0].leader = 456;
-  response.mutable_topic_metadata().push_back(metadata);
-  ASSERT_EQ(1, response.response().topic_metadata().size());
+  metadata.partitions.resize(1);
+  metadata.partitions[0].partition = 1;
+  metadata.partitions[0].leader = 456;
+  response.mutable_topics().push_back(metadata);
+  ASSERT_EQ(1, response.response().topics().size());
 
   MetadataResponse::Broker::OptionalType leader =
     response.response().PartitionLeader("foo", 1);
@@ -51,13 +51,13 @@ TEST_F(MetadataResponseTest, PartitionLeader)
 
 TEST_F(MetadataResponseTest, PartitionLeader_InElection)
 {
-  MetadataResponse::TopicMetadata metadata;
+  MetadataResponse::Topic metadata;
   metadata.topic_name = "foo";
-  metadata.partition_metadata.resize(1);
-  metadata.partition_metadata[0].partition = 1;
-  metadata.partition_metadata[0].leader = -1;
-  response.mutable_topic_metadata().push_back(metadata);
-  ASSERT_EQ(1, response.response().topic_metadata().size());
+  metadata.partitions.resize(1);
+  metadata.partitions[0].partition = 1;
+  metadata.partitions[0].leader = -1;
+  response.mutable_topics().push_back(metadata);
+  ASSERT_EQ(1, response.response().topics().size());
 
   MetadataResponse::Broker::OptionalType leader =
     response.response().PartitionLeader("foo", 1);
