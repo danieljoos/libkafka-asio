@@ -32,7 +32,7 @@ void HandleRequest(const Client::ErrorCodeType& err,
       << std::endl;
     return;
   }
-  OffsetResponse::PartitionOffset::OptionalType offset =
+  OffsetResponse::Topic::Partition::OptionalType offset =
     response->TopicPartitionOffset("mytopic", 1);
   if (!offset || offset->offsets.empty())
   {
