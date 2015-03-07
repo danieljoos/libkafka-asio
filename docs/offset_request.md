@@ -14,7 +14,7 @@ acting as leader for that topic partition.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
 [OffsetRequest]++-*[Topic], 
-[Topic]++-*[TopicPartition]" 
+[Topic]++-*[Topic::Partition]" 
 />
 
 Member Functions
@@ -25,8 +25,11 @@ Member Functions
 Fetches offset information for the given topic partition. The optional `time`
 parameter can be used to ask for messages before a certain time in the past.
 Time must be specified in milliseconds. Two special values exist for this
-parameters: `libkafka_asio::constants::kOffsetTimeLatest` (`-1`) (Default) and 
-`libkafka_asio::constants::kOffsetTimeEarliest` (`-2`).
+parameters:
+ 
+* `libkafka_asio::constants::kOffsetTimeLatest` (`-1`) (Default) and 
+* `libkafka_asio::constants::kOffsetTimeEarliest` (`-2`).
+
 The maximum number of offsets to fetch can optionally be specified as well.
 
 ```cpp
@@ -53,7 +56,7 @@ conversion to the Kafka wire format.
 Types
 -----
 
-### struct **TopicPartition**
+### struct **Topic::Partition**
 
 + `partition`:
    Number, identifying this topic partition.

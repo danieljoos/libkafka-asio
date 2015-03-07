@@ -13,15 +13,14 @@ when invoking a metadata request.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
 [MetadataResponse]++-*[Broker], 
-[MetadataResponse]++-*[TopicMetadata], 
-[TopicMetadata]++-*[PartitionMetadata]" 
+[MetadataResponse]++-*[Topic], 
+[Topic]++-*[Topic::Partition]" 
 />
 
 Member Functions
 ----------------
 
-### Broker::OptionalType **PartitionLeader** (const String& topic, Int32
-partition) const
+### Broker::OptionalType **PartitionLeader** (const String& topic, Int32 partition) const
 
 Returns the broker, which is currently acting as leader for the given topic
 partition. The function basically looks for the given topic and partition in
@@ -43,15 +42,15 @@ if (leader)
 }
 ```
 
-### const BrokerVector& **broker** () const
+### const BrokerVector& **brokers** () const
 
-Returns a reference to the received broker metadata. See the `Broker` data
-structure below.
+Returns a reference to the set of received broker metadata. See the `Broker` 
+data structure below.
 
-### const TopicMetadataVector& **topic_metadata** () const
+### const TopicVector& **topics** () const
 
 Returns a reference to the received topic partition metadata. See the
-description for `TopicMetadata` and `PartitionMetadata` types below.
+description for `Topic` and `Topic::Partition` types below.
 
 Types
 -----
@@ -65,9 +64,9 @@ Types
 + `port`:
    Kafka broker port
    
-### struct **PartitionMetaData**
+### struct **Topic::Partition**
 
-+ `partition_error_code`:
++ `error_code`:
    Kafka error code for this partition.
 + `partition`:
    Number, identifying this topic partition.
@@ -80,13 +79,13 @@ Types
 + `isr`:
    Set of Kafka broker node IDs that are "caught up" to the leader broker.
 
-### struct **TopicMetadata**
+### struct **Topic**
 
-+ `topic_error_code`:
++ `error_code`:
    Kafka error code for this topic.
 + `topic_name`:
    Name of this topic.
-+ `partition_metadata`:
++ `partitions`:
    Metadata for each requested partition of this topic. This can be empty in
    case of an error for this topic (e.g. in case the topic cannot be found on
    the connected broker).
@@ -98,7 +97,7 @@ be used for metadata request handler functions.
 ### typedef std::vector<Broker\> **BrokerVector**
 Set of brokers.
    
-### typedef std::vector<TopicMetadata\> **TopicMetadataVector**
+### typedef std::vector<Topic\> **TopicVector**
 Set of topic metadata structures.
 
 ### typedef boost::optional<Broker\> **Broker::OptionalType**

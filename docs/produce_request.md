@@ -13,7 +13,7 @@ remote Kafka server.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
 [ProduceRequest]++-*[Topic], 
-[Topic]++-*[TopicPartition]" 
+[Topic]++-*[Topic::Partition]" 
 />
 
 Member Functions
@@ -73,7 +73,7 @@ Timeout in milliseconds to wait for required acknowledgements.
 Types
 -----
 
-### struct **TopicPartition**
+### struct **Topic::Partition**
 
 + `partition`:
    Number, identifying this topic partition.

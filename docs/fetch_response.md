@@ -58,7 +58,7 @@ Returns a reference to the set of topics, messages have been received for.
 Types
 -----
 
-### struct **TopicPartition**
+### struct **Topic::Partition**
 
 + `partition`:
    Number, identifying this topic partition.

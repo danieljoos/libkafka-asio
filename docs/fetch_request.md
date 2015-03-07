@@ -68,7 +68,7 @@ conversion to the Kafka wire format.
 Types
 -----
 
-### struct **TopicPartition**
+### struct **Topic::Partition**
 
 + `partition`:
    Number, identifying this topic partition.

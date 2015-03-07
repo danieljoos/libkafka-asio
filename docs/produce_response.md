@@ -14,7 +14,7 @@ response (which is not always the case for a ProduceRequest).
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
 [ProduceResponse]++-*[Topic], 
-[Topic]++-*[TopicPartition]" 
+[Topic]++-*[Topic::Partition]" 
 />
 
 Member Functions
@@ -28,7 +28,7 @@ description of `Topic` type below.
 Types
 -----
 
-### struct **TopicPartition**
+### struct **Topic::Partition**
 
 + `partition`:
    Number, identifying this topic partition.
@@ -43,8 +43,8 @@ Types
 + `topic_name`:
    Name of this topic.
 + `partitions`:
-   Vector of `TopicPartitions`, representing the partitions, for which messages
-   have been created.
+   Vector of `Topic::Partition`, representing the partitions, for which 
+   messages have been created.
 
 ### typedef std::vector<Topic\> **TopicVector**
 

@@ -13,13 +13,13 @@ when invoking an offset request.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
 [OffsetResponse]++-*[Topic], 
-[Topic]++-*[PartitionOffset]" 
+[Topic]++-*[Topic::Partition]" 
 />
 
 Member Functions
 ----------------
 
-### PartitionOffset::OptionalType **TopicPartitionOffset** (const String& topic_name, Int32 partition) const
+### Topic::Partition::OptionalType **TopicPartitionOffset** (const String& topic_name, Int32 partition) const
 
 Search for offset data for the given topic partition inside this response 
 object. If no such data can be found, the return value is empty.
@@ -29,7 +29,7 @@ object. If no such data can be found, the return value is empty.
 OffsetResponse::OptionalType response;
 
 // Get the offset data for topic 'foo' partition 1
-OffsetResponse::PartitionOffset::OptionalType offsets;
+OffsetResponse::Topic::Partition::OptionalType offsets;
 offsets = response->TopicPartitionOffset("foo", 1);
 if (offsets)
 {
@@ -44,7 +44,7 @@ Returns a reference to the set of topics, offsets have been received for.
 Types
 -----
 
-### struct **PartitionOffset**
+### struct **Topic::Partition**
 
 + `partition`:
    Number, identifying this topic partition.
