@@ -10,6 +10,7 @@
 #ifndef PRODUCE_RESPONSE_READ_H_9046BEF5_332B_4B67_8138_5964E836BF6C
 #define PRODUCE_RESPONSE_READ_H_9046BEF5_332B_4B67_8138_5964E836BF6C
 
+#include <boost/foreach.hpp>
 #include <libkafka_asio/error.h>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/detail/response_read.h>
@@ -23,33 +24,24 @@ inline void ReadResponseMessage(std::istream& is,
                                 MutableProduceResponse& response,
                                 boost::system::error_code& ec)
 {
-  // Topic Array
-  Int32 topics_size = ReadInt32(is);
-  for (Int32 i = 0; i < topics_size; ++i)
+  response.mutable_topics().resize(ReadInt32(is));
+  BOOST_FOREACH(ProduceResponse::Topic& topic, response.mutable_topics())
   {
-    ProduceResponse::Topic topic;
-
-    // Topic Name
     topic.topic_name = ReadString(is);
-
-    // Partition Array
-    Int32 partition_size = ReadInt32(is);
-    for (Int32 j = 0; j < partition_size; ++j)
+    topic.partitions.resize(ReadInt32(is));
+    BOOST_FOREACH(ProduceResponse::Topic::Partition& partition,
+                  topic.partitions)
     {
-      ProduceResponse::Topic::Partition topic_partition;
-      topic_partition.partition = ReadInt32(is);
-      topic_partition.error_code = ReadInt16(is);
-      topic_partition.offset = ReadInt64(is);
-      topic.partitions.push_back(topic_partition);
+      partition.partition = ReadInt32(is);
+      partition.error_code = ReadInt16(is);
+      partition.offset = ReadInt64(is);
 
-      if (topic_partition.error_code)
+      if (partition.error_code)
       {
-        ec = (KafkaError) topic_partition.error_code;
+        ec = (KafkaError) partition.error_code;
         return;
       }
     }
-
-    response.mutable_topics().push_back(topic);
   }
 }
 

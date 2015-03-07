@@ -10,8 +10,8 @@
 #ifndef FETCH_RESPONSE_READ_H_03C2A581_53D0_498E_AF6A_2082227485A3
 #define FETCH_RESPONSE_READ_H_03C2A581_53D0_498E_AF6A_2082227485A3
 
+#include <boost/foreach.hpp>
 #include <libkafka_asio/detail/response_read.h>
-#include <libkafka_asio/fetch_response.h>
 
 namespace libkafka_asio
 {
@@ -23,19 +23,15 @@ inline void ReadResponseMessage(std::istream& is,
                                 boost::system::error_code& ec)
 {
   // Topic array
-  Int32 topics_size = ReadInt32(is);
-  response.mutable_topics().resize(topics_size);
-  for (Int32 i = 0; i < topics_size; ++i)
+  response.mutable_topics().resize(ReadInt32(is));
+  BOOST_FOREACH(FetchResponse::Topic& topic, response.mutable_topics())
   {
-    FetchResponse::Topic& topic = response.mutable_topics()[i];
     topic.topic_name = ReadString(is);
 
     // Partitions array
-    Int32 partitions_size = ReadInt32(is);
-    topic.partitions.resize(partitions_size);
-    for (Int32 j = 0; j < partitions_size; ++j)
+    topic.partitions.resize(ReadInt32(is));
+    BOOST_FOREACH(FetchResponse::Topic::Partition& partition, topic.partitions)
     {
-      FetchResponse::Topic::Partition& partition = topic.partitions[j];
       partition.partition = ReadInt32(is);
       partition.error_code = ReadInt16(is);
       partition.highwater_mark_offset = ReadInt64(is);

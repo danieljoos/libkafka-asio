@@ -10,6 +10,7 @@
 #ifndef OFFSET_COMMIT_RESPONSE_READ_H_2BC25D29_FD96_4830_AD74_E2495AA55545
 #define OFFSET_COMMIT_RESPONSE_READ_H_2BC25D29_FD96_4830_AD74_E2495AA55545
 
+#include <boost/foreach.hpp>
 #include <libkafka_asio/detail/response_read.h>
 
 namespace libkafka_asio
@@ -21,18 +22,14 @@ inline void ReadResponseMessage(std::istream& is,
                                 MutableOffsetCommitResponse& response,
                                 boost::system::error_code& ec)
 {
-  Int32 topics_size = ReadInt32(is);
-  response.mutable_topics().resize(topics_size);
-  for (Int32 i = 0; i < topics_size; ++i)
+  response.mutable_topics().resize(ReadInt32(is));
+  BOOST_FOREACH(OffsetCommitResponse::Topic& topic, response.mutable_topics())
   {
-    OffsetCommitResponse::Topic& topic = response.mutable_topics()[i];
     topic.topic_name = ReadString(is);
-
-    Int32 partitions_size = ReadInt32(is);
-    topic.partitions.resize(partitions_size);
-    for (Int32 j = 0; j < partitions_size; ++j)
+    topic.partitions.resize(ReadInt32(is));
+    BOOST_FOREACH(OffsetCommitResponse::Topic::Partition& partition,
+                  topic.partitions)
     {
-      OffsetCommitResponse::Topic::Partition& partition = topic.partitions[j];
       partition.partition = ReadInt32(is);
       partition.error_code = ReadInt16(is);
     }

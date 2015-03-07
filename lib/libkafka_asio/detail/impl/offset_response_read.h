@@ -10,6 +10,7 @@
 #ifndef OFFSET_RESPONSE_READ_H_BAFF7FC5_03CA_46CD_B8EC_AD2CDBFF19F0
 #define OFFSET_RESPONSE_READ_H_BAFF7FC5_03CA_46CD_B8EC_AD2CDBFF19F0
 
+#include <boost/foreach.hpp>
 #include <libkafka_asio/detail/response_read.h>
 
 namespace libkafka_asio
@@ -21,34 +22,26 @@ inline void ReadResponseMessage(std::istream & is,
                                 MutableOffsetResponse & response,
                                 boost::system::error_code & ec)
 {
-  Int32 topics_size = ReadInt32(is);
-  for (Int32 i = 0; i < topics_size; ++i)
+  response.mutable_topics().resize(ReadInt32(is));
+  BOOST_FOREACH(OffsetResponse::Topic& topic, response.mutable_topics())
   {
-    OffsetResponse::Topic topic;
-    topic.topic_name = ReadString(is);
-
-    Int32 partitions_size = ReadInt32(is);
-    for (Int32 j = 0; j < partitions_size; ++j)
+    topic.partitions.resize(ReadInt32(is));
+    BOOST_FOREACH(OffsetResponse::Topic::Partition& partition,
+                  topic.partitions)
     {
-      OffsetResponse::Topic::Partition partition_offset;
-      partition_offset.partition = ReadInt32(is);
-      partition_offset.error_code = ReadInt16(is);
-
-      if (partition_offset.error_code)
+      partition.partition = ReadInt32(is);
+      partition.error_code = ReadInt16(is);
+      if (partition.error_code)
       {
-        ec = (KafkaError) partition_offset.error_code;
+        ec = (KafkaError) partition.error_code;
         return;
       }
-
       Int32 offsets_size = ReadInt32(is);
       for (Int32 k = 0; k < offsets_size; ++k)
       {
-        partition_offset.offsets.push_back(ReadInt64(is));
+        partition.offsets.push_back(ReadInt64(is));
       }
-
-      topic.partitions.push_back(partition_offset);
     }
-    response.mutable_topics().push_back(topic);
   }
 }
 

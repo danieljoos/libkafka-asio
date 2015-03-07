@@ -30,14 +30,10 @@ inline Int32 RequestMessageWireSize(const OffsetRequest& request)
 
     // Partitions array
     size += sizeof(Int32);
-    BOOST_FOREACH(const OffsetRequest::Topic::Partition& partition,
-                  topic.partitions)
-    {
-      size +=
-        sizeof(Int32) +  // Partition
-        sizeof(Int64) +  // Time
-        sizeof(Int32);   // MaxNumberOfOffsets
-    }
+    size += topic.partitions.size() * (
+      sizeof(Int32) +  // Partition
+      sizeof(Int64) +  // Time
+      sizeof(Int32));  // MaxNumberOfOffsets
   }
   return size;
 }
