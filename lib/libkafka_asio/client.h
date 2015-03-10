@@ -36,11 +36,6 @@ namespace libkafka_asio
 class Client :
   private boost::noncopyable
 {
-  typedef boost::asio::ip::tcp::resolver ResolverType;
-  typedef boost::asio::ip::tcp::socket SocketType;
-  typedef boost::asio::deadline_timer DeadlineTimerType;
-  typedef boost::shared_ptr<boost::asio::streambuf> StreambufType;
-
   enum ClientState
   {
     kStateClosed = 0,
@@ -49,6 +44,12 @@ class Client :
     kStateWriting,
     kStateReading
   };
+
+  typedef boost::asio::ip::tcp::resolver ResolverType;
+  typedef boost::asio::ip::tcp::socket SocketType;
+  typedef boost::asio::deadline_timer DeadlineTimerType;
+  typedef boost::shared_ptr<boost::asio::streambuf> StreambufType;
+  typedef boost::shared_ptr<ClientState> SharedClientState;
 
 public:
   // Configuration type
@@ -139,9 +140,6 @@ public:
                     const typename Handler<TRequest>::Type& handler);
 
   // Closes the connection to the Kafka server.
-  // All asynchronous operations will be cancelled immediately with an
-  // `operation_aborted` error.
-  //
   void Close();
 
 private:
@@ -204,7 +202,7 @@ private:
     const typename Handler<TRequest>::Type& handler);
 
   // Handle socket operation timeout
-  void HandleDeadline();
+  void HandleDeadline(const ErrorCodeType& error);
 
   Configuration configuration_;
   ClientState state_;

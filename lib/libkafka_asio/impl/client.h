@@ -34,10 +34,7 @@ inline Client::Client(boost::asio::io_service& io_service,
 
 inline Client::~Client()
 {
-  if (state_ != kStateClosed)
-  {
-    Close();
-  }
+  Close();
 }
 
 inline void Client::AsyncConnect(const std::string& host,
@@ -53,7 +50,10 @@ inline void Client::AsyncConnect(const std::string& host,
   ResolverType::query query(host, service);
   resolver_.async_resolve(
     query,
-    boost::bind(&Client::HandleAsyncResolve, this, ::_1, ::_2, handler));
+    boost::bind(&Client::HandleAsyncResolve, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::iterator,
+                handler));
   state_ = kStateConnecting;
   SetDeadline();
 }
@@ -107,16 +107,19 @@ inline void Client::Close()
 {
   state_ = kStateClosed;
   boost::system::error_code ec;
+  resolver_.cancel();
   socket_.shutdown(SocketType::shutdown_both, ec);
   socket_.close(ec);
-  deadline_.cancel();
+  deadline_.cancel(ec);
 }
 
 inline void Client::SetDeadline()
 {
   using boost::posix_time::milliseconds;
   deadline_.expires_from_now(milliseconds(configuration_.socket_timeout));
-  deadline_.async_wait(boost::bind(&Client::HandleDeadline, this));
+  deadline_.async_wait(
+    boost::bind(&Client::HandleDeadline, this,
+                boost::asio::placeholders::error));
 }
 
 inline void Client::AutoConnect(
@@ -128,8 +131,10 @@ inline void Client::AutoConnect(
       &Client::HandleAsyncAutoConnect, this, ::_1, handler, broker_iter);
   resolver_.async_resolve(
     query,
-    boost::bind(
-      &Client::HandleAsyncResolve, this, ::_1, ::_2, wrapped_handler));
+    boost::bind(&Client::HandleAsyncResolve, this, 
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::iterator,
+                wrapped_handler));
   state_ = kStateConnecting;
   SetDeadline();
 }
@@ -147,8 +152,12 @@ inline void Client::SendAsyncRequest(
   bool response_expected = request.ResponseExpected();
   boost::asio::async_write(
     socket_, *buffer,
-    boost::bind(&Client::HandleAsyncRequestWrite<TRequest>,
-    this, ::_1, ::_2, buffer, handler, response_expected));
+    boost::bind(&Client::HandleAsyncRequestWrite<TRequest>, this, 
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred,
+                buffer,
+                handler,
+                response_expected));
   state_ = kStateWriting;
   SetDeadline();
 }
@@ -166,7 +175,9 @@ inline void Client::HandleAsyncResolve(
   }
   boost::asio::async_connect(
     socket_, iter,
-    boost::bind(&Client::HandleAsyncConnect, this, ::_1, handler));
+    boost::bind(&Client::HandleAsyncConnect, this,
+                boost::asio::placeholders::error,
+                handler));
   SetDeadline();
 }
 
@@ -238,8 +249,11 @@ void Client::HandleAsyncRequestWrite(
     socket_,
     buffer->prepare(sizeof(Int32)),
     boost::asio::transfer_exactly(sizeof(Int32)),
-    boost::bind(&Client::HandleAsyncResponseSizeRead<TRequest>,
-                this, ::_1, ::_2, buffer, handler));
+    boost::bind(&Client::HandleAsyncResponseSizeRead<TRequest>, this, 
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred,
+                buffer,
+                handler));
   state_ = kStateReading;
   SetDeadline();
 }
@@ -282,8 +296,11 @@ void Client::HandleAsyncResponseSizeRead(
     socket_,
     buffer->prepare(size),
     boost::asio::transfer_exactly(size),
-    boost::bind(&Client::HandleAsyncResponseRead<TRequest>,
-                this, ::_1, ::_2, buffer, handler));
+    boost::bind(&Client::HandleAsyncResponseRead<TRequest>, this, 
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred,
+                buffer,
+                handler));
   SetDeadline();
 }
 
@@ -322,19 +339,19 @@ void Client::HandleAsyncResponseRead(
   }
 }
 
-inline void Client::HandleDeadline()
+inline void Client::HandleDeadline(const Client::ErrorCodeType& error)
 {
-  if (state_ == kStateClosed || state_ == kStateConnected)
+  if (error == boost::asio::error::operation_aborted ||
+      state_ == kStateClosed || state_ == kStateConnected)
   {
     return;
   }
   if (deadline_.expires_at() <= DeadlineTimerType::traits_type::now())
   {
     // Socket operation timed out!
-    Close();
     deadline_.expires_at(boost::posix_time::pos_infin);
+    Close();
   }
-  deadline_.async_wait(boost::bind(&Client::HandleDeadline, this));
 }
 
 }  // namespace libkafka_asio
