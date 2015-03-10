@@ -25,6 +25,7 @@ inline void ReadResponseMessage(std::istream & is,
   response.mutable_topics().resize(ReadInt32(is));
   BOOST_FOREACH(OffsetResponse::Topic& topic, response.mutable_topics())
   {
+    topic.topic_name = ReadString(is);
     topic.partitions.resize(ReadInt32(is));
     BOOST_FOREACH(OffsetResponse::Topic::Partition& partition,
                   topic.partitions)

@@ -13,6 +13,7 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/client_configuration.h>
@@ -32,7 +33,8 @@ namespace libkafka_asio
 // programming model:
 // http://www.boost.org/doc/libs/release/libs/asio/
 //
-class Client
+class Client :
+  private boost::noncopyable
 {
   typedef boost::asio::ip::tcp::resolver ResolverType;
   typedef boost::asio::ip::tcp::socket SocketType;
