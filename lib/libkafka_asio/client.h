@@ -42,9 +42,11 @@ class Client :
     kStateConnecting,
     kStateConnected,
     kStateWriting,
-    kStateReading
+    kStateReading,
+    kStateDestroyed = -1
   };
 
+  typedef boost::asio::io_service IOServiceType;
   typedef boost::asio::ip::tcp::resolver ResolverType;
   typedef boost::asio::ip::tcp::socket SocketType;
   typedef boost::asio::deadline_timer DeadlineTimerType;
@@ -77,8 +79,7 @@ public:
          const Configuration& configuration = Configuration());
 
   // A possibly open connection will be closed on destruction of client objects.
-  // All pending asynchronous operations will be cancelled and the respective
-  // handler functions will be called with `operation_aborted` error.
+  // All pending asynchronous operations will be cancelled.
   ~Client();
 
   // Asynchronously connects to the Kafka server, identified by the given
@@ -143,9 +144,6 @@ public:
   void Close();
 
 private:
-  Client(const Client&);
-
-  Client& operator=(const Client&);
 
   // Resets the socket operation timeout
   void SetDeadline();
@@ -164,10 +162,12 @@ private:
   // Handle async resolve operations
   void HandleAsyncResolve(const ErrorCodeType& error,
                           ResolverType::iterator iter,
+                          const SharedClientState& state,
                           const ConnectionHandlerType& handler);
 
   // Handle async connect operations
   void HandleAsyncConnect(const ErrorCodeType& error,
+                          const SharedClientState& state,
                           const ConnectionHandlerType& handler);
 
   // Handle auto-connect. Tries the next broker on error.
@@ -182,6 +182,7 @@ private:
     const ErrorCodeType& error,
     size_t bytes_transferred,
     StreambufType buffer,
+    const SharedClientState& state,
     const typename Handler<TRequest>::Type& handler,
     bool response_expected);
 
@@ -191,6 +192,7 @@ private:
     const ErrorCodeType& error,
     size_t bytes_transferred,
     StreambufType buffer,
+    const SharedClientState& state,
     const typename Handler<TRequest>::Type& handler);
 
   // Handle async read of response body
@@ -199,14 +201,15 @@ private:
     const ErrorCodeType& error,
     size_t bytes_transferred,
     StreambufType buffer,
+    const SharedClientState& state,
     const typename Handler<TRequest>::Type& handler);
 
   // Handle socket operation timeout
-  void HandleDeadline(const ErrorCodeType& error);
+  void HandleDeadline(const SharedClientState& state);
 
   Configuration configuration_;
-  ClientState state_;
-  boost::asio::io_service& io_service_;
+  SharedClientState state_;
+  IOServiceType& io_service_;
   ResolverType resolver_;
   SocketType socket_;
   DeadlineTimerType deadline_;
