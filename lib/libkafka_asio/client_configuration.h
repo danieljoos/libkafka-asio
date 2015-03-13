@@ -58,6 +58,11 @@ struct ClientConfiguration
   template< typename T >
   void AddBroker(const T& broker);
 
+  // Add a broker using the given hostname and service parameter.
+  // Both will be casted to string using a lexical_cast.
+  template<typename Tx, typename Ty>
+  void AddBroker(const Tx& hostname, const Ty& service);
+
   // Add an existing BrokerAddress data structure.
   // This is the same as simply pushing the given object to the broker_list.
   void AddBroker(const BrokerAddress& broker_address);

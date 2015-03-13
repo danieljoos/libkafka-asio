@@ -45,9 +45,16 @@ inline void ClientConfiguration::AddBrokerFromString(const std::string& str)
 template< typename T >
 inline void ClientConfiguration::AddBroker(const T& broker)
 {
+  AddBroker(broker.host, broker.port);
+}
+
+template<typename Tx, typename Ty>
+inline void ClientConfiguration::AddBroker(const Tx& hostname,
+                                           const Ty& service)
+{
   BrokerAddress broker_address;
-  broker_address.hostname = boost::lexical_cast<String>(broker.host);
-  broker_address.service = boost::lexical_cast<String>(broker.port);
+  broker_address.hostname = boost::lexical_cast<String>(hostname);
+  broker_address.service = boost::lexical_cast<String>(service);
   AddBroker(broker_address);
 }
 
