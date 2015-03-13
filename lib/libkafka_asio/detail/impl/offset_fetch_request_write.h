@@ -18,7 +18,7 @@ namespace libkafka_asio
 namespace detail
 {
 
-Int32 RequestMessageWireSize(const OffsetFetchRequest& request)
+inline Int32 RequestMessageWireSize(const OffsetFetchRequest& request)
 {
   Int32 size = StringWireSize(request.consumer_group());
   // Topics Array
@@ -33,7 +33,8 @@ Int32 RequestMessageWireSize(const OffsetFetchRequest& request)
   return size;
 }
 
-void WriteRequestMessage(const OffsetFetchRequest& request, std::ostream& os)
+inline void WriteRequestMessage(const OffsetFetchRequest& request,
+                                std::ostream& os)
 {
   WriteString(request.consumer_group(), os);
   // Topics Array
