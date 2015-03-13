@@ -24,7 +24,7 @@ namespace libkafka_asio
 inline Client::Client(boost::asio::io_service& io_service,
                       const Client::Configuration& configuration) :
   configuration_(configuration),
-  state_(kStateClosed),
+  state_(new Client::ClientState(kStateClosed)),
   io_service_(io_service),
   resolver_(io_service_),
   socket_(io_service_),
@@ -34,17 +34,15 @@ inline Client::Client(boost::asio::io_service& io_service,
 
 inline Client::~Client()
 {
-  if (state_ != kStateClosed)
-  {
-    Close();
-  }
+  Close();
+  *state_ = kStateDestroyed;
 }
 
 inline void Client::AsyncConnect(const std::string& host,
                                  const std::string& service,
                                  const Client::ConnectionHandlerType& handler)
 {
-  if (state_ != kStateClosed)
+  if (*state_ != kStateClosed)
   {
     io_service_.post(boost::bind(handler, kErrorAlreadyConnected));
     return;
@@ -53,14 +51,18 @@ inline void Client::AsyncConnect(const std::string& host,
   ResolverType::query query(host, service);
   resolver_.async_resolve(
     query,
-    boost::bind(&Client::HandleAsyncResolve, this, ::_1, ::_2, handler));
-  state_ = kStateConnecting;
+    boost::bind(&Client::HandleAsyncResolve, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::iterator,
+                state_,
+                handler));
+  *state_ = kStateConnecting;
   SetDeadline();
 }
 
 inline void Client::AsyncConnect(const Client::ConnectionHandlerType& handler)
 {
-  if (state_ != kStateClosed)
+  if (*state_ != kStateClosed)
   {
     io_service_.post(boost::bind(handler, kErrorAlreadyConnected));
     return;
@@ -81,7 +83,7 @@ void Client::AsyncRequest(
   const TRequest& request,
   const typename Client::Handler<TRequest>::Type& handler)
 {
-  if (state_ == kStateClosed)
+  if (*state_ == kStateClosed)
   {
     if (configuration_.auto_connect)
     {
@@ -94,7 +96,7 @@ void Client::AsyncRequest(
     io_service_.post(boost::bind(handler, kErrorNotConnected, empty_response));
     return;
   }
-  if (state_ != kStateConnected)
+  if (*state_ != kStateConnected)
   {
     typename TRequest::ResponseType::OptionalType empty_response;
     io_service_.post(boost::bind(handler, kErrorInProgress, empty_response));
@@ -105,18 +107,20 @@ void Client::AsyncRequest(
 
 inline void Client::Close()
 {
-  state_ = kStateClosed;
+  *state_ = kStateClosed;
   boost::system::error_code ec;
+  resolver_.cancel();
   socket_.shutdown(SocketType::shutdown_both, ec);
   socket_.close(ec);
-  deadline_.cancel();
+  deadline_.cancel(ec);
 }
 
 inline void Client::SetDeadline()
 {
   using boost::posix_time::milliseconds;
   deadline_.expires_from_now(milliseconds(configuration_.socket_timeout));
-  deadline_.async_wait(boost::bind(&Client::HandleDeadline, this));
+  deadline_.async_wait(
+    boost::bind(&Client::HandleDeadline, this, state_));
 }
 
 inline void Client::AutoConnect(
@@ -128,9 +132,12 @@ inline void Client::AutoConnect(
       &Client::HandleAsyncAutoConnect, this, ::_1, handler, broker_iter);
   resolver_.async_resolve(
     query,
-    boost::bind(
-      &Client::HandleAsyncResolve, this, ::_1, ::_2, wrapped_handler));
-  state_ = kStateConnecting;
+    boost::bind(&Client::HandleAsyncResolve, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::iterator,
+                state_,
+                wrapped_handler));
+  *state_ = kStateConnecting;
   SetDeadline();
 }
 
@@ -147,17 +154,27 @@ inline void Client::SendAsyncRequest(
   bool response_expected = request.ResponseExpected();
   boost::asio::async_write(
     socket_, *buffer,
-    boost::bind(&Client::HandleAsyncRequestWrite<TRequest>,
-    this, ::_1, ::_2, buffer, handler, response_expected));
-  state_ = kStateWriting;
+    boost::bind(&Client::HandleAsyncRequestWrite<TRequest>, this, 
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred,
+                buffer,
+                state_,
+                handler,
+                response_expected));
+  *state_ = kStateWriting;
   SetDeadline();
 }
 
 inline void Client::HandleAsyncResolve(
   const Client::ErrorCodeType& error,
   Client::ResolverType::iterator iter,
+  const Client::SharedClientState& state,
   const Client::ConnectionHandlerType& handler)
 {
+  if (*state == kStateDestroyed)
+  {
+    return;
+  }
   if (error)
   {
     io_service_.post(boost::bind(handler, error));
@@ -166,21 +183,29 @@ inline void Client::HandleAsyncResolve(
   }
   boost::asio::async_connect(
     socket_, iter,
-    boost::bind(&Client::HandleAsyncConnect, this, ::_1, handler));
+    boost::bind(&Client::HandleAsyncConnect, this,
+                boost::asio::placeholders::error,
+                state_,
+                handler));
   SetDeadline();
 }
 
 inline void Client::HandleAsyncConnect(
   const Client::ErrorCodeType& error,
+  const Client::SharedClientState& state,
   const Client::ConnectionHandlerType& handler)
 {
+  if (*state == kStateDestroyed)
+  {
+    return;
+  }
   if (error)
   {
     Close();
   }
   else
   {
-    state_ = kStateConnected;
+    *state_ = kStateConnected;
     deadline_.cancel();
   }
   io_service_.post(boost::bind(handler, error));
@@ -208,9 +233,14 @@ void Client::HandleAsyncRequestWrite(
   const Client::ErrorCodeType& error,
   size_t bytes_transferred,
   Client::StreambufType buffer,
+  const Client::SharedClientState& state,
   const typename Client::Handler<TRequest>::Type& handler,
   bool response_expected)
 {
+  if (*state == kStateDestroyed)
+  {
+    return;
+  }
   typedef typename TRequest::ResponseType::OptionalType OptionalResponse;
   buffer->consume(buffer->size());
   if (error)
@@ -220,7 +250,7 @@ void Client::HandleAsyncRequestWrite(
     Close();
     return;
   }
-  else if (state_ == kStateClosed)
+  else if (*state_ == kStateClosed)
   {
     OptionalResponse empty_response;
     io_service_.post(boost::bind(handler, kErrorNotConnected, empty_response));
@@ -230,7 +260,7 @@ void Client::HandleAsyncRequestWrite(
   {
     OptionalResponse empty_response;
     io_service_.post(boost::bind(handler, error, empty_response));
-    state_ = kStateConnected;
+    *state_ = kStateConnected;
     deadline_.cancel();
     return;
   }
@@ -238,9 +268,13 @@ void Client::HandleAsyncRequestWrite(
     socket_,
     buffer->prepare(sizeof(Int32)),
     boost::asio::transfer_exactly(sizeof(Int32)),
-    boost::bind(&Client::HandleAsyncResponseSizeRead<TRequest>,
-                this, ::_1, ::_2, buffer, handler));
-  state_ = kStateReading;
+    boost::bind(&Client::HandleAsyncResponseSizeRead<TRequest>, this, 
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred,
+                buffer,
+                state_,
+                handler));
+  *state_ = kStateReading;
   SetDeadline();
 }
 
@@ -249,8 +283,13 @@ void Client::HandleAsyncResponseSizeRead(
   const ErrorCodeType& error,
   size_t bytes_transferred,
   Client::StreambufType buffer,
+  const Client::SharedClientState& state,
   const typename Client::Handler<TRequest>::Type& handler)
 {
+  if (*state == kStateDestroyed)
+  {
+    return;
+  }
   typedef typename TRequest::ResponseType::OptionalType OptionalResponse;
   buffer->commit(bytes_transferred);
   if (error)
@@ -260,7 +299,7 @@ void Client::HandleAsyncResponseSizeRead(
     Close();
     return;
   }
-  else if (state_ == kStateClosed)
+  else if (*state_ == kStateClosed)
   {
     OptionalResponse empty_response;
     io_service_.post(boost::bind(handler, kErrorNotConnected, empty_response));
@@ -282,8 +321,12 @@ void Client::HandleAsyncResponseSizeRead(
     socket_,
     buffer->prepare(size),
     boost::asio::transfer_exactly(size),
-    boost::bind(&Client::HandleAsyncResponseRead<TRequest>,
-                this, ::_1, ::_2, buffer, handler));
+    boost::bind(&Client::HandleAsyncResponseRead<TRequest>, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred,
+                buffer,
+                state_,
+                handler));
   SetDeadline();
 }
 
@@ -292,8 +335,13 @@ void Client::HandleAsyncResponseRead(
   const Client::ErrorCodeType& error,
   size_t bytes_transferred,
   Client::StreambufType buffer,
+  const Client::SharedClientState& state,
   const typename Client::Handler<TRequest>::Type& handler)
 {
+  if (*state == kStateDestroyed)
+  {
+    return;
+  }
   typedef typename TRequest::ResponseType::OptionalType OptionalResponse;
   buffer->commit(bytes_transferred);
   if (error)
@@ -317,24 +365,25 @@ void Client::HandleAsyncResponseRead(
   else
   {
     io_service_.post(boost::bind(handler, ec, response.response()));
-    state_ = kStateConnected;
+    *state_ = kStateConnected;
     deadline_.cancel();
   }
 }
 
-inline void Client::HandleDeadline()
+inline void Client::HandleDeadline(const Client::SharedClientState& state)
 {
-  if (state_ == kStateClosed || state_ == kStateConnected)
+  if (*state == kStateDestroyed ||
+      *state == kStateClosed || 
+      *state == kStateConnected)
   {
     return;
   }
   if (deadline_.expires_at() <= DeadlineTimerType::traits_type::now())
   {
     // Socket operation timed out!
-    Close();
     deadline_.expires_at(boost::posix_time::pos_infin);
+    Close();
   }
-  deadline_.async_wait(boost::bind(&Client::HandleDeadline, this));
 }
 
 }  // namespace libkafka_asio
