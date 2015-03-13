@@ -42,4 +42,8 @@ add_executable(offset_cxx11 ${PROJECT_SOURCE_DIR}/offset_cxx11.cpp)
 target_link_libraries(offset_cxx11 ${examples_LINK_LIBRARIES})
 set_property(TARGET offset_cxx11 PROPERTY CXX_STANDARD 11)
 
+add_executable(offset_fetch_cxx11 ${PROJECT_SOURCE_DIR}/offset_fetch_cxx11.cpp)
+target_link_libraries(offset_fetch_cxx11 ${examples_LINK_LIBRARIES})
+set_property(TARGET offset_fetch_cxx11 PROPERTY CXX_STANDARD 11)
+
 endif()
