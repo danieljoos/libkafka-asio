@@ -47,4 +47,6 @@ inline void OffsetFetchRequest::FetchOffset(const String& topic_name,
 
 }  // namespace libkafka_asio
 
+#include <libkafka_asio/detail/impl/offset_fetch_request_write.h>
+
 #endif  // OFFSET_FETCH_REQUEST_H_FCE526A2_0BA6_48F4_9717_4729A46D6D5D

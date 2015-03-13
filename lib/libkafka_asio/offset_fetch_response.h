@@ -44,7 +44,7 @@ private:
 };
 
 class MutableOffsetFetchResponse :
-  MutableResponse<OffsetFetchResponse>
+  public MutableResponse<OffsetFetchResponse>
 {
 public:
   OffsetFetchResponse::TopicVector& mutable_topics();

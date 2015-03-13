@@ -25,6 +25,7 @@ Int32 RequestMessageWireSize(const OffsetFetchRequest& request)
   size += sizeof(Int32);
   BOOST_FOREACH(const OffsetFetchRequest::Topic& topic, request.topics())
   {
+    size += StringWireSize(topic.topic_name);
     // Partitions Array
     size += sizeof(Int32);
     size += topic.partitions.size() * sizeof(Int32);
@@ -39,11 +40,13 @@ void WriteRequestMessage(const OffsetFetchRequest& request, std::ostream& os)
   WriteInt32(request.topics().size(), os);
   BOOST_FOREACH(const OffsetFetchRequest::Topic& topic, request.topics())
   {
+    WriteString(topic.topic_name, os);
     // Partitions Array
-    WriteInt32(topic.partitions.size());
-    BOOST_FOREACH(Int32 partition, topic.partitions)
+    WriteInt32(topic.partitions.size(), os);
+    BOOST_FOREACH(const OffsetFetchRequest::Topic::Partition partition,
+                  topic.partitions)
     {
-      WriteInt32(partition, os);
+      WriteInt32(partition.partition, os);
     }
   }
 }
