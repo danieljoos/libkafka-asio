@@ -24,6 +24,9 @@ target_link_libraries(metadata_cxx03 ${examples_LINK_LIBRARIES})
 add_executable(offset_cxx03 ${PROJECT_SOURCE_DIR}/offset_cxx03.cpp)
 target_link_libraries(offset_cxx03 ${examples_LINK_LIBRARIES})
 
+add_executable(offset_fetch_cxx03 ${PROJECT_SOURCE_DIR}/offset_fetch_cxx03.cpp)
+target_link_libraries(offset_fetch_cxx03 ${examples_LINK_LIBRARIES})
+
 if(NOT NO_CXX11)
 
 add_executable(fetch_cxx11 ${PROJECT_SOURCE_DIR}/fetch_cxx11.cpp)
