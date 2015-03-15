@@ -14,7 +14,7 @@ pages:
     - ['fetch_response.md', 'Fetch API', 'FetchResponse']
     - ['offset_request.md', 'Offset API', 'OffsetRequest']
     - ['offset_response.md', 'Offset API', 'OffsetResponse']
-    - ['consumer_metadata_request.md', 'Offset Commit/Fetch API', 'ConsumerMetadataRequest']
-    - ['consumer_metadata_response.md', 'Offset Commit/Fetch API', 'ConsumerMetadataResponse']
-    - ['offset_commit_request.md', 'Offset Commit/Fetch API', 'OffsetCommitRequest']
+    #- ['consumer_metadata_request.md', 'Offset Commit/Fetch API', 'ConsumerMetadataRequest']
+    #- ['consumer_metadata_response.md', 'Offset Commit/Fetch API', 'ConsumerMetadataResponse']
+    #- ['offset_commit_request.md', 'Offset Commit/Fetch API', 'OffsetCommitRequest']
     
