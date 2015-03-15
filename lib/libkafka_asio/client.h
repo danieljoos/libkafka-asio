@@ -97,6 +97,24 @@ public:
                     const std::string& service,
                     const ConnectionHandlerType& handler);
 
+  // Asynchronously connects to the Kafka server, identified by the given
+  // hostname and service. Both arguments will be casted to string using
+  // lexical_cast.
+  // The given handler function object will be called on success as well as
+  // on error.
+  // The function always returns immediately.
+  // The signature of the handler function must be:
+  // ```
+  // void handler(
+  //   const boost::system::error_code& error  // Success status
+  // );
+  // ```
+  //
+  template<typename Tx, typename Ty>
+  void AsyncConnect(Tx host,
+                    Ty service,
+                    const ConnectionHandlerType& handler);
+
   // Tries to connect to the brokers, specified in the configuration given to
   // this client object. If no such broker address was configured, the handler
   // function will be scheduled with ErrorNoBroker.

@@ -13,6 +13,7 @@
 #include <vector>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 #include <libkafka_asio/constants.h>
 #include <libkafka_asio/detail/request_write.h>
 #include <libkafka_asio/detail/response_read.h>
@@ -58,6 +59,17 @@ inline void Client::AsyncConnect(const std::string& host,
                 handler));
   *state_ = kStateConnecting;
   SetDeadline();
+}
+
+template<typename Tx, typename Ty>
+inline void Client::AsyncConnect(Tx host,
+                                 Ty service,
+                                 const Client::ConnectionHandlerType& handler)
+{
+  using boost::lexical_cast;
+  AsyncConnect(lexical_cast<std::string>(host),
+               lexical_cast<std::string>(service),
+               handler);
 }
 
 inline void Client::AsyncConnect(const Client::ConnectionHandlerType& handler)
