@@ -7,34 +7,23 @@
 // Distributed under MIT license. (See file LICENSE)
 //
 
-#include <iostream>
 #include <gtest/gtest.h>
-#include <boost/asio/streambuf.hpp>
-#include <boost/shared_ptr.hpp>
 #include <libkafka_asio/libkafka_asio.h>
+
+#include "StreamTest.h"
 
 using namespace libkafka_asio;
 using namespace libkafka_asio::detail;
 
 class ResponseReadTest :
-  public ::testing::Test
+  public ::testing::Test,
+  public StreamTest
 {
 protected:
   virtual void SetUp()
   {
     ResetStream();
   }
-
-  void ResetStream()
-  {
-    streambuf.reset(new boost::asio::streambuf());
-    stream.reset(new std::iostream(streambuf.get()));
-  }
-
-  typedef boost::shared_ptr<boost::asio::streambuf> StreamBufType;
-  typedef boost::shared_ptr<std::iostream> StreamType;
-  StreamBufType streambuf;
-  StreamType stream;
 };
 
 TEST_F(ResponseReadTest, ReadInt8)

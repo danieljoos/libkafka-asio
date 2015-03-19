@@ -5,6 +5,7 @@ find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread system)
 
 include_directories(
+    ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/../lib
     ${GTEST_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS})
