@@ -24,7 +24,8 @@ inline Int16 ProduceRequest::ApiKey()
 }
 
 inline ProduceRequest::ProduceRequest() :
-  required_acks_(constants::kDefaultProduceRequiredAcks)
+  required_acks_(constants::kDefaultProduceRequiredAcks),
+  timeout_(constants::kDefaultProduceTimeout)
 {
 }
 

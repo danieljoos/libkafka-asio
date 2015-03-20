@@ -40,6 +40,8 @@ public:
   typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
   typedef Topic::VectorType TopicVector;
 
+  FetchRequest();
+
   Int32 replica_id() const;
 
   Int32 max_wait_time() const;

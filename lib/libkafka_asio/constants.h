@@ -39,8 +39,11 @@ enum Defaults
 {
   kDefaultPartition = 0,
   kDefaultProduceRequiredAcks = 0,
+  kDefaultProduceTimeout = 10000,
   kDefaultFetchOffset = 0,
+  kDefaultFetchMinBytes = 0,
   kDefaultFetchMaxBytes = 32768,
+  kDefaultFetchMaxWaitTime = 0,
   kDefaultOffsetMaxNumberOfOffsets = 1,
   kDefaultOffsetCommitTimestampNow = -1,
   kDefaultCorrelationId = 0,

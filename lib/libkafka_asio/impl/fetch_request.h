@@ -21,6 +21,12 @@ inline Int16 FetchRequest::ApiKey()
   return constants::kApiKeyFetchRequest;
 }
 
+inline FetchRequest::FetchRequest() :
+  max_wait_time_(constants::kDefaultFetchMaxWaitTime),
+  min_bytes_(constants::kDefaultFetchMinBytes)
+{
+}
+
 inline Int32 FetchRequest::replica_id() const
 {
   return -1;
