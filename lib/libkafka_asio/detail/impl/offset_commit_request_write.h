@@ -50,6 +50,8 @@ inline void WriteRequestMessage(const OffsetCommitRequest& request,
   WriteInt32(static_cast<Int32>(request.topics().size()), os);
   BOOST_FOREACH(const OffsetCommitRequest::Topic& topic, request.topics())
   {
+    WriteString(topic.topic_name, os);
+
     // Partitions Array
     WriteInt32(static_cast<Int32>(topic.partitions.size()), os);
     BOOST_FOREACH(const OffsetCommitRequest::Topic::Partition& partition,
