@@ -6,14 +6,17 @@ C++ Kafka Client Library using Boost Asio
 
 ## Introduction
 
-`libkafka-asio` is a C++ header-only library, implementing the Kafka client protocol. The following Kafka APIs are implemented at the moment:
+`libkafka-asio` is a C++ header-only library, implementing the Kafka client 
+protocol. All Kafka APIs, including offset commit/fetch, are implemented:
 
 * [Metadata](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-MetadataAPI)
 * [Produce](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-ProduceAPI)
 * [Fetch](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-FetchAPI)
 * [Offset](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-OffsetAPI)
+* [Offset Commit/Fetch](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-OffsetCommit/FetchAPI)
 
-For now it is missing support for Snappy/GZIP compression, but I plan to include this as well.
+For now it is **missing** support for Snappy/GZIP compression, but I plan to 
+include this as well.
 
 The library was tested on Linux (GCC 4.9, clang 3.5.1) and Windows (MSVC 10, 11, 12). There is a small (yet not complete) set of unit tests available under [`test`](test/).
 
