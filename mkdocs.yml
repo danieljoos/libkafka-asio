@@ -2,10 +2,10 @@
 site_name: libkafka-asio
 theme: readthedocs
 pages:
-    - ['index.md', 'Introduction']
-    - ['primitives.md', 'Primitive Types']
-    - ['client.md', 'Client', 'Client']
-    - ['client_configuration.md', 'Client', 'ClientConfiguration']
+    - ['index.html', 'Reference']
+    - ['primitives.md', 'Core', 'Primitive Types']
+    - ['client.md', 'Core', 'Client']
+    - ['client_configuration.md', 'Core', 'ClientConfiguration']
     - ['metadata_request.md', 'Metadata API', 'MetadataRequest']
     - ['metadata_response.md', 'Metadata API', 'MetadataResponse']
     - ['produce_request.md', 'Produce API', 'ProduceRequest']

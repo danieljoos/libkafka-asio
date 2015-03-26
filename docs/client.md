@@ -185,7 +185,7 @@ Error code type.
 
 ### ConnectionHandlerType
 ```cpp
-typedef boost::function<void(constErrorCodeType&)> ConnectionHandlerType
+typedef boost::function<void(const ErrorCodeType&)> ConnectionHandlerType
 ```
 
 Handler type for connection attempts.
