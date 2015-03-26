@@ -20,7 +20,11 @@ when invoking a metadata request.
 Member Functions
 ----------------
 
-### Broker::OptionalType **PartitionLeader** (const String& topic, Int32 partition) const
+### PartitionLeader
+```cpp
+Broker::OptionalType PartitionLeader(const String& topic, 
+                                     Int32 partition) const
+```
 
 Returns the broker, which is currently acting as leader for the given topic
 partition. The function basically looks for the given topic and partition in
@@ -38,24 +42,38 @@ MetadataResponse::Broker::OptionalType leader = response->PartitionLeader
 ("foo", 1);
 if (leader)
 {
-    std::cout << "Found leader: " << leader->host << ":" << leader->port << std::endl;
+    std::cout 
+      << "Found leader: " << leader->host << ":" << leader->port
+      << std::endl;
 }
 ```
 
-### const BrokerVector& **brokers** () const
+
+### brokers
+```cpp
+const BrokerVector& brokers() const
+```
 
 Returns a reference to the set of received broker metadata. See the `Broker` 
 data structure below.
 
-### const TopicVector& **topics** () const
+
+### topics
+```cpp
+const TopicVector& topics() const
+```
 
 Returns a reference to the received topic partition metadata. See the
 description for `Topic` and `Topic::Partition` types below.
 
+
 Types
 -----
 
-### struct **Broker**
+### Broker
+```cpp
+struct Broker
+```
 
 + `node_id`:
    ID of the Kafka broker
@@ -63,8 +81,27 @@ Types
    Kafka broker hostname
 + `port`:
    Kafka broker port
-   
-### struct **Topic::Partition**
+
+
+### Topic
+```cpp
+struct Topic
+```
+
++ `error_code`:
+   Kafka error code for this topic.
++ `topic_name`:
+   Name of this topic.
++ `partitions`:
+   Metadata for each requested partition of this topic. This can be empty in
+   case of an error for this topic (e.g. in case the topic cannot be found on
+   the connected broker).
+
+
+### Topic::Partition
+```cpp
+struct Topic::Partition
+```
 
 + `error_code`:
    Kafka error code for this partition.
@@ -79,27 +116,35 @@ Types
 + `isr`:
    Set of Kafka broker node IDs that are "caught up" to the leader broker.
 
-### struct **Topic**
 
-+ `error_code`:
-   Kafka error code for this topic.
-+ `topic_name`:
-   Name of this topic.
-+ `partitions`:
-   Metadata for each requested partition of this topic. This can be empty in
-   case of an error for this topic (e.g. in case the topic cannot be found on
-   the connected broker).
+### OptionalType
+```cpp
+typedef boost::optional<MetadataResponse> OptionalType
+```
 
-### typedef boost::optional<MetadataResponse\> **OptionalType**
 A metadata response object wrapped using _Boost optional_. Such an object will
 be used for metadata request handler functions.
 
-### typedef std::vector<Broker\> **BrokerVector**
+
+### BrokerVector
+```cpp
+typedef std::vector<Broker> BrokerVector
+```
+
 Set of brokers.
-   
-### typedef std::vector<Topic\> **TopicVector**
+
+
+### TopicVector
+```cpp
+typedef std::vector<Topic> TopicVector
+```
+
 Set of topic metadata structures.
 
-### typedef boost::optional<Broker\> **Broker::OptionalType**
+
+### Broker::OptionalType
+```cpp
+typedef boost::optional<Broker> Broker::OptionalType
+```
+
 Broker data structure wrapped using _Boost optional_.
-   

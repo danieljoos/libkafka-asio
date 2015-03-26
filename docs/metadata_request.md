@@ -15,10 +15,14 @@ The leader for a topic partition can be retrieved via a metadata request.
 Member Functions
 ----------------
 
-### void **AddTopicName** \(const String& topic_name\)
 
-Adds the given topic to this metadata request. This results in metadata being
-fetched for that topic.
+### AddTopicName 
+```cpp
+void AddTopicName(const String& topic_name)
+```
+
+Adds the given topic to this metadata request.
+This results in metadata being fetched for the given topic.
 
 ```cpp
 using libkafka_asio::MetadataRequest;
@@ -27,18 +31,48 @@ req.AddTopicName("foo");
 req.AddTopicName("bar");
 ```
 
-### const TopicNameVector& **topic_names** \(\) const
+### Clear
+```cpp
+void Clear()
+```
+
+Clears the list of topic names, added to this metadata request.
+
+
+### topic_names
+```cpp
+const TopicNameVector& topic_names() const
+```
 
 Returns a reference to the list of topic names of this metadata request. This
 method is mainly used internally for getting the request data during the
 conversion to the Kafka wire format.
 
+
 Types
 -----
 
-### typedef MetadataResponse **ResponseType**
+
+### ResponseType
+```cpp
+typedef MetadataResponse ResponseType
+```
+
 Type of the response object of a metadata request.
 
-### typedef std::vector<String\> **TopicNameVector**
+
+### MutableResponseType
+```cpp
+typedef MutableMetadataResponse MutableResponseType
+```
+
+Type of a mutable response object for a metadata request. This type is used by
+the library at the time of reading in the response from a Kafka server.
+
+
+### TopicNameVector
+```cpp
+typedef std::vector<String> TopicNameVector
+```
+
 Vector of topic name strings.
-   

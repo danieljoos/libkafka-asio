@@ -20,9 +20,13 @@ when invoking a fetch request.
 Member Functions
 ----------------
 
-### const_iterator **begin** () const
+### begin
+```cpp
+const_iterator begin() const
+```
 
-Start iterator, used for iterating over all received messages.
+Creates and returns an iterator object that can be used for iterating over all
+received messages. This function returns the start iterator object.
 
 ```cpp
 // Assume the response is an argument of the request handler function
@@ -46,19 +50,42 @@ for (; iter != end_iter; ++iter)
 }
 ```
 
-### const_iterator **end** () const
+
+### end
+```cpp
+const_iterator end() const
+```
 
 End iterator (see start iterator description above). Similar to default
 construction of the `const_iterator` type.
 
-### const TopicVector& **topics** () const
+
+### topics
+```cpp
+const TopicVector& topics() const
+```
 
 Returns a reference to the set of topics, messages have been received for.
+
 
 Types
 -----
 
-### struct **Topic::Partition**
+### Topic
+```cpp
+struct Topic
+```
+
++ `topic_name`:
+   Name of this topic.
++ `partitions`:
+   Set of partitions of this topic for which message data has been received.
+
+
+### Topic::Partition
+```cpp
+struct Topic::Partition
+```
 
 + `partition`:
    Number, identifying this topic partition.
@@ -66,19 +93,20 @@ Types
    Kafka error for this topic partition.
 + `highwater_mark_offset`:
    Offset at the end of the log for this partition on the server.
-   
-### struct **Topic**
 
-+ `topic_name`:
-   Name of this topic.
-+ `partitions`:
-   Set of partitions of this topic for which message data has been received.
 
-### typedef std::vector<Topic\> **TopicVector**
+### TopicVector
+```cpp
+typedef std::vector<Topic> TopicVector
+```
 
 Vector of `Topic` structures.
 
-### typedef defail::FetchResponseIterator<TopicVector> **const_iterator**
+
+### const_iterator
+```cpp
+typedef defail::FetchResponseIterator<TopicVector> const_iterator
+```
 
 Constant iterator type, used for iterating over all messages of a fetch
 response object. See `FetchResponseIterator` class template for details.

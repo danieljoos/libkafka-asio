@@ -10,21 +10,35 @@ The client class does the actual interaction with a Kafka server. Use it to
 connect to such a server and send asynchronous requests to it. The client uses
 _Boost Asio_ for the TCP-based communication.
 
-### **Client** (boost::asio::io_service& io_service, const Configuration& configuration)
+### Client
+```cpp
+Client(boost::asio::io_service& io_service, 
+       const Configuration& configuration)
+```
 
 Constructs a new client object. All communication to the Kafka server will be
 scheduled on the given `io_service` object.
 
-### **~Client** ()
+
+### ~Client
+```cpp
+~Client()
+```
 
 A possible open connection will be closed on destruction of the client object.
 All pending asynchronous operations will be cancelled and the respective handler
 functions will be called with an `operation_aborted` error.
 
+
 Member Functions
 ----------------
 
-### void **AsyncConnect** (const std::string& host, const std::string& service, const ConnectionHandlerType& handler)
+### AsyncConnect (overload 1 of 2)
+```cpp
+void AsyncConnect(const std::string& host,
+                  const std::string& service,
+                  const ConnectionHandlerType& handler)
+```
 
 Asynchronously connects to the Kafka server, identified by the given `hostname`
 and `service` (port or service string, e.g. see `/etc/services` under Linux).
@@ -52,7 +66,11 @@ cl.AsyncConnect("localhost", "9092", [](const Client::ErrorCodeType& error) {
 });
 ```
 
-### void **AsyncConnect** (const ConnectionHandlerType& handler)
+
+### AsyncConnect (overload 2 of 2)
+```cpp
+void AsyncConnect(const ConnectionHandlerType& handler)
+```
 
 Tries to connect to the brokers, specified in the configuration given to this
 client object. If no such broker address was configured, the handler function
@@ -86,7 +104,13 @@ cl.AsyncConnect([](const Client::ErrorCodeType& error) {
 });
 ```
 
-### template < typename TRequest \> void **AsyncRequest** (const TRequest& request, const typename Handler<TRequest>::Type& handler)
+
+### AsyncRequest
+```cpp
+template<typename TRequest>
+void AsyncRequest (const TRequest& request,
+                   const typename Handler<TRequest>::Type& handler)
+```
 
 Asynchronously sends the given request to the connected Kafka server. The given
 handler function object will be called on success as well as on error condition.
@@ -130,28 +154,46 @@ client.AsyncRequest(request, [](const Client::ErrorCodeType& error,
 });
 ```
 
-### void **Close** ()
+
+### Close
+```cpp
+void Close()
+```
 
 Closes the connection to the Kafka server. All asynchronous operations will be
 cancelled immediately with an `operation_aborted` error.
 
+
 Types
 -----
 
-### typedef ClientConfiguration **Configuration**
+### Configuration
+```cpp
+typedef ClientConfiguration Configuration
+```
 
 Client configuration type.
 
-### typedef boost::system::error_code **ErrorCodeType**
+
+### ErrorCodeType
+```cpp
+typedef boost::system::error_code ErrorCodeType
+```
 
 Error code type.
 
-### typedef boost::function<void(constErrorCodeType&)\> **ConnectionHandlerType**
+
+### ConnectionHandlerType
+```cpp
+typedef boost::function<void(constErrorCodeType&)> ConnectionHandlerType
+```
 
 Handler type for connection attempts.
 
-### template < typename TRequest \> **Handler<TRequest\>::Type**
+
+### Handler<TRequest\>::Type
+```cpp
+template<typename TRequest> Handler<TRequest>::Type
+```
 
 Handler type for asynchronous requests.
-
-

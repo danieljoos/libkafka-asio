@@ -13,16 +13,37 @@ primitive types of the Kafka protocol as described on the
 Types
 -----
 
-### typedef boost::int8_t **Int8**
+### Int8
+```cpp
+typedef boost::int_t<8>::exact Int8
+```
 
-### typedef boost::int16_t **Int16**
+### Int16
+```cpp
+typedef boost::int_t<16>::exact Int16
+```
 
-### typedef boost::int32_t **Int32**
+### Int32
+```cpp
+typedef boost::int_t<32>::exact Int32
+```
 
-### typedef boost::int64_t **Int64**
+### Int64
+```cpp
+typedef boost::int_t<64>::exact Int64
+```
 
-### typedef boost::uint8_t **Byte**
+### Byte
+```cpp
+typedef boost::uint_t<8>::exact Byte
+```
 
-### typedef std::string **String**
+### String
+```cpp
+typedef std::string String
+```
 
-### typedef boost::shared_ptr<std::vector<Byte\> \> **Bytes**
+### Bytes
+```cpp
+typedef boost::shared_ptr<std::vector<Byte> > Bytes
+```

@@ -20,7 +20,13 @@ acting as leader for that topic partition.
 Member Functions
 ----------------
 
-### void **FetchTopicOffset** (const String& topic_name, Int32 partition, Int64 time, Int32 max_number_of_offsets)
+### FetchTopicOffset
+```cpp
+void FetchTopicOffset(const String& topic_name,
+                      Int32 partition,
+                      Int64 time,
+                      Int32 max_number_of_offsets)
+```
 
 Fetches offset information for the given topic partition. The optional `time`
 parameter can be used to ask for messages before a certain time in the past.
@@ -39,24 +45,51 @@ OffsetRequest request;
 request.FetchOffset("foo", 0);
 ```
 
-### void **Clear** ()
+
+### Clear
+```cpp
+void Clear()
+```
 
 Clears all entries of this request for fetching offsets of topic partitions.
 
-### Int32 **replica_id** () const
+
+### replica_id
+```cpp
+Int32 replica_id() const
+```
 
 Always returns `-1`.
 
-### const TopicVector& **topics** () const
+
+### topics
+```cpp
+const TopicVector& topics() const
+```
 
 Returns a reference to the list of topics of this offset request. This
 method is mainly used internally for getting the request data during the
 conversion to the Kafka wire format.
 
+
 Types
 -----
 
-### struct **Topic::Partition**
+### Topic
+```cpp
+struct Topic
+```
+
++ `topic_name`:
+   Name of the topic to fetch data for.
++ `partitions`:
+   Set of partitions of this topic to fetch offset data for.
+
+
+### Topic::Partition
+```cpp
+struct Topic::Partition
+```
 
 + `partition`:
    Number, identifying this topic partition.
@@ -64,14 +97,28 @@ Types
    Time in milliseconds to ask for messages before.
 + `max_number_of_offsets`:
    The maximum number of offsets to fetch for this topic partition.
-   
-### struct **Topic**
 
-+ `topic_name`:
-   Name of the topic to fetch data for.
-+ `partitions`:
-   Set of partitions of this topic to fetch offset data for.
 
-### typedef std::vector<Topic> **TopicVector**
+### ResponseType
+```cpp
+typedef OffsetResponse ResponseType
+```
+
+Type of the response object of an offset request.
+
+
+### MutableResponseType
+```cpp
+typedef MutableOffsetResponse MutableResponseType
+```
+
+Type of a mutable response object for a offset request. This type is used by 
+the library at when reading-in the response from a Kafka server.
+
+
+### TopicVector
+```cpp
+typedef std::vector<Topic> TopicVector
+```
 
 Vector of topics to fetch offset data for.

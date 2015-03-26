@@ -19,7 +19,11 @@ when invoking an offset request.
 Member Functions
 ----------------
 
-### Topic::Partition::OptionalType **TopicPartitionOffset** (const String& topic_name, Int32 partition) const
+### TopicPartitionOffset
+```cpp
+Topic::Partition::OptionalType TopicPartitionOffset(const String& topic_name, 
+                                                    Int32 partition) const
+```
 
 Search for offset data for the given topic partition inside this response 
 object. If no such data can be found, the return value is empty.
@@ -37,14 +41,33 @@ if (offsets)
 }
 ```
 
-### const TopicVector& **topics** () const
+
+### topics
+```cpp
+const TopicVector& topics() const
+```
 
 Returns a reference to the set of topics, offsets have been received for.
+
 
 Types
 -----
 
-### struct **Topic::Partition**
+### Topic
+```cpp
+struct Topic
+```
+
++ `topic_name`:
+   Name of the topic to fetch data for.
++ `partition_offsets`:
+   Set of partitions of this topic for which offset data has been received.
+
+
+### Topic::Partition
+```cpp
+struct Topic::Partition
+```
 
 + `partition`:
    Number, identifying this topic partition.
@@ -52,14 +75,11 @@ Types
    Kafka error for this topic partition.
 + `offsets`:
    Vector of offsets (`std::vector<Int64>`) received for this topic partition.
-   
-### struct **Topic**
 
-+ `topic_name`:
-   Name of the topic to fetch data for.
-+ `partition_offsets`:
-   Set of partitions of this topic for which offset data has been received.
 
-### typedef std::vector<Topic\> **TopicVector**
+### TopicVector
+```cpp
+typedef std::vector<Topic> TopicVector
+```
 
 Vector of `Topic` structures.
