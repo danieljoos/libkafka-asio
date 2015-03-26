@@ -64,3 +64,12 @@ typedef std::vector<Topic> TopicVector
 ```
 
 Set of topics, messages have been produced for.
+
+
+### OptionalType
+```cpp
+typedef boost::optional<ProduceResponse> OptionalType
+```
+
+A produce response object wrapped using _Boost optional_. Such an object will
+be used for produce request handler functions.

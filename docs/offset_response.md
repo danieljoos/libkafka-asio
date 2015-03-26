@@ -83,3 +83,12 @@ typedef std::vector<Topic> TopicVector
 ```
 
 Vector of `Topic` structures.
+
+
+### OptionalType
+```cpp
+typedef boost::optional<OffsetResponse> OptionalType
+```
+
+A offset response object wrapped using _Boost optional_. Such an object will
+be used for offset request handler functions.

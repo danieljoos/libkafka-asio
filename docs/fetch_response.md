@@ -110,3 +110,12 @@ typedef defail::FetchResponseIterator<TopicVector> const_iterator
 
 Constant iterator type, used for iterating over all messages of a fetch
 response object. See `FetchResponseIterator` class template for details.
+
+
+### OptionalType
+```cpp
+typedef boost::optional<FetchResponse> OptionalType
+```
+
+A fetch response object wrapped using _Boost optional_. Such an object will
+be used for fetch request handler functions.
