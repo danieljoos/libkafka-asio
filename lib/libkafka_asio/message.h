@@ -17,6 +17,12 @@
 namespace libkafka_asio
 {
 
+// Forward declaration
+class MessageAndOffset;
+
+// Kafka MessageSet type
+typedef std::vector<MessageAndOffset> MessageSet;
+
 // Kafka Message Data Structure
 class Message
 {
@@ -31,7 +37,7 @@ public:
   // Copy from the given message object
   Message& operator=(const Message& rhs);
 
-  // Magic byte is always zero
+  // Magic byte is always one
   Int8 magic_byte() const;
 
   // Attributes bitset. The lowest 2 bits indicate the used compression
@@ -48,13 +54,21 @@ public:
 
   Bytes& mutable_value();
 
+  // Compressed messages contain a nested message set
+  const MessageSet& nested_message_set() const;
+
+  MessageSet& mutable_nested_message_set();
+
   // Enable message compression using the specified compression algorithm.
-  void SetCompression(constants::Compression compression_type);
+  void SetCompression(Int8 attributes);
+
+  constants::Compression compression() const;
 
 private:
   Int8 attributes_;
   Bytes key_;
   Bytes value_;
+  boost::shared_ptr<MessageSet> nested_message_set_;
 };
 
 // Message data structure with an additional offset
@@ -73,9 +87,6 @@ public:
 private:
   Int64 offset_;
 };
-
-// Kafka MessageSet data structure
-typedef std::vector<MessageAndOffset> MessageSet;
 
 }  // namespace libkafka_asio
 
