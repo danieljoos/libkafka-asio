@@ -37,3 +37,24 @@ TEST(CompressionGzTest, SimpleDecompress)
   ASSERT_EQ(expected_result.size(), result->size());
   ASSERT_STREQ(expected_result.c_str(), (const char *) &(*result)[0]);
 }
+
+TEST(CompressionGzTest, EmptyDecompress)
+{
+  {
+    Bytes test_data;
+    boost::system::error_code ec;
+    using namespace libkafka_asio::constants;
+    Bytes result = Decompress(test_data, kCompressionGZIP, ec);
+    ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
+    ASSERT_TRUE(!result);
+  }
+  {
+    Bytes test_data(new Bytes::element_type());
+    boost::system::error_code ec;
+    ASSERT_EQ(0, test_data->size());
+    using namespace libkafka_asio::constants;
+    Bytes result = Decompress(test_data, kCompressionGZIP, ec);
+    ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
+    ASSERT_TRUE(!result);
+  }
+}
