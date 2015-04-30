@@ -22,25 +22,27 @@ inline Bytes Compress(const Bytes& data,
                       constants::Compression compression,
                       boost::system::error_code& ec)
 {
-  typedef CompressionAlgorithm<constants::kCompressionGZIP> AlgorithmGZIP;
-  typedef CompressionAlgorithm<constants::kCompressionSnappy> AlgorithmSnappy;
-  typedef CompressionAlgorithm<constants::kCompressionLz4> AlgorithmLz4;
+  using namespace libkafka_asio::constants;
 
   switch (compression)
   {
-    case constants::kCompressionGZIP:
-      return AlgorithmGZIP::Compress(data, ec);
-    case constants::kCompressionSnappy:
-      return AlgorithmSnappy::Compress(data, ec);
-    case constants::kCompressionLz4:
-      return AlgorithmLz4::Compress(data, ec);
-    case constants::kCompressionNone:
+    case kCompressionGZIP:
+      return CompressionPolicy<kCompressionGZIP>::
+      Algorithm::Compress(data, ec);
+    case kCompressionSnappy:
+      return CompressionPolicy<kCompressionSnappy>::
+      Algorithm::Compress(data, ec);
+    case kCompressionLz4:
+      return CompressionPolicy<kCompressionLz4>::
+      Algorithm::Compress(data, ec);
+    case kCompressionNone:
       ec = kErrorSuccess;
       break;
     default:
       ec = kErrorCompressionNotAvailable;
       break;
   }
+
   return Bytes();
 }
 
@@ -48,45 +50,44 @@ inline Bytes Decompress(const Bytes& data,
                         constants::Compression compression,
                         boost::system::error_code& ec)
 {
-  typedef CompressionAlgorithm<constants::kCompressionGZIP> AlgorithmGZIP;
-  typedef CompressionAlgorithm<constants::kCompressionSnappy> AlgorithmSnappy;
-  typedef CompressionAlgorithm<constants::kCompressionLz4> AlgorithmLz4;
+  using namespace libkafka_asio::constants;
 
   switch (compression)
   {
-    case constants::kCompressionGZIP:
-      return AlgorithmGZIP::Decompress(data, ec);
-    case constants::kCompressionSnappy:
-      return AlgorithmSnappy::Decompress(data, ec);
-    case constants::kCompressionLz4:
-      return AlgorithmLz4::Decompress(data, ec);
-    case constants::kCompressionNone:
+    case kCompressionGZIP:
+      return CompressionPolicy<kCompressionGZIP>::
+      Algorithm::Decompress(data, ec);
+    case kCompressionSnappy:
+      return CompressionPolicy<kCompressionSnappy>::
+      Algorithm::Decompress(data, ec);
+    case kCompressionLz4:
+      return CompressionPolicy<kCompressionLz4>::
+      Algorithm::Decompress(data, ec);
+    case kCompressionNone:
       ec = kErrorSuccess;
       break;
     default:
       ec = kErrorCompressionNotAvailable;
       break;
   }
+
   return Bytes();
 }
 
-// Fallback implementation
-template<constants::Compression C>
-inline Bytes CompressionAlgorithm<C>::Compress(const Bytes& data,
-                                               boost::system::error_code& ec)
+inline Bytes FallbackCompressionAlgorithm::Compress(
+  const Bytes&, boost::system::error_code& ec)
 {
   ec = kErrorCompressionNotAvailable;
   return Bytes();
 }
 
-// Fallback implementation
-template<constants::Compression C>
-inline Bytes CompressionAlgorithm<C>::Decompress(const Bytes& data,
-                                                 boost::system::error_code& ec)
+inline Bytes FallbackCompressionAlgorithm::Decompress(
+  const Bytes&, boost::system::error_code& ec)
 {
   ec = kErrorCompressionNotAvailable;
   return Bytes();
 }
+
 
 }  // namespace detail
 }  // namespace libkafka_asio

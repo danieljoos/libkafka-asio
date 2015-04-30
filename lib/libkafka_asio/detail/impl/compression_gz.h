@@ -10,37 +10,74 @@
 #ifndef COMPRESSION_GZ_H_4936268F_C651_4E32_A917_8AC05247B3DB
 #define COMPRESSION_GZ_H_4936268F_C651_4E32_A917_8AC05247B3DB
 
-#if !defined(LIBKAFKAASIO_NO_COMPRESSION) \
- && !defined(LIBKAFKAASIO_NO_COMPRESSION_GZIP)
-
 #include <zlib.h>
+
 #include <libkafka_asio/constants.h>
+#include <libkafka_asio/error.h>
+#include <libkafka_asio/primitives.h>
 
 namespace libkafka_asio
 {
 namespace detail
 {
 
-template<>
-inline Bytes
-CompressionAlgorithm<constants::kCompressionGZIP>::Compress(
+inline Bytes GZIPCompressionAlgorithm::Compress(
   const Bytes& data, boost::system::error_code& ec)
 {
   ec = kErrorCompressionNotAvailable;
   return Bytes();
 }
 
-template<>
-inline Bytes
-CompressionAlgorithm<constants::kCompressionGZIP>::Decompress(
+inline Bytes GZIPCompressionAlgorithm::Decompress(
   const Bytes& data, boost::system::error_code& ec)
 {
-  ec = kErrorCompressionNotAvailable;
-  return Bytes();
+  static const size_t kBufferSize = 32 * 1024;
+  static const int kGZIPWindowBits = 15+32;
+
+  if (!data || data->empty())
+  {
+    ec = kErrorCompressionFailed;
+    return Bytes();
+  }
+  // Initialize a new zlib stream
+  ::z_stream gz = {};
+  ::gz_header header = {};
+  if (::inflateInit2(&gz, kGZIPWindowBits) != Z_OK)
+  {
+    ec = kErrorCompressionFailed;
+    return Bytes();
+  }
+  gz.next_in = reinterpret_cast< ::Bytef *>(&(*data)[0]);
+  gz.avail_in = data->size();
+  int ret = Z_OK;
+  // Inflate gzip header
+  ret = ::inflateGetHeader(&gz, &header);
+  Bytes out(new Bytes::element_type());
+  // Now, inflate the actual data
+  while (ret == Z_OK)
+  {
+    size_t pos = out->size();
+    out->resize(out->size() + kBufferSize);
+    gz.next_out = reinterpret_cast< ::Bytef *>(&(*out)[pos]);
+    gz.avail_out = kBufferSize;
+    ret = ::inflate(&gz, 0);
+  }
+  if (gz.total_out < out->size())
+  {
+    out->resize(gz.total_out);
+  }
+  ::inflateEnd(&gz);
+  if (ret != Z_STREAM_END)
+  {
+    ec = kErrorCompressionFailed;
+    return Bytes();
+  }
+
+  ec = kErrorSuccess;
+  return out;
 }
 
 }  // namespace detail
 }  // namespace libkafka_asio
 
-#endif  // GZIP compression not disabled?
 #endif  // COMPRESSION_GZ_H_4936268F_C651_4E32_A917_8AC05247B3DB
