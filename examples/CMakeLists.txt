@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 project(libkafka_asio_examples)
 option(NO_CXX11, "Disable build of C++11 examples")
 
+add_definitions("-DLIBKAFKAASIO_NO_COMPRESSION")
+
 find_package(Boost REQUIRED COMPONENTS thread system)
 
 include_directories(
