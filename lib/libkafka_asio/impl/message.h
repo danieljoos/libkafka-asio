@@ -57,7 +57,7 @@ inline Message& Message::operator=(const Message& rhs)
 
 inline Int8 Message::magic_byte() const
 {
-  return 1;
+  return 0;
 }
 
 inline Int8 Message::attributes() const

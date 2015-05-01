@@ -37,7 +37,7 @@ public:
   // Copy from the given message object
   Message& operator=(const Message& rhs);
 
-  // Magic byte is always one
+  // Magic byte is always zero
   Int8 magic_byte() const;
 
   // Attributes bitset. The lowest 2 bits indicate the used compression
