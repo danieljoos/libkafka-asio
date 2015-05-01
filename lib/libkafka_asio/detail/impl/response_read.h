@@ -79,20 +79,20 @@ inline void ReadMessage(std::istream& is, Message& message)
   Int8 attributes = ReadInt8(is);
   ReadBytes(is, message.mutable_key());
   ReadBytes(is, message.mutable_value());
-  if (magic_byte == 0x01)
+
+  message.SetCompression(attributes);
+  boost::system::error_code ec;
+  Bytes data = Decompress(message.value(), message.compression(), ec);
+  if (!ec && data && !data->empty())
   {
-    message.SetCompression(attributes);
-    boost::system::error_code ec;
-    Bytes data = Decompress(message.value(), message.compression(), ec);
-    if (!ec && data && !data->empty())
-    {
-      std::stringbuf intermediate_buffer;
-      intermediate_buffer.pubsetbuf(reinterpret_cast<char*>(&(*data)[0]),
-                                    data->size());
-      std::istream intermediate_is(&intermediate_buffer);
-      ReadMessageSet(is, message.mutable_nested_message_set(), data->size());
-    }
+    std::stringbuf intermediate_buffer;
+    intermediate_buffer.pubsetbuf(reinterpret_cast<char *>(&(*data)[0]),
+                                  data->size());
+    std::istream intermediate_is(&intermediate_buffer);
+    ReadMessageSet(intermediate_is, message.mutable_nested_message_set(),
+                   data->size());
   }
+
 }
 
 inline void ReadMessageSet(std::istream& is,
@@ -105,7 +105,7 @@ inline void ReadMessageSet(std::istream& is,
     MessageAndOffset message;
     message.set_offset(ReadInt64(is));
     Int32 message_size = ReadInt32(is);
-    if ((Int32)(size - read_count) < message_size)
+    if ((Int32) (size - read_count) < message_size)
     {
       // Ignore partial messages
       is.seekg(size - read_count, std::ios::cur);
