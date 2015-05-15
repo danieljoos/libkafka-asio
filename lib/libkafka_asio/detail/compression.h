@@ -59,6 +59,7 @@ struct CompressionPolicy
 }  // namespace libkafka_asio
 
 #include <libkafka_asio/detail/compression_gz.h>
+#include <libkafka_asio/detail/compression_snappy.h>
 #include <libkafka_asio/detail/impl/compression.h>
 
 #endif  // COMPRESSION_H_D5F6D8BB_5E7B_4A32_8684_2F69BF8D7AD1
