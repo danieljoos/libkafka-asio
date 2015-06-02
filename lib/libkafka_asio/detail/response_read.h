@@ -51,9 +51,14 @@ String ReadString(std::istream& is);
 
 void ReadBytes(std::istream& is, Bytes& bytes);
 
-void ReadMessage(std::istream& is, Message& message);
+void ReadMessage(std::istream& is,
+                 Message& message,
+                 boost::system::error_code& ec);
 
-void ReadMessageSet(std::istream& is, MessageSet& message_set, size_t size);
+void ReadMessageSet(std::istream& is,
+                    MessageSet& message_set,
+                    size_t size,
+                    boost::system::error_code& ec);
 
 template<typename TMutableResponse>
 void ReadResponse(std::istream& is,
