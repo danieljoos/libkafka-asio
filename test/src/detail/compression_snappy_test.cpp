@@ -42,6 +42,7 @@ TEST(CompressionSnappyTest, StreamDecompress)
   using boost::asio::buffer_cast;
   using boost::asio::buffer_size;
   using libkafka_asio::detail::WriteInt32;
+  using libkafka_asio::Int32;
   String compressed1, compressed2;
   ::snappy::Compress(expected_result.c_str(), 5,
                      &compressed1);
@@ -55,9 +56,9 @@ TEST(CompressionSnappyTest, StreamDecompress)
                           magic_bytes->size());
   WriteInt32(1, compressed_stream);
   WriteInt32(1, compressed_stream);
-  WriteInt32(compressed1.size(), compressed_stream);
+  WriteInt32(static_cast<Int32>(compressed1.size()), compressed_stream);
   compressed_stream.write(compressed1.c_str(), compressed1.size());
-  WriteInt32(compressed2.size(), compressed_stream);
+  WriteInt32(static_cast<Int32>(compressed2.size()), compressed_stream);
   compressed_stream.write(compressed2.c_str(), compressed2.size());
   streambuf::const_buffers_type compressed_data =
     compressed_streambuf.data();

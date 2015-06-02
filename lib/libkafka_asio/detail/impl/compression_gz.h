@@ -48,7 +48,7 @@ inline Bytes GZIPCompressionAlgorithm::Decompress(
     return Bytes();
   }
   gz.next_in = reinterpret_cast< ::Bytef *>(&(*data)[0]);
-  gz.avail_in = data->size();
+  gz.avail_in = (::uInt) data->size();
   int ret = Z_OK;
   // Inflate gzip header
   ret = ::inflateGetHeader(&gz, &header);

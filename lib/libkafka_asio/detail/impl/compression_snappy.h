@@ -12,10 +12,10 @@
 
 #include <algorithm>
 #include <iostream>
-#include <sstream>
 
 #include <snappy.h>
 #include <libkafka_asio/error.h>
+#include <libkafka_asio/detail/bytes_streambuf.h>
 #include <libkafka_asio/detail/endian.h>
 #include <libkafka_asio/detail/response_read.h>
 
@@ -82,11 +82,9 @@ inline Bytes SnappyCompressionAlgorithm::DecompressStream(
   const Bytes& data, boost::system::error_code& ec)
 {
   // Create intput and output streams
-  using std::stringbuf;
   using boost::asio::streambuf;
-  stringbuf input_buffer;
+  BytesStreambuf input_buffer(data);
   streambuf output_buffer;
-  input_buffer.pubsetbuf(reinterpret_cast<char *>(&(*data)[0]), data->size());
   std::istream is(&input_buffer);
   std::ostream os(&output_buffer);
   // The stream header can be ignored

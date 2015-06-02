@@ -13,6 +13,9 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/../lib
     ${GTEST_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS})
+include_directories(
+    ${ZLIB_INCLUDE_DIRS}
+    ${SNAPPY_INCLUDE_DIRS})
     
 file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})

@@ -28,7 +28,7 @@ inline Int32 RequestMessageWireSize(const OffsetFetchRequest& request)
     size += StringWireSize(topic.topic_name);
     // Partitions Array
     size += sizeof(Int32);
-    size += topic.partitions.size() * sizeof(Int32);
+    size += static_cast<Int32>(topic.partitions.size()) * sizeof(Int32);
   }
   return size;
 }
@@ -38,12 +38,12 @@ inline void WriteRequestMessage(const OffsetFetchRequest& request,
 {
   WriteString(request.consumer_group(), os);
   // Topics Array
-  WriteInt32(request.topics().size(), os);
+  WriteInt32(static_cast<Int32>(request.topics().size()), os);
   BOOST_FOREACH(const OffsetFetchRequest::Topic& topic, request.topics())
   {
     WriteString(topic.topic_name, os);
     // Partitions Array
-    WriteInt32(topic.partitions.size(), os);
+    WriteInt32(static_cast<Int32>(topic.partitions.size()), os);
     BOOST_FOREACH(const OffsetFetchRequest::Topic::Partition partition,
                   topic.partitions)
     {

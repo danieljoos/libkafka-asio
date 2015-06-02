@@ -13,6 +13,7 @@
 #include <boost/asio.hpp>
 #include <libkafka_asio/detail/endian.h>
 #include <libkafka_asio/detail/compression.h>
+#include <libkafka_asio/detail/bytes_streambuf.h>
 
 namespace libkafka_asio
 {
@@ -85,9 +86,7 @@ inline void ReadMessage(std::istream& is, Message& message)
   Bytes data = Decompress(message.value(), message.compression(), ec);
   if (!ec && data && !data->empty())
   {
-    std::stringbuf intermediate_buffer;
-    intermediate_buffer.pubsetbuf(reinterpret_cast<char *>(&(*data)[0]),
-                                  data->size());
+    BytesStreambuf intermediate_buffer(data);
     std::istream intermediate_is(&intermediate_buffer);
     ReadMessageSet(intermediate_is, message.mutable_nested_message_set(),
                    data->size());
