@@ -116,3 +116,23 @@ TEST_F(CompressionSnappyTest, SimpleCompress)
   ASSERT_EQ(libkafka_asio::kErrorSuccess, ec);
   AssertBytesEq(expected_result, result);
 }
+
+TEST_F(CompressionSnappyTest, EmptyCompress)
+{
+  {
+    Bytes test_data;
+    boost::system::error_code ec;
+    using namespace libkafka_asio::constants;
+    Bytes result = Compress(test_data, kCompressionSnappy, ec);
+    ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
+    ASSERT_TRUE(!result);
+  }
+  {
+    Bytes test_data(new Bytes::element_type());
+    boost::system::error_code ec;
+    using namespace libkafka_asio::constants;
+    Bytes result = Compress(test_data, kCompressionSnappy, ec);
+    ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
+    ASSERT_TRUE(!result);
+  }
+}
