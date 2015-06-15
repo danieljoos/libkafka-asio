@@ -30,6 +30,7 @@ struct SnappyCompressionAlgorithm
   // Xerial Snappy OutputStream Magic Bytes
   static const Bytes& kSnappyStreamMagic();
 
+  // Compress the given data using Snappy
   static Bytes Compress(const Bytes& data, boost::system::error_code& ec);
 
   // Decompress the given data using Snappy
