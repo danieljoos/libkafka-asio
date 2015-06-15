@@ -16,29 +16,50 @@ using libkafka_asio::String;
 using libkafka_asio::detail::Compress;
 using libkafka_asio::detail::Decompress;
 
-TEST(CompressionGzTest, SimpleDecompress)
+class CompressionGzTest : public ::testing::Test
 {
-  const String expected_result = "foobar\n";
-  const unsigned char compressed[32] =
+protected:
+  Bytes TestCase1Compressed()
+  {
+    const unsigned char data[32] =
     {
       0x1f, 0x8b, 0x08, 0x08, 0x75, 0xad, 0x3b, 0x55,
       0x00, 0x03, 0x74, 0x65, 0x73, 0x74, 0x00, 0x4b,
       0xcb, 0xcf, 0x4f, 0x4a, 0x2c, 0xe2, 0x02, 0x00,
       0x47, 0x97, 0x2c, 0xb2, 0x07, 0x00, 0x00, 0x00
     };
-  Bytes test_data(new Bytes::element_type(compressed,
-                                          compressed + sizeof(compressed)));
+    return Bytes(new Bytes::element_type(data, data + sizeof(data)));
+  }
 
+  Bytes TestCase1Uncompressed()
+  {
+    static const String data = "foobar\n";
+    return Bytes(new Bytes::element_type(data.begin(), data.end()));
+  }
+
+  void AssertBytesEq(const Bytes& expected, const Bytes& actual)
+  {
+    ASSERT_TRUE(expected);
+    ASSERT_TRUE(actual);
+    ASSERT_EQ(expected->size(), actual->size());
+    for (size_t i = 0; i < actual->size(); ++i)
+    {
+      ASSERT_EQ(expected->at(i), actual->at(i));
+    }
+  }
+};
+
+TEST_F(CompressionGzTest, SimpleDecompress)
+{
   boost::system::error_code ec;
   using namespace libkafka_asio::constants;
-  Bytes result = Decompress(test_data, kCompressionGZIP, ec);
-
+  Bytes result = Decompress(TestCase1Compressed(), kCompressionGZIP, ec);
+  Bytes expected_result = TestCase1Uncompressed();
   ASSERT_EQ(libkafka_asio::kErrorSuccess, ec);
-  ASSERT_EQ(expected_result.size(), result->size());
-  ASSERT_STREQ(expected_result.c_str(), (const char *) &(*result)[0]);
+  AssertBytesEq(expected_result, result);
 }
 
-TEST(CompressionGzTest, EmptyDecompress)
+TEST_F(CompressionGzTest, EmptyDecompress)
 {
   {
     Bytes test_data;
@@ -57,4 +78,14 @@ TEST(CompressionGzTest, EmptyDecompress)
     ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
     ASSERT_TRUE(!result);
   }
+}
+
+TEST_F(CompressionGzTest, SimpleCompress)
+{
+  boost::system::error_code ec;
+  using namespace libkafka_asio::constants;
+  Bytes result = Compress(TestCase1Uncompressed(), kCompressionGZIP, ec);
+  Bytes expected_result = TestCase1Compressed();
+  ASSERT_EQ(libkafka_asio::kErrorSuccess, ec);
+  AssertBytesEq(expected_result, result);
 }
