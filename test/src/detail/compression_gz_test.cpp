@@ -111,3 +111,24 @@ TEST_F(CompressionGzTest, SimpleCompress)
   SkipGzipHeader(expected_result);
   AssertBytesEq(expected_result, result);
 }
+
+TEST_F(CompressionGzTest, EmptyCompress)
+{
+  {
+    Bytes test_data;
+    boost::system::error_code ec;
+    using namespace libkafka_asio::constants;
+    Bytes result = Compress(test_data, kCompressionGZIP, ec);
+    ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
+    ASSERT_TRUE(!result);
+  }
+  {
+    Bytes test_data(new Bytes::element_type());
+    boost::system::error_code ec;
+    ASSERT_EQ(0, test_data->size());
+    using namespace libkafka_asio::constants;
+    Bytes result = Compress(test_data, kCompressionGZIP, ec);
+    ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
+    ASSERT_TRUE(!result);
+  }
+}
