@@ -47,6 +47,26 @@ protected:
       ASSERT_EQ(expected->at(i), actual->at(i));
     }
   }
+
+  void SkipGzipHeader(Bytes& data)
+  {
+    ::z_stream gz = {};
+    ::gz_header header = {};
+    int ret = ::inflateInit2(&gz, 15 + 32);
+    gz.next_in = reinterpret_cast< ::Bytef *>(&(*data)[0]);
+    gz.avail_in = (::uInt) data->size();
+    ret = ::inflateGetHeader(&gz, &header);
+    while (ret == Z_OK && !header.done)
+    {
+      Byte buf;
+      gz.next_out = reinterpret_cast< ::Bytef *>(&buf);
+      gz.avail_out = 1;
+      ret = ::inflate(&gz, Z_BLOCK);
+    }
+    ::inflateEnd(&gz);
+    size_t skip = gz.total_in;
+    data->erase(data->begin(), data->begin() + skip);
+  }
 };
 
 TEST_F(CompressionGzTest, SimpleDecompress)
@@ -87,5 +107,7 @@ TEST_F(CompressionGzTest, SimpleCompress)
   Bytes result = Compress(TestCase1Uncompressed(), kCompressionGZIP, ec);
   Bytes expected_result = TestCase1Compressed();
   ASSERT_EQ(libkafka_asio::kErrorSuccess, ec);
+  SkipGzipHeader(result);
+  SkipGzipHeader(expected_result);
   AssertBytesEq(expected_result, result);
 }
