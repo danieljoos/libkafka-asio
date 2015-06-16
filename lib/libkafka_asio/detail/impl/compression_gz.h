@@ -29,6 +29,11 @@ inline Bytes GZIPCompressionAlgorithm::Compress(
   static const size_t kBufferSize = 32 * 1024;
   static const int kGZIPWindowBits = 15+16;
 
+  if (!data || data->empty())
+  {
+    ec = kErrorCompressionFailed;
+    return Bytes();
+  }
   // Initialize a new zlib stream
   ::z_stream gz = {};
   ::gz_header header = {};
