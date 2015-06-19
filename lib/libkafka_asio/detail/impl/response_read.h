@@ -79,11 +79,9 @@ inline void ReadMessage(std::istream& is,
 {
   Int32 crc = ReadInt32(is);
   Int8 magic_byte = ReadInt8(is);
-  Int8 attributes = ReadInt8(is);
+  message.set_attributes(ReadInt8(is));
   ReadBytes(is, message.mutable_key());
   ReadBytes(is, message.mutable_value());
-
-  message.SetCompression(attributes);
   Bytes data = Decompress(message.value(), message.compression(), ec);
   if (!ec && data && !data->empty())
   {

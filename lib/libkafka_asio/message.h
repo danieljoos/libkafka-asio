@@ -44,6 +44,9 @@ public:
   // algorithm.
   Int8 attributes() const;
 
+  // Sets the attributes byte of this message
+  void set_attributes(Int8 attributes);
+
   // Optional message key. Can be NULL (default).
   const Bytes& key() const;
 
@@ -59,9 +62,7 @@ public:
 
   MessageSet& mutable_nested_message_set();
 
-  // Enable message compression using the specified compression algorithm.
-  void SetCompression(Int8 attributes);
-
+  // Returns the compression algorithm, used for compressing the message value
   constants::Compression compression() const;
 
 private:

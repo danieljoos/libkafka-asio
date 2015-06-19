@@ -65,6 +65,11 @@ inline Int8 Message::attributes() const
   return attributes_;
 }
 
+inline void Message::set_attributes(Int8 attributes)
+{
+  attributes_ = attributes;
+}
+
 inline const Bytes& Message::key() const
 {
   return key_;
@@ -93,20 +98,6 @@ inline const MessageSet& Message::nested_message_set() const
 inline MessageSet& Message::mutable_nested_message_set()
 {
   return *nested_message_set_;
-}
-
-inline void Message::SetCompression(Int8 attributes)
-{
-  Int8 compression_type = (attributes & 0x03);
-  switch (compression_type)
-  {
-    case constants::kCompressionNone:
-    case constants::kCompressionGZIP:
-    case constants::kCompressionSnappy:
-      attributes_ &= 0xfc;
-      attributes_ |= compression_type;
-      break;
-  }
 }
 
 inline constants::Compression Message::compression() const
