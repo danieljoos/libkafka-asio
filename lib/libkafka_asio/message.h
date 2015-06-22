@@ -13,6 +13,7 @@
 #include <vector>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/constants.h>
+#include <libkafka_asio/error.h>
 #include <libkafka_asio/message_fwd.h>
 
 namespace libkafka_asio
@@ -89,7 +90,8 @@ private:
 // compression attribute of that object will be set respectively. The created
 // `Message` object will be returned by this function.
 Message CompressMessageSet(const MessageSet& message_set,
-                           constants::Compression compression);
+                           constants::Compression compression,
+                           boost::system::error_code& ec);
 
 }  // namespace libkafka_asio
 

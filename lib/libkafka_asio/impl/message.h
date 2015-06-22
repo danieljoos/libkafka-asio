@@ -131,30 +131,42 @@ inline void MessageAndOffset::set_offset(Int64 offset)
 }
 
 inline Message CompressMessageSet(const MessageSet& message_set,
-                                  constants::Compression compression)
+                                  constants::Compression compression,
+                                  boost::system::error_code& ec)
 {
+  using boost::asio::buffer;
   using boost::asio::buffer_copy;
   using boost::asio::streambuf;
   using boost::system::error_code;
   using detail::WriteMessageSet;
   using detail::Compress;
 
+  if (compression == constants::kCompressionNone)
+  {
+    ec = kErrorCompressionFailed;
+    return Message();
+  }
   streambuf intermediate_buffer;
   std::ostream intermediate_os(&intermediate_buffer);
   WriteMessageSet(message_set, intermediate_os);
   size_t size = intermediate_buffer.size();
+  if (size == 0)
+  {
+    ec = kErrorCompressionFailed;
+    return Message();
+  }
   intermediate_buffer.commit(size);
   Bytes uncompressed_value(new Bytes::element_type(size));
-  //buffer_copy(&(*uncompressed_value)[0], intermediate_buffer.data());
-  error_code ec;
+  buffer_copy(buffer(&(*uncompressed_value)[0], size),
+              intermediate_buffer.data());
   Message result;
   result.set_attributes(compression);
   result.mutable_value() = Compress(uncompressed_value, compression, ec);
   if (ec)
   {
-    // TODO: Error handling
     return Message();
   }
+  ec = kErrorSuccess;
   return result;
 }
 
