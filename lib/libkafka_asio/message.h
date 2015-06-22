@@ -13,15 +13,10 @@
 #include <vector>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/constants.h>
+#include <libkafka_asio/message_fwd.h>
 
 namespace libkafka_asio
 {
-
-// Forward declaration
-class MessageAndOffset;
-
-// Kafka MessageSet type
-typedef std::vector<MessageAndOffset> MessageSet;
 
 // Kafka Message Data Structure
 class Message
@@ -88,6 +83,13 @@ public:
 private:
   Int64 offset_;
 };
+
+// Compresses the given `MessageSet` object using the specified compression
+// algorithm and puts the result as value into a new `Message` object. The
+// compression attribute of that object will be set respectively. The created
+// `Message` object will be returned by this function.
+Message CompressMessageSet(const MessageSet& message_set,
+                           constants::Compression compression);
 
 }  // namespace libkafka_asio
 

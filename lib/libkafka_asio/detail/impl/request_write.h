@@ -10,9 +10,6 @@
 #ifndef REQUEST_WRITE_H_5A99E292_8486_40A6_8B1B_90D78026F803
 #define REQUEST_WRITE_H_5A99E292_8486_40A6_8B1B_90D78026F803
 
-#include <boost/asio.hpp>
-#include <boost/crc.hpp>
-#include <boost/foreach.hpp>
 #include <libkafka_asio/detail/endian.h>
 
 namespace libkafka_asio
@@ -31,29 +28,6 @@ inline Int32 BytesWireSize(const Bytes& bytes)
   if (bytes)
   {
     size += static_cast<Int32>(bytes->size());
-  }
-  return size;
-}
-
-inline Int32 MessageWireSize(const Message& message)
-{
-  return
-    sizeof(Int32) +  // Crc
-    sizeof(Int8) +   // MagicByte
-    sizeof(Int8) +   // Attributes
-    BytesWireSize( message.key() ) +  // Key
-    BytesWireSize( message.value() );  // Value
-}
-
-inline Int32 MessageSetWireSize(const MessageSet& message_set)
-{
-  Int32 size = 0;
-  BOOST_FOREACH(const MessageAndOffset &message, message_set)
-  {
-    size +=
-      sizeof(Int64) +  // Offset
-      sizeof(Int32) +  // MessageSize
-      MessageWireSize(message);  // Message
   }
   return size;
 }
@@ -108,43 +82,6 @@ inline void WriteBytes(const Bytes& value, std::ostream& os)
   WriteInt32(static_cast<Int32>(value->size()), os);
   os.write( reinterpret_cast<const char*>( value->data() ), value->size() );
 }
-
-inline void WriteMessage(const Message& value, std::ostream& os)
-{
-  using boost::asio::buffer_cast;
-
-  // Write everything (except crc) to an intermediate buffer
-  boost::asio::streambuf intermediate_buffer;
-  std::ostream intermediate_os(&intermediate_buffer);
-  WriteInt8(value.magic_byte(), intermediate_os);
-  WriteInt8(value.attributes(), intermediate_os);
-  WriteBytes(value.key(), intermediate_os);
-  WriteBytes(value.value(), intermediate_os);
-
-  size_t size = intermediate_buffer.size();
-  intermediate_buffer.commit(size);
-
-  // Calculate crc
-  boost::crc_32_type crc;
-  crc.process_bytes(
-    buffer_cast<void const*>(intermediate_buffer.data()), size);
-
-  // Write to the real stream
-  WriteInt32(crc.checksum(), os);
-  os.write(
-    buffer_cast<const char*>(intermediate_buffer.data()), size);
-}
-
-inline void WriteMessageSet(const MessageSet& value, std::ostream& os)
-{
-  BOOST_FOREACH(const MessageAndOffset &message, value)
-  {
-    WriteInt64(message.offset(), os);
-    WriteInt32(MessageWireSize(message), os);
-    WriteMessage(message, os);
-  }
-}
-
 
 template< typename TRequest >
 void WriteRequest(const TRequest& request, const String& client_id,

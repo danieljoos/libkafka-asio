@@ -10,6 +10,9 @@
 #ifndef MESSAGE_H_AFAF4566_F008_41D9_962B_EE74729E4F4F
 #define MESSAGE_H_AFAF4566_F008_41D9_962B_EE74729E4F4F
 
+#include <libkafka_asio/detail/impl/message_read.h>
+#include <libkafka_asio/detail/impl/message_write.h>
+
 namespace libkafka_asio
 {
 
@@ -125,6 +128,34 @@ inline Int64 MessageAndOffset::offset() const
 inline void MessageAndOffset::set_offset(Int64 offset)
 {
   offset_ = offset;
+}
+
+inline Message CompressMessageSet(const MessageSet& message_set,
+                                  constants::Compression compression)
+{
+  using boost::asio::buffer_copy;
+  using boost::asio::streambuf;
+  using boost::system::error_code;
+  using detail::WriteMessageSet;
+  using detail::Compress;
+
+  streambuf intermediate_buffer;
+  std::ostream intermediate_os(&intermediate_buffer);
+  WriteMessageSet(message_set, intermediate_os);
+  size_t size = intermediate_buffer.size();
+  intermediate_buffer.commit(size);
+  Bytes uncompressed_value(new Bytes::element_type(size));
+  //buffer_copy(&(*uncompressed_value)[0], intermediate_buffer.data());
+  error_code ec;
+  Message result;
+  result.set_attributes(compression);
+  result.mutable_value() = Compress(uncompressed_value, compression, ec);
+  if (ec)
+  {
+    // TODO: Error handling
+    return Message();
+  }
+  return result;
 }
 
 }  // namespace libkafka_asio

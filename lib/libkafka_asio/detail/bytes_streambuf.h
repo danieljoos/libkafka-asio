@@ -11,6 +11,7 @@
 #define BYTES_STREAMBUF_H_3909DFCD_867A_4A2C_A494_3AAAE9A751E2
 
 #include <streambuf>
+#include <libkafka_asio/primitives.h>
 
 namespace libkafka_asio
 {

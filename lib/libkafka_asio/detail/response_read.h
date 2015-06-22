@@ -14,6 +14,7 @@
 #include <boost/system/error_code.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
+#include <libkafka_asio/message_fwd.h>
 
 namespace libkafka_asio
 {
