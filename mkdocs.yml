@@ -8,6 +8,8 @@ pages:
     - ['client.md', 'Core', 'Client']
     - ['client_configuration.md', 'Core', 'ClientConfiguration']
     - ['message.md', 'Core', 'Message']
+    - ['message_and_offset.md', 'Core', 'MessageAndOffset']
+    - ['message_set.md', 'Core', 'MessageSet']
     - ['metadata_request.md', 'Metadata API', 'MetadataRequest']
     - ['metadata_response.md', 'Metadata API', 'MetadataResponse']
     - ['produce_request.md', 'Produce API', 'ProduceRequest']
