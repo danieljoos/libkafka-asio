@@ -38,7 +38,7 @@ enum Compression
 enum Defaults
 {
   kDefaultPartition = 0,
-  kDefaultProduceRequiredAcks = 0,
+  kDefaultProduceRequiredAcks = 1,
   kDefaultProduceTimeout = 10000,
   kDefaultFetchOffset = 0,
   kDefaultFetchMinBytes = 0,
