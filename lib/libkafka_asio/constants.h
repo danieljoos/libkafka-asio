@@ -32,7 +32,8 @@ enum Compression
 {
   kCompressionNone = 0,
   kCompressionGZIP = 1,
-  kCompressionSnappy = 2
+  kCompressionSnappy = 2,
+  kCompressionLz4 = 3
 };
 
 enum Defaults

@@ -44,7 +44,11 @@ inline void ReadResponseMessage(std::istream& is,
 
       // MessageSet
       Int32 message_set_size = ReadInt32(is);
-      ReadMessageSet(is, partition.messages, message_set_size);
+      ReadMessageSet(is, partition.messages, message_set_size, ec);
+      if (ec != kErrorSuccess)
+      {
+        return;
+      }
     }
   }
 }

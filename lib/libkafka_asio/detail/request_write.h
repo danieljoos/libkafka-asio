@@ -12,8 +12,7 @@
 
 #include <iostream>
 #include <libkafka_asio/primitives.h>
-#include <libkafka_asio/request.h>
-#include <libkafka_asio/message.h>
+#include <libkafka_asio/message_fwd.h>
 
 namespace libkafka_asio
 {

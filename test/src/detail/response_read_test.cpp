@@ -102,3 +102,55 @@ TEST_F(ResponseReadTest, ReadBytes)
   ASSERT_EQ(0x01, read_bytes->at(0));
   ASSERT_EQ(0x02, read_bytes->at(1));
 }
+
+TEST_F(ResponseReadTest, ReadMessage)
+{
+  // Extracted this from `Wireshark`, capturing a `kafka-console-producer`
+  // request with message value `helloworld`.
+  const unsigned char test_data[24] =
+  {
+      0x6f, 0xff, 0xbb, 0x60, 0x00, 0x00, 0xff, 0xff,
+      0xff, 0xff, 0x00, 0x00, 0x00, 0x0a, 0x68, 0x65,
+      0x6c, 0x6c, 0x6f, 0x77, 0x6f, 0x72, 0x6c, 0x64
+  };
+  stream->write((const char*)test_data, sizeof(test_data));
+  Message message;
+  boost::system::error_code ec;
+  ReadMessage(*stream, message, ec);
+  ASSERT_EQ(kErrorSuccess, ec);
+  ASSERT_FALSE(message.key());
+  ASSERT_TRUE(message.value());
+  std::string message_value((const char*)&(*message.value())[0],
+                            message.value()->size());
+  ASSERT_STREQ("helloworld", message_value.c_str());
+}
+
+TEST_F(ResponseReadTest, ReadMessageSet)
+{
+  // MessageSet that contains 2 messages: `foo` and `bar`
+  const unsigned char test_data[58] =
+  {
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x11, 0xfa, 0x8b, 0x1b, 0x4c,
+      0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
+      0x00, 0x03, 0x66, 0x6f, 0x6f, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x11, 0x00, 0x07, 0xf2, 0xc7, 0x00, 0x00, 0xff,
+      0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x03, 0x62,
+      0x61, 0x72
+  };
+  stream->write((const char*)test_data, sizeof(test_data));
+  MessageSet message_set;
+  boost::system::error_code ec;
+  ReadMessageSet(*stream, message_set, sizeof(test_data), ec);
+  ASSERT_EQ(kErrorSuccess, ec);
+  ASSERT_EQ(2, message_set.size());
+  ASSERT_TRUE(message_set[0].value());
+  ASSERT_TRUE(message_set[1].value());
+  std::string message_value_0((const char*) &(*message_set[0].value())[0],
+                              message_set[0].value()->size());
+  std::string message_value_1((const char*) &(*message_set[1].value())[0],
+                              message_set[1].value()->size());
+  ASSERT_STREQ("foo", message_value_0.c_str());
+  ASSERT_STREQ("bar", message_value_1.c_str());
+}

@@ -10,7 +10,12 @@
 #ifndef LIBKAFKA_ASIO_H_D2B00651_6C27_47B1_9403_2856E2D065EA
 #define LIBKAFKA_ASIO_H_D2B00651_6C27_47B1_9403_2856E2D065EA
 
+#include <libkafka_asio/primitives.h>
+#include <libkafka_asio/constants.h>
+#include <libkafka_asio/error.h>
+
 #include <libkafka_asio/client.h>
+#include <libkafka_asio/message.h>
 
 // Metadata API
 #include <libkafka_asio/metadata_request.h>

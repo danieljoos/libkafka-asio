@@ -28,7 +28,7 @@ inline Int32 RequestMessageWireSize(const OffsetFetchRequest& request)
     size += StringWireSize(topic.topic_name);
     // Partitions Array
     size += sizeof(Int32);
-    size += static_cast<Int32>(topic.partitions.size() * sizeof(Int32));
+    size += static_cast<Int32>(topic.partitions.size()) * sizeof(Int32);
   }
   return size;
 }

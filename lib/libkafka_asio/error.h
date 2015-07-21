@@ -25,7 +25,9 @@ enum ClientError
   kErrorAlreadyConnected,
   kErrorNotConnected,
   kErrorNoBroker,
-  kErrorInProgress
+  kErrorInProgress,
+  kErrorCompressionNotAvailable,
+  kErrorCompressionFailed
 };
 
 enum KafkaError
@@ -70,6 +72,10 @@ public:
         return "No broker found";
       case kErrorInProgress:
         return "Another operation is still in progress for this client";
+      case kErrorCompressionNotAvailable:
+        return "The specified compression algorithm is not available!";
+      case kErrorCompressionFailed:
+        return "Data compression failure!";
       default:
         return "libkafka_asio client error";
     }

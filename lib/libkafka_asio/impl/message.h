@@ -10,16 +10,21 @@
 #ifndef MESSAGE_H_AFAF4566_F008_41D9_962B_EE74729E4F4F
 #define MESSAGE_H_AFAF4566_F008_41D9_962B_EE74729E4F4F
 
+#include <libkafka_asio/detail/impl/message_read.h>
+#include <libkafka_asio/detail/impl/message_write.h>
+
 namespace libkafka_asio
 {
 
 inline Message::Message() :
-  attributes_(0)
+  attributes_(0),
+  nested_message_set_(new MessageSet())
 {
 }
 
 inline Message::Message(const Message& orig, bool deep) :
-  attributes_(orig.attributes_)
+  attributes_(orig.attributes_),
+  nested_message_set_(orig.nested_message_set_)
 {
   if (deep)
   {
@@ -31,11 +36,16 @@ inline Message::Message(const Message& orig, bool deep) :
     {
       value_.reset(new Bytes::element_type(*orig.value()));
     }
+    if (orig.nested_message_set_)
+    {
+      nested_message_set_.reset(new MessageSet(*orig.nested_message_set_));
+    }
   }
   else
   {
     key_ = orig.key();
     value_ = orig.value();
+    nested_message_set_ = orig.nested_message_set_;
   }
 }
 
@@ -44,6 +54,7 @@ inline Message& Message::operator=(const Message& rhs)
   attributes_ = rhs.attributes_;
   key_ = rhs.key_;
   value_ = rhs.value_;
+  nested_message_set_ = rhs.nested_message_set_;
   return *this;
 }
 
@@ -55,6 +66,11 @@ inline Int8 Message::magic_byte() const
 inline Int8 Message::attributes() const
 {
   return attributes_;
+}
+
+inline void Message::set_attributes(Int8 attributes)
+{
+  attributes_ = attributes;
 }
 
 inline const Bytes& Message::key() const
@@ -77,17 +93,19 @@ inline Bytes& Message::mutable_value()
   return value_;
 }
 
-inline void Message::SetCompression(constants::Compression compression_type)
+inline const MessageSet& Message::nested_message_set() const
 {
-  attributes_ &= 0xfc;
-  switch (compression_type)
-  {
-    case constants::kCompressionNone:
-    case constants::kCompressionGZIP:
-    case constants::kCompressionSnappy:
-      attributes_ |= (compression_type & 0x02);
-      break;
-  }
+  return *nested_message_set_;
+}
+
+inline MessageSet& Message::mutable_nested_message_set()
+{
+  return *nested_message_set_;
+}
+
+inline constants::Compression Message::compression() const
+{
+  return constants::Compression(attributes_ & 0x03);
 }
 
 inline MessageAndOffset::MessageAndOffset() :
@@ -110,6 +128,46 @@ inline Int64 MessageAndOffset::offset() const
 inline void MessageAndOffset::set_offset(Int64 offset)
 {
   offset_ = offset;
+}
+
+inline Message CompressMessageSet(const MessageSet& message_set,
+                                  constants::Compression compression,
+                                  boost::system::error_code& ec)
+{
+  using boost::asio::buffer;
+  using boost::asio::buffer_copy;
+  using boost::asio::streambuf;
+  using boost::system::error_code;
+  using detail::WriteMessageSet;
+  using detail::Compress;
+
+  if (compression == constants::kCompressionNone)
+  {
+    ec = kErrorCompressionFailed;
+    return Message();
+  }
+  streambuf intermediate_buffer;
+  std::ostream intermediate_os(&intermediate_buffer);
+  WriteMessageSet(message_set, intermediate_os);
+  size_t size = intermediate_buffer.size();
+  if (size == 0)
+  {
+    ec = kErrorCompressionFailed;
+    return Message();
+  }
+  intermediate_buffer.commit(size);
+  Bytes uncompressed_value(new Bytes::element_type(size));
+  buffer_copy(buffer(&(*uncompressed_value)[0], size),
+              intermediate_buffer.data());
+  Message result;
+  result.set_attributes(compression);
+  result.mutable_value() = Compress(uncompressed_value, compression, ec);
+  if (ec)
+  {
+    return Message();
+  }
+  ec = kErrorSuccess;
+  return result;
 }
 
 }  // namespace libkafka_asio

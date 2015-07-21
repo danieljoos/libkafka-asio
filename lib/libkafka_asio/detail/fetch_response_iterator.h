@@ -12,6 +12,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <libkafka_asio/message.h>
+#include <libkafka_asio/detail/recursive_messageset_iterator.h>
 
 namespace libkafka_asio
 {
@@ -47,8 +48,9 @@ public:
       topic_partition_iter_ = topic_iter_->partitions.begin();
       while (topic_partition_iter_ != topic_iter_->partitions.end())
       {
-        message_iter_ = topic_partition_iter_->messages.begin();
-        if (message_iter_ != topic_partition_iter_->messages.end())
+        message_iter_ =
+          RecursiveMessageSetIterator(topic_partition_iter_->messages);
+        if (message_iter_ != RecursiveMessageSetIterator())
         {
           // Found a message to start with
           return;
@@ -76,7 +78,6 @@ private:
 
   typedef typename TTopicVector::const_iterator TopicIterator;
   typedef typename TopicPartitionVector::const_iterator TopicPartitionIterator;
-  typedef typename MessageSet::const_iterator MessageIterator;
 
   void reset()
   {
@@ -90,7 +91,7 @@ private:
       return;
     }
     message_iter_++;
-    while (message_iter_ == topic_partition_iter_->messages.end())
+    while (message_iter_ == RecursiveMessageSetIterator())
     {
       topic_partition_iter_++;
       while (topic_partition_iter_ == topic_iter_->partitions.end())
@@ -103,7 +104,8 @@ private:
         }
         topic_partition_iter_ = topic_iter_->partitions.begin();
       }
-      message_iter_ = topic_partition_iter_->messages.begin();
+      message_iter_ =
+        RecursiveMessageSetIterator(topic_partition_iter_->messages);
     }
   }
 
@@ -125,7 +127,7 @@ private:
   const TTopicVector *topics_;
   TopicIterator topic_iter_;
   TopicPartitionIterator topic_partition_iter_;
-  MessageIterator message_iter_;
+  RecursiveMessageSetIterator message_iter_;
 };
 
 }  // namespace detail

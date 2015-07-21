@@ -62,7 +62,7 @@ cl.AsyncConnect("localhost", "9092", [](const Client::ErrorCodeType& error) {
         std::cerr << "Failed to connect!" << std::endl;
         return;
     }
-    std::cout << "Connected! << std::endl;
+    std::cout << "Connected!" << std::endl;
 });
 ```
 
@@ -100,7 +100,7 @@ cl.AsyncConnect([](const Client::ErrorCodeType& error) {
         std::cerr << "Failed to connect!" << std::endl;
         return;
     }
-    std::cout << "Connected! << std::endl;
+    std::cout << "Connected!" << std::endl;
 });
 ```
 

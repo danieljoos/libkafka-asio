@@ -13,6 +13,8 @@
 #include <vector>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/constants.h>
+#include <libkafka_asio/error.h>
+#include <libkafka_asio/message_fwd.h>
 
 namespace libkafka_asio
 {
@@ -38,6 +40,9 @@ public:
   // algorithm.
   Int8 attributes() const;
 
+  // Sets the attributes byte of this message
+  void set_attributes(Int8 attributes);
+
   // Optional message key. Can be NULL (default).
   const Bytes& key() const;
 
@@ -48,13 +53,19 @@ public:
 
   Bytes& mutable_value();
 
-  // Enable message compression using the specified compression algorithm.
-  void SetCompression(constants::Compression compression_type);
+  // Compressed messages contain a nested message set
+  const MessageSet& nested_message_set() const;
+
+  MessageSet& mutable_nested_message_set();
+
+  // Returns the compression algorithm, used for compressing the message value
+  constants::Compression compression() const;
 
 private:
   Int8 attributes_;
   Bytes key_;
   Bytes value_;
+  boost::shared_ptr<MessageSet> nested_message_set_;
 };
 
 // Message data structure with an additional offset
@@ -74,8 +85,13 @@ private:
   Int64 offset_;
 };
 
-// Kafka MessageSet data structure
-typedef std::vector<MessageAndOffset> MessageSet;
+// Compresses the given `MessageSet` object using the specified compression
+// algorithm and puts the result as value into a new `Message` object. The
+// compression attribute of that object will be set respectively. The created
+// `Message` object will be returned by this function.
+Message CompressMessageSet(const MessageSet& message_set,
+                           constants::Compression compression,
+                           boost::system::error_code& ec);
 
 }  // namespace libkafka_asio
 

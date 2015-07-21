@@ -12,6 +12,9 @@
 #include <libkafka_asio/libkafka_asio.h>
 
 using libkafka_asio::Message;
+using libkafka_asio::MessageAndOffset;
+using libkafka_asio::MessageSet;
+using libkafka_asio::CompressMessageSet;
 using libkafka_asio::Bytes;
 
 TEST(MessageTest, FlatCopy)
@@ -62,4 +65,29 @@ TEST(MessageTest, DeepCopy)
   std::string test_value2((const char*)&(*copy.value())[0],
                           copy.value()->size());
   ASSERT_STREQ(test_value1.c_str(), test_value2.c_str());
+}
+
+TEST(MessageTest, CompressMessageSet)
+{
+  MessageSet message_set(2);
+  message_set[0].set_offset(1);
+  message_set[1].set_offset(2);
+  boost::system::error_code ec;
+  using namespace libkafka_asio::constants;
+  Message msg = CompressMessageSet(message_set, kCompressionGZIP, ec);
+  ASSERT_EQ(libkafka_asio::kErrorSuccess, ec);
+  ASSERT_TRUE(msg.value());
+  ASSERT_FALSE(msg.value()->empty());
+  ASSERT_EQ(kCompressionGZIP, msg.compression());
+}
+
+TEST(MessageTest, CompressMessageSetNoneCompression)
+{
+  MessageSet message_set(2);
+  message_set[0].set_offset(1);
+  message_set[1].set_offset(2);
+  boost::system::error_code ec;
+  using namespace libkafka_asio::constants;
+  Message msg = CompressMessageSet(message_set, kCompressionNone, ec);
+  ASSERT_EQ(libkafka_asio::kErrorCompressionFailed, ec);
 }
