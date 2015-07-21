@@ -15,10 +15,10 @@ protocol. All Kafka APIs, including offset commit/fetch, are implemented:
 * [Offset](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-OffsetAPI)
 * [Offset Commit/Fetch](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-OffsetCommit/FetchAPI)
 
-For now it is **missing** support for Snappy/GZIP compression, but I plan to 
-include this as well.
+The library supports GZIP and Snappy message compression and therefore relies on the [zlib](http://www.zlib.net/) and [Snappy](https://code.google.com/p/snappy/) libraries.
+Message compression can optionally be turned off.
 
-The library was tested on Linux (GCC 4.9, clang 3.5.1) and Windows (MSVC 10, 11, 12). There is a small (yet not complete) set of unit tests available under [`test`](test/).
+The library was tested on Linux (GCC 4.9, clang 3.5.1) and Windows (MSVC 10, 11, 12). There is a set of unit tests available under [`test`](test/).
 
 ## Usage
 
