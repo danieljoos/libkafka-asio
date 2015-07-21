@@ -103,7 +103,7 @@ void set_required_acks(Int16 required_acks)
 Sets the number of acknowledgements that need to be received by the server
 before the response for this request is sent. If `0` is specified for this
 parameter, the server will not wait for acknowledgements. In this case, no
-response will be sent by the server.
+response will be sent by the server. The default value is `1`.
 
 
 ### set_timeout
