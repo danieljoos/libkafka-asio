@@ -1,5 +1,5 @@
-#ifndef CLIENT_CONFIGURATION_H_97A5C774_9202_42D5_BD64_05F2293A3ABD
-#define CLIENT_CONFIGURATION_H_97A5C774_9202_42D5_BD64_05F2293A3ABD
+#ifndef CONNECTION_CONFIGURATION_H_97A5C774_9202_42D5_BD64_05F2293A3ABD
+#define CONNECTION_CONFIGURATION_H_97A5C774_9202_42D5_BD64_05F2293A3ABD
 
 #include <string>
 #include <vector>
@@ -8,8 +8,8 @@
 namespace libkafka_asio
 {
 
-// Client configuration data structure
-struct ClientConfiguration
+// Connection configuration data structure
+struct ConnectionConfiguration
 {
   // Broker address configuration data structure
   struct BrokerAddress
@@ -29,7 +29,7 @@ struct ClientConfiguration
   // Default value is 60000 (1 min).
   unsigned int socket_timeout;
 
-  // Client identification string.
+  // Connection identification string.
   // Default value is 'libkafka_asio'.
   String client_id;
 
@@ -40,7 +40,7 @@ struct ClientConfiguration
   bool auto_connect;
 
   // Construct using default values
-  ClientConfiguration();
+  ConnectionConfiguration();
 
   // Add a broker address from string.
   // If the string contain a colon, the part before the colon is interpreted
@@ -70,6 +70,6 @@ struct ClientConfiguration
 
 }  // namespace libkafka_asio
 
-#include <libkafka_asio/impl/client_configuration.h>
+#include <libkafka_asio/impl/connection_configuration.h>
 
-#endif  // CLIENT_CONFIGURATION_H_97A5C774_9202_42D5_BD64_05F2293A3ABD
+#endif  // CONNECTION_CONFIGURATION_H_97A5C774_9202_42D5_BD64_05F2293A3ABD

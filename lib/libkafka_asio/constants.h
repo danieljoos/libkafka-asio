@@ -52,12 +52,12 @@ enum Defaults
   kDefaultSocketTimeout = 60000
 };
 
-inline bool DefaultClientAutoConnect()
+inline bool DefaultConnectionAutoConnect()
 {
   return false;
 }
 
-inline const String& DefaultClientId()
+inline const String& DefaultConnectionId()
 {
   static String client_id = "libkafka_asio";
   return client_id;

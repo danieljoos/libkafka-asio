@@ -18,21 +18,21 @@
 #include <boost/asio.hpp>
 #include <libkafka_asio/libkafka_asio.h>
 
-using libkafka_asio::Client;
+using libkafka_asio::Connection;
 using libkafka_asio::FetchRequest;
 using libkafka_asio::FetchResponse;
 using libkafka_asio::MessageAndOffset;
 
 int main(int argc, char **argv)
 {
-  Client::Configuration configuration;
+  Connection::Configuration configuration;
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 10000;
   configuration.AddBrokerFromString("192.168.15.137:49162");
 
   boost::asio::io_service ios;
-  Client client(ios, configuration);
+  Connection client(ios, configuration);
 
   // Create a 'Fetch' request and try to get data for partition 0 of topic
   // 'mytopic', starting with offset 1
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
   // in the configuration.
   client.AsyncRequest(
     request,
-    [&](const Client::ErrorCodeType& err,
+    [&](const Connection::ErrorCodeType& err,
         const FetchResponse::OptionalType& response)
   {
     if (err)
