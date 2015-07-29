@@ -14,7 +14,7 @@
 #include <libkafka_asio/constants.h>
 #include <libkafka_asio/error.h>
 
-#include <libkafka_asio/client.h>
+#include <libkafka_asio/connection.h>
 #include <libkafka_asio/message.h>
 
 // Metadata API
