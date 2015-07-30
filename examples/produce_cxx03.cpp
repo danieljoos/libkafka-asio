@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   configuration.AddBrokerFromString("192.168.15.137:49166");
 
   boost::asio::io_service ios;
-  Connection client(ios, configuration);
+  Connection connection(ios, configuration);
 
   // Create a 'Produce' request and add a single message to it. The value of
   // that message is set to "Hello World". The message is produced for topic
@@ -53,9 +53,9 @@ int main(int argc, char **argv)
   request.AddValue("Hello World", "mytopic", 0);
 
   // Send the prepared produce request.
-  // The client will attempt to automatically connect to one of the brokers,
+  // The connection will attempt to automatically connect to one of the brokers,
   // specified in the configuration.
-  client.AsyncRequest(request, &HandleRequest);
+  connection.AsyncRequest(request, &HandleRequest);
 
   // Let's go!
   ios.run();

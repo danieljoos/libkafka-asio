@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   configuration.AddBrokerFromString("192.168.15.137:49162");
 
   boost::asio::io_service ios;
-  Connection client(ios, configuration);
+  Connection connection(ios, configuration);
 
   // Create a 'Fetch' request and try to get data for partition 0 of topic
   // 'mytopic', starting with offset 1
@@ -67,9 +67,9 @@ int main(int argc, char **argv)
   request.FetchTopic("mytopic", 0, 1);
 
   // Send the prepared fetch request.
-  // The client will attempt to automatically connect to the broker, specified
+  // The connection will attempt to automatically connect to the broker, specified
   // in the configuration.
-  client.AsyncRequest(request, &HandleFetch);
+  connection.AsyncRequest(request, &HandleFetch);
 
   // Let's go!
   ios.run();
