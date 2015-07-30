@@ -1,10 +1,10 @@
 
-struct `ClientConfiguration`
+struct `ConnectionConfiguration`
 ============================
 
-The data structure, used for configuring a client object.
+The data structure, used for configuring a connection object.
 
-### **ClientConfiguration** ()
+### **ConnectionConfiguration** ()
 
 Construct the configuration using default values.
 
@@ -48,7 +48,7 @@ List of known Kafka broker servers.
 bool auto_connect
 ```
 
-If set to `true`, the client will try to automatically connect to one of the
+If set to `true`, the connection will try to automatically connect to one of the
 known Kafka servers.
 
 

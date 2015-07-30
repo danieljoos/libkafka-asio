@@ -1,31 +1,31 @@
 
-class `Client`
+class `Connection`
 ==============
 
-**Header File:** `<libkafka_asio/client.h>`
+**Header File:** `<libkafka_asio/connection.h>`
 
 **Namespace:** `libkafka_asio`
 
-The client class does the actual interaction with a Kafka server. Use it to
-connect to such a server and send asynchronous requests to it. The client uses
+The connection class does the actual interaction with a Kafka server. Use it to
+connect to such a server and send asynchronous requests to it. The connection uses
 _Boost Asio_ for the TCP-based communication.
 
-### Client
+### Connection
 ```cpp
-Client(boost::asio::io_service& io_service, 
+Connection(boost::asio::io_service& io_service, 
        const Configuration& configuration)
 ```
 
-Constructs a new client object. All communication to the Kafka server will be
+Constructs a new connection object. All communication to the Kafka server will be
 scheduled on the given `io_service` object.
 
 
-### ~Client
+### ~Connection
 ```cpp
-~Client()
+~Connection()
 ```
 
-A possible open connection will be closed on destruction of the client object.
+A possible open connection will be closed on destruction of the connection object.
 All pending asynchronous operations will be cancelled and the respective handler
 functions will be called with an `operation_aborted` error.
 
@@ -48,7 +48,7 @@ The function always returns immediately.
 The signature of the handler function must be:
 ```cpp
 void handler(
-    const Client::ErrorCodeType& error
+    const Connection::ErrorCodeType& error
 );
 ```
 
@@ -56,8 +56,8 @@ Example:
 
 ```cpp
 boost::asio::io_service ios;
-Client cl(ios);
-cl.AsyncConnect("localhost", "9092", [](const Client::ErrorCodeType& error) {
+Connection cl(ios);
+cl.AsyncConnect("localhost", "9092", [](const Connection::ErrorCodeType& error) {
     if (error) {
         std::cerr << "Failed to connect!" << std::endl;
         return;
@@ -73,7 +73,7 @@ void AsyncConnect(const ConnectionHandlerType& handler)
 ```
 
 Tries to connect to the brokers, specified in the configuration given to this
-client object. If no such broker address was configured, the handler function
+connection object. If no such broker address was configured, the handler function
 will be scheduled with `ErrorNoBroker`.
 Connection attempts will be made in the sequence, the broker addresses were
 added to the configuration.
@@ -82,7 +82,7 @@ The function always returns immediately.
 The signature of the handler function must be:
 ```cpp
 void handler(
-    const Client::ErrorCodeType& error
+    const Connection::ErrorCodeType& error
 );
 ```
 
@@ -90,12 +90,12 @@ Example:
 
 ```cpp
 boost::asio::io_service ios;
-Client::Configuration conf;
+Connection::Configuration conf;
 conf.auto_connect = true;
 conf.AddBrokerFromString("localhost:9092");
 conf.AddBrokerFromString("example.org:9092");
-Client cl(ios);
-cl.AsyncConnect([](const Client::ErrorCodeType& error) {
+Connection cl(ios);
+cl.AsyncConnect([](const Connection::ErrorCodeType& error) {
     if (error) {
         std::cerr << "Failed to connect!" << std::endl;
         return;
@@ -115,7 +115,7 @@ void AsyncRequest (const TRequest& request,
 Asynchronously sends the given request to the connected Kafka server. The given
 handler function object will be called on success as well as on error condition.
 
-If this client object is not in `connected` state, the handler function will be
+If this connection object is not in `connected` state, the handler function will be
 scheduled with `ErrorNotConnected`. If the `auto-connect` option was enabled in
 the configuration, this function will try to connect to one of the brokers,
 specified in the configuration (See function `AsyncConnect(handler)`).
@@ -125,7 +125,7 @@ must be:
 
 ```cpp
 void handler(
-    const Client::ErrorCodeType& error,
+    const Connection::ErrorCodeType& error,
     const Response::OptionalType& response
 );
 ```
@@ -138,13 +138,13 @@ Example:
 
 ```cpp
 boost::asio::io_service ios;
-Client::Configuration conf;
+Connection::Configuration conf;
 conf.auto_connect = true;
 conf.AddBrokerFromString("localhost:9092");
 conf.AddBrokerFromString("example.org:9092");
-Client cl(ios);
+Connection cl(ios);
 MetadataRequest request;
-client.AsyncRequest(request, [](const Client::ErrorCodeType& error,
+connection.AsyncRequest(request, [](const Connection::ErrorCodeType& error,
                                 const MetadataResponse::OptionalType& response) {
     if (error) {
         std::cerr << "Error!" << std::endl;
@@ -169,10 +169,10 @@ Types
 
 ### Configuration
 ```cpp
-typedef ClientConfiguration Configuration
+typedef ConnectionConfiguration Configuration
 ```
 
-Client configuration type.
+Connection configuration type.
 
 
 ### ErrorCodeType
