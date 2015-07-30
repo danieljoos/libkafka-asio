@@ -10,7 +10,7 @@ namespace libkafka_asio
 inline ConnectionConfiguration::ConnectionConfiguration() :
   message_max_bytes(constants::kDefaultMessageMaxBytes),
   socket_timeout(constants::kDefaultSocketTimeout),
-  client_id(constants::DefaultConnectionId()),
+  client_id(constants::DefaultClientId()),
   auto_connect(constants::DefaultConnectionAutoConnect())
 {
 }

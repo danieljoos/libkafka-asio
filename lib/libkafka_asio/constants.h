@@ -57,7 +57,7 @@ inline bool DefaultConnectionAutoConnect()
   return false;
 }
 
-inline const String& DefaultConnectionId()
+inline const String& DefaultClientId()
 {
   static String client_id = "libkafka_asio";
   return client_id;
