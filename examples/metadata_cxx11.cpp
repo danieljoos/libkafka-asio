@@ -32,12 +32,12 @@ int main(int argc, char** argv)
   configuration.AddBrokerFromString("192.168.59.104:49156");
 
   boost::asio::io_service ios;
-  Connection client(ios, configuration);
+  Connection connection(ios, configuration);
 
   MetadataRequest request;
   request.AddTopicName("mytopic");
 
-  client.AsyncRequest(
+  connection.AsyncRequest(
     request,
     [&](const Connection::ErrorCodeType& err,
         const MetadataResponse::OptionalType& response)

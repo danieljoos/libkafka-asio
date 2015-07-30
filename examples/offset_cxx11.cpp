@@ -32,7 +32,7 @@ int main(int argc, char** argv)
   configuration.AddBrokerFromString("192.168.59.104:49156");
 
   boost::asio::io_service ios;
-  Connection client(ios, configuration);
+  Connection connection(ios, configuration);
 
   // Request the latest offset for partition 1 of topic 'mytopic' on the
   // configured broker.
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   OffsetRequest request;
   request.FetchTopicOffset("mytopic", 1, kOffsetTimeLatest);
 
-  client.AsyncRequest(
+  connection.AsyncRequest(
     request,
     [&](const Connection::ErrorCodeType& err,
         const OffsetResponse::OptionalType& response)
