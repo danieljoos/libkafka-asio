@@ -1,5 +1,5 @@
 //
-// impl/client.h
+// impl/connection.h
 // -------------
 //
 // Copyright (c) 2015 Daniel Joos

@@ -1,5 +1,5 @@
 //
-// client.h
+// connection.h
 // --------
 //
 // Copyright (c) 2015 Daniel Joos
@@ -28,7 +28,7 @@ namespace libkafka_asio
 // The class follows the asynchronous programming model of the asio library
 // and uses callback function objects. The actual action (e.g. 'establish a
 // connection' or 'send a request') requires a blocking call to the 
-// `io_service::run()` method of the io_service object given to this client.
+// `io_service::run()` method of the io_service object given to this connection.
 // Please see the documentation of boost::asio for further details on the asio
 // programming model:
 // http://www.boost.org/doc/libs/release/libs/asio/
@@ -72,13 +72,13 @@ public:
   // Connection handler type
   typedef boost::function<void(const ErrorCodeType&)> ConnectionHandlerType;
 
-  // Create a new client object.
+  // Create a new connection object.
   // Connection attempts and requests to the Kafka server will be scheduled
   // on the given io_service object.
   Connection(boost::asio::io_service& io_service,
          const Configuration& configuration = Configuration());
 
-  // A possibly open connection will be closed on destruction of client objects.
+  // A possibly open connection will be closed on destruction of connection objects.
   // All pending asynchronous operations will be cancelled.
   ~Connection();
 
@@ -116,7 +116,7 @@ public:
                     const ConnectionHandlerType& handler);
 
   // Tries to connect to the brokers, specified in the configuration given to
-  // this client object. If no such broker address was configured, the handler
+  // this connection object. If no such broker address was configured, the handler
   // function will be scheduled with ErrorNoBroker.
   // Connection attempts will be made in the sequence, the broker addresses
   // were added to the configuration.
@@ -134,7 +134,7 @@ public:
   // The given handler function object will be called on success as well as on
   // error condition.
   //
-  // If this client object is not in 'connected' state, the handler function
+  // If this connection object is not in 'connected' state, the handler function
   // will be scheduled with ErrorNotConnected.
   // If the 'auto-connect' option was enabled in the configuration, this
   // function will try to connect to one the brokers, specified in the
