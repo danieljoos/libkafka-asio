@@ -26,7 +26,7 @@
 
 using boost::lexical_cast;
 using boost::system::system_error;
-using libkafka_asio::Client;
+using libkafka_asio::Connection;
 using libkafka_asio::String;
 using libkafka_asio::Int32;
 using libkafka_asio::ConsumerMetadataRequest;
@@ -42,13 +42,13 @@ using libkafka_asio::OffsetFetchResponse;
 // pointer.
 template<typename T>
 std::function<
-  void(const Client::ErrorCodeType&, const typename T::OptionalType&)>
+  void(const Connection::ErrorCodeType&, const typename T::OptionalType&)>
 PromiseHandler(std::promise<T>&& pr)
 {
   typedef std::promise<T> PromiseType;
   typedef std::shared_ptr<PromiseType> SharedPromiseType;
   return std::bind(
-    [](const Client::ErrorCodeType& err,
+    [](const Connection::ErrorCodeType& err,
        const typename T::OptionalType& response,
        SharedPromiseType result)
     {
@@ -74,8 +74,8 @@ int main(int argc, char **argv)
   boost::asio::io_service::work work(ios);
   std::thread worker([&ios]() { ios.run(); });
 
-  // Construct a `libkafka_asio` client object
-  Client::Configuration configuration;
+  // Construct a `libkafka_asio` connection object
+  Connection::Configuration configuration;
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 2000;
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   String consumer_group = "ExampleGroup";
   String topic_name = "example";
   Int32 partition = 0;
-  Client client(ios, configuration);
+  Connection connection(ios, configuration);
 
   // Discover the coordinator broker.
   // It uses a promise, which will be set inside the handler function of the
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
       auto ret = result.get_future();
       ConsumerMetadataRequest request;
       request.set_consumer_group(consumer_group);
-      client.AsyncRequest(request, PromiseHandler(std::move(result)));
+      connection.AsyncRequest(request, PromiseHandler(std::move(result)));
       return ret;
     };
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
       OffsetFetchRequest request;
       request.set_consumer_group(consumer_group);
       request.FetchOffset(topic_name, partition);
-      client.AsyncRequest(request, PromiseHandler(std::move(result)));
+      connection.AsyncRequest(request, PromiseHandler(std::move(result)));
       return ret;
     };
 
@@ -115,14 +115,14 @@ int main(int argc, char **argv)
     // First get the broker that is currently coordinating the offset management
     auto coordinator = discover_coordinator().get();
 
-    // Then re-connect the client to the coordinator
+    // Then re-connect the connection to the coordinator
     std::promise<bool> connected;
     auto is_connected = connected.get_future();
-    client.Close();
-    client.AsyncConnect(
+    connection.Close();
+    connection.AsyncConnect(
       coordinator.coordinator_host(),
       lexical_cast<String>(coordinator.coordinator_port()),
-      [&](const Client::ErrorCodeType& err)
+      [&](const Connection::ErrorCodeType& err)
       {
         if (err)
         {

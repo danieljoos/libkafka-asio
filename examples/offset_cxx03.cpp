@@ -18,11 +18,11 @@
 #include <boost/asio.hpp>
 #include <libkafka_asio/libkafka_asio.h>
 
-using libkafka_asio::Client;
+using libkafka_asio::Connection;
 using libkafka_asio::OffsetRequest;
 using libkafka_asio::OffsetResponse;
 
-void HandleRequest(const Client::ErrorCodeType& err,
+void HandleRequest(const Connection::ErrorCodeType& err,
                    const OffsetResponse::OptionalType& response)
 {
   if (err || !response)
@@ -46,14 +46,14 @@ void HandleRequest(const Client::ErrorCodeType& err,
 
 int main(int argc, char** argv)
 {
-  Client::Configuration configuration;
+  Connection::Configuration configuration;
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 2000;
   configuration.AddBrokerFromString("192.168.59.104:49156");
 
   boost::asio::io_service ios;
-  Client client(ios, configuration);
+  Connection connection(ios, configuration);
 
   // Request the latest offset for partition 1 of topic 'mytopic' on the
   // configured broker.
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
   OffsetRequest request;
   request.FetchTopicOffset("mytopic", 1, kOffsetTimeLatest);
 
-  client.AsyncRequest(request, &HandleRequest);
+  connection.AsyncRequest(request, &HandleRequest);
 
   ios.run();
   return 0;

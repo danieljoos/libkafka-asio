@@ -52,7 +52,7 @@ enum Defaults
   kDefaultSocketTimeout = 60000
 };
 
-inline bool DefaultClientAutoConnect()
+inline bool DefaultConnectionAutoConnect()
 {
   return false;
 }

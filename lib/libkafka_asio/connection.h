@@ -1,5 +1,5 @@
 //
-// client.h
+// connection.h
 // --------
 //
 // Copyright (c) 2015 Daniel Joos
@@ -7,8 +7,8 @@
 // Distributed under MIT license. (See file LICENSE)
 //
 
-#ifndef CLIENT_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
-#define CLIENT_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
+#ifndef CONNECTION_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
+#define CONNECTION_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
 
 #include <string>
 #include <boost/asio.hpp>
@@ -16,27 +16,27 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <libkafka_asio/primitives.h>
-#include <libkafka_asio/client_configuration.h>
+#include <libkafka_asio/connection_configuration.h>
 
 namespace libkafka_asio
 {
 
 //
-// Kafka API client using the asio library. Client objects are used to connect
+// Kafka API client using the asio library. Connection objects are used to connect
 // to a Kafka server, send prepared requests and receive a response from the
 // server.
 // The class follows the asynchronous programming model of the asio library
 // and uses callback function objects. The actual action (e.g. 'establish a
 // connection' or 'send a request') requires a blocking call to the 
-// `io_service::run()` method of the io_service object given to this client.
+// `io_service::run()` method of the io_service object given to this connection.
 // Please see the documentation of boost::asio for further details on the asio
 // programming model:
 // http://www.boost.org/doc/libs/release/libs/asio/
 //
-class Client :
+class Connection :
   private boost::noncopyable
 {
-  enum ClientState
+  enum ConnectionState
   {
     kStateClosed = 0,
     kStateConnecting,
@@ -51,11 +51,11 @@ class Client :
   typedef boost::asio::ip::tcp::socket SocketType;
   typedef boost::asio::deadline_timer DeadlineTimerType;
   typedef boost::shared_ptr<boost::asio::streambuf> StreambufType;
-  typedef boost::shared_ptr<ClientState> SharedClientState;
+  typedef boost::shared_ptr<ConnectionState> SharedConnectionState;
 
 public:
   // Configuration type
-  typedef ClientConfiguration Configuration;
+  typedef ConnectionConfiguration Configuration;
   
   // Error Code Type
   typedef boost::system::error_code ErrorCodeType;
@@ -72,15 +72,15 @@ public:
   // Connection handler type
   typedef boost::function<void(const ErrorCodeType&)> ConnectionHandlerType;
 
-  // Create a new client object.
+  // Create a new connection object.
   // Connection attempts and requests to the Kafka server will be scheduled
   // on the given io_service object.
-  Client(boost::asio::io_service& io_service,
+  Connection(boost::asio::io_service& io_service,
          const Configuration& configuration = Configuration());
 
-  // A possibly open connection will be closed on destruction of client objects.
+  // A possibly open connection will be closed on destruction of connection objects.
   // All pending asynchronous operations will be cancelled.
-  ~Client();
+  ~Connection();
 
   // Asynchronously connects to the Kafka server, identified by the given
   // hostname and port. The given handler function object will be called on
@@ -116,7 +116,7 @@ public:
                     const ConnectionHandlerType& handler);
 
   // Tries to connect to the brokers, specified in the configuration given to
-  // this client object. If no such broker address was configured, the handler
+  // this connection object. If no such broker address was configured, the handler
   // function will be scheduled with ErrorNoBroker.
   // Connection attempts will be made in the sequence, the broker addresses
   // were added to the configuration.
@@ -134,7 +134,7 @@ public:
   // The given handler function object will be called on success as well as on
   // error condition.
   //
-  // If this client object is not in 'connected' state, the handler function
+  // If this connection object is not in 'connected' state, the handler function
   // will be scheduled with ErrorNotConnected.
   // If the 'auto-connect' option was enabled in the configuration, this
   // function will try to connect to one the brokers, specified in the
@@ -180,12 +180,12 @@ private:
   // Handle async resolve operations
   void HandleAsyncResolve(const ErrorCodeType& error,
                           ResolverType::iterator iter,
-                          const SharedClientState& state,
+                          const SharedConnectionState& state,
                           const ConnectionHandlerType& handler);
 
   // Handle async connect operations
   void HandleAsyncConnect(const ErrorCodeType& error,
-                          const SharedClientState& state,
+                          const SharedConnectionState& state,
                           const ConnectionHandlerType& handler);
 
   // Handle auto-connect. Tries the next broker on error.
@@ -200,7 +200,7 @@ private:
     const ErrorCodeType& error,
     size_t bytes_transferred,
     StreambufType buffer,
-    const SharedClientState& state,
+    const SharedConnectionState& state,
     const typename Handler<TRequest>::Type& handler,
     bool response_expected);
 
@@ -210,7 +210,7 @@ private:
     const ErrorCodeType& error,
     size_t bytes_transferred,
     StreambufType buffer,
-    const SharedClientState& state,
+    const SharedConnectionState& state,
     const typename Handler<TRequest>::Type& handler);
 
   // Handle async read of response body
@@ -219,14 +219,14 @@ private:
     const ErrorCodeType& error,
     size_t bytes_transferred,
     StreambufType buffer,
-    const SharedClientState& state,
+    const SharedConnectionState& state,
     const typename Handler<TRequest>::Type& handler);
 
   // Handle socket operation timeout
-  void HandleDeadline(const SharedClientState& state);
+  void HandleDeadline(const SharedConnectionState& state);
 
   Configuration configuration_;
-  SharedClientState state_;
+  SharedConnectionState state_;
   IOServiceType& io_service_;
   ResolverType resolver_;
   SocketType socket_;
@@ -235,6 +235,6 @@ private:
 
 }  // namespace libkafka_asio
 
-#include <libkafka_asio/impl/client.h>
+#include <libkafka_asio/impl/connection.h>
 
-#endif  // CLIENT_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
+#endif  // CONNECTION_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
