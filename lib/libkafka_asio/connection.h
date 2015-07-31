@@ -10,6 +10,7 @@
 #ifndef CONNECTION_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
 #define CONNECTION_H_229D7905_40B7_49F1_BAC5_910B10FADDBA
 
+#include <deque>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
@@ -163,6 +164,22 @@ public:
 
 private:
 
+  // Handler function object type
+  typedef boost::function<void(const ErrorCodeType&, size_t)> WriteHandlerType;
+
+  // Items of this type will be stored in the write queue
+  struct WriteQueueItem
+  {
+    // The data to send to the Kafka broker
+    StreambufType buffer;
+
+    // Write handler function object
+    WriteHandlerType write_handler;
+  };
+
+  // Write queue type
+  typedef std::deque<WriteQueueItem> WriteQueue;
+
   // Resets the socket operation timeout
   void SetDeadline();
 
@@ -171,11 +188,15 @@ private:
     const ConnectionHandlerType& handler,
     const Configuration::BrokerList::const_iterator& broker_iter);
 
-  // Send the given request. At this point, a connection is required
+  // If there is at least one request in the queue, then start working on it
+  void SendNextRequest(const ErrorCodeType& error,
+                       const SharedConnectionState& state);
+
+  // Serialize the given request to the Kafka wire format and push it to the
+  // end of the write queue
   template<typename TRequest>
-  void SendAsyncRequest(const ErrorCodeType& error,
-                        const TRequest& request,
-                        const typename Handler<TRequest>::Type& handler);
+  void SerializeAndEnqueue(const TRequest& request,
+                           const typename Handler<TRequest>::Type& handler);
 
   // Handle async resolve operations
   void HandleAsyncResolve(const ErrorCodeType& error,
@@ -231,6 +252,7 @@ private:
   ResolverType resolver_;
   SocketType socket_;
   DeadlineTimerType deadline_;
+  WriteQueue write_queue_;
 };
 
 }  // namespace libkafka_asio
