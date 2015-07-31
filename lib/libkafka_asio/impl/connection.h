@@ -95,12 +95,13 @@ void Connection::AsyncRequest(
   const TRequest& request,
   const typename Connection::Handler<TRequest>::Type& handler)
 {
+  SerializeAndEnqueue(request, handler);
   if (*state_ == kStateClosed)
   {
     if (configuration_.auto_connect)
     {
       ConnectionHandlerType wrapped_handler = boost::bind(
-        &Connection::SendAsyncRequest<TRequest>, this, ::_1, request, handler);
+        &Connection::SendNextRequest, this, ::_1, state_);
       AsyncConnect(wrapped_handler);
       return;
     }
@@ -108,13 +109,7 @@ void Connection::AsyncRequest(
     io_service_.post(boost::bind(handler, kErrorNotConnected, empty_response));
     return;
   }
-  if (*state_ != kStateConnected)
-  {
-    typename TRequest::ResponseType::OptionalType empty_response;
-    io_service_.post(boost::bind(handler, kErrorInProgress, empty_response));
-    return;
-  }
-  SendAsyncRequest(kErrorSuccess, request, handler);
+  SendNextRequest(kErrorSuccess, state_);
 }
 
 inline void Connection::Close()
@@ -153,28 +148,59 @@ inline void Connection::AutoConnect(
   SetDeadline();
 }
 
-template<typename TRequest>
-inline void Connection::SendAsyncRequest(
+inline void Connection::SendNextRequest(
   const Connection::ErrorCodeType& error,
+  const Connection::SharedConnectionState& state)
+{
+  if (*state == kStateDestroyed)
+  {
+    return;
+  }
+  if (error)
+  {
+    while (!write_queue_.empty())
+    {
+      WriteQueueItem& item = write_queue_.front();
+      io_service_.post(boost::bind(item.write_handler, error, 0));
+      write_queue_.pop_front();
+    }
+    Close();
+    return;
+  }
+  if (*state != kStateConnected ||
+      write_queue_.empty())
+  {
+    return;
+  }
+  WriteQueueItem& item = write_queue_.front();
+  boost::asio::async_write(socket_, *item.buffer, item.write_handler);
+  write_queue_.pop_front();
+  *state_ = kStateWriting;
+  SetDeadline();
+}
+
+template<typename TRequest>
+inline void Connection::SerializeAndEnqueue(
   const TRequest& request,
   const typename Connection::Handler<TRequest>::Type& handler)
 {
+  // serialize
   StreambufType buffer(new StreambufType::element_type());
   std::ostream os(buffer.get());
   detail::WriteRequest(request, configuration_.client_id, os);
-
+  // and enqueue
+  WriteQueueItem item;
+  item.buffer = buffer;
   bool response_expected = request.ResponseExpected();
-  boost::asio::async_write(
-    socket_, *buffer,
+  item.write_handler = 
     boost::bind(&Connection::HandleAsyncRequestWrite<TRequest>, this, 
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred,
                 buffer,
                 state_,
                 handler,
-                response_expected));
-  *state_ = kStateWriting;
-  SetDeadline();
+                response_expected);
+  write_queue_.push_back(item);
 }
 
 inline void Connection::HandleAsyncResolve(
@@ -274,6 +300,7 @@ void Connection::HandleAsyncRequestWrite(
     io_service_.post(boost::bind(handler, error, empty_response));
     *state_ = kStateConnected;
     deadline_.cancel();
+    SendNextRequest(kErrorSuccess, state_);
     return;
   }
   boost::asio::async_read(
@@ -379,6 +406,7 @@ void Connection::HandleAsyncResponseRead(
     io_service_.post(boost::bind(handler, ec, response.response()));
     *state_ = kStateConnected;
     deadline_.cancel();
+    SendNextRequest(kErrorSuccess, state_);
   }
 }
 
