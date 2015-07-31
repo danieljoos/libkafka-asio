@@ -1,5 +1,5 @@
 //
-// impl/client.h
+// impl/connection.h
 // -------------
 //
 // Copyright (c) 2015 Daniel Joos
@@ -7,8 +7,8 @@
 // Distributed under MIT license. (See file LICENSE)
 //
 
-#ifndef CLIENT_H_ED1F1865_1B5B_4132_AA22_35A9C9AE433F
-#define CLIENT_H_ED1F1865_1B5B_4132_AA22_35A9C9AE433F
+#ifndef CONNECTION_H_ED1F1865_1B5B_4132_AA22_35A9C9AE433F
+#define CONNECTION_H_ED1F1865_1B5B_4132_AA22_35A9C9AE433F
 
 #include <vector>
 #include <boost/asio.hpp>
@@ -22,10 +22,10 @@
 namespace libkafka_asio
 {
 
-inline Client::Client(boost::asio::io_service& io_service,
-                      const Client::Configuration& configuration) :
+inline Connection::Connection(boost::asio::io_service& io_service,
+                      const Connection::Configuration& configuration) :
   configuration_(configuration),
-  state_(new Client::ClientState(kStateClosed)),
+  state_(new Connection::ConnectionState(kStateClosed)),
   io_service_(io_service),
   resolver_(io_service_),
   socket_(io_service_),
@@ -33,15 +33,15 @@ inline Client::Client(boost::asio::io_service& io_service,
 {
 }
 
-inline Client::~Client()
+inline Connection::~Connection()
 {
   Close();
   *state_ = kStateDestroyed;
 }
 
-inline void Client::AsyncConnect(const std::string& host,
+inline void Connection::AsyncConnect(const std::string& host,
                                  const std::string& service,
-                                 const Client::ConnectionHandlerType& handler)
+                                 const Connection::ConnectionHandlerType& handler)
 {
   if (*state_ != kStateClosed)
   {
@@ -52,7 +52,7 @@ inline void Client::AsyncConnect(const std::string& host,
   ResolverType::query query(host, service);
   resolver_.async_resolve(
     query,
-    boost::bind(&Client::HandleAsyncResolve, this,
+    boost::bind(&Connection::HandleAsyncResolve, this,
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::iterator,
                 state_,
@@ -62,9 +62,9 @@ inline void Client::AsyncConnect(const std::string& host,
 }
 
 template<typename Tx, typename Ty>
-inline void Client::AsyncConnect(Tx host,
+inline void Connection::AsyncConnect(Tx host,
                                  Ty service,
-                                 const Client::ConnectionHandlerType& handler)
+                                 const Connection::ConnectionHandlerType& handler)
 {
   using boost::lexical_cast;
   AsyncConnect(lexical_cast<std::string>(host),
@@ -72,7 +72,7 @@ inline void Client::AsyncConnect(Tx host,
                handler);
 }
 
-inline void Client::AsyncConnect(const Client::ConnectionHandlerType& handler)
+inline void Connection::AsyncConnect(const Connection::ConnectionHandlerType& handler)
 {
   if (*state_ != kStateClosed)
   {
@@ -91,16 +91,16 @@ inline void Client::AsyncConnect(const Client::ConnectionHandlerType& handler)
 }
 
 template<typename TRequest>
-void Client::AsyncRequest(
+void Connection::AsyncRequest(
   const TRequest& request,
-  const typename Client::Handler<TRequest>::Type& handler)
+  const typename Connection::Handler<TRequest>::Type& handler)
 {
   if (*state_ == kStateClosed)
   {
     if (configuration_.auto_connect)
     {
       ConnectionHandlerType wrapped_handler = boost::bind(
-        &Client::SendAsyncRequest<TRequest>, this, ::_1, request, handler);
+        &Connection::SendAsyncRequest<TRequest>, this, ::_1, request, handler);
       AsyncConnect(wrapped_handler);
       return;
     }
@@ -117,7 +117,7 @@ void Client::AsyncRequest(
   SendAsyncRequest(kErrorSuccess, request, handler);
 }
 
-inline void Client::Close()
+inline void Connection::Close()
 {
   *state_ = kStateClosed;
   boost::system::error_code ec;
@@ -127,24 +127,24 @@ inline void Client::Close()
   deadline_.cancel(ec);
 }
 
-inline void Client::SetDeadline()
+inline void Connection::SetDeadline()
 {
   using boost::posix_time::milliseconds;
   deadline_.expires_from_now(milliseconds(configuration_.socket_timeout));
   deadline_.async_wait(
-    boost::bind(&Client::HandleDeadline, this, state_));
+    boost::bind(&Connection::HandleDeadline, this, state_));
 }
 
-inline void Client::AutoConnect(
-  const Client::ConnectionHandlerType& handler,
-  const Client::Configuration::BrokerList::const_iterator& broker_iter)
+inline void Connection::AutoConnect(
+  const Connection::ConnectionHandlerType& handler,
+  const Connection::Configuration::BrokerList::const_iterator& broker_iter)
 {
   ResolverType::query query(broker_iter->hostname, broker_iter->service);
   ConnectionHandlerType wrapped_handler = boost::bind(
-      &Client::HandleAsyncAutoConnect, this, ::_1, handler, broker_iter);
+      &Connection::HandleAsyncAutoConnect, this, ::_1, handler, broker_iter);
   resolver_.async_resolve(
     query,
-    boost::bind(&Client::HandleAsyncResolve, this,
+    boost::bind(&Connection::HandleAsyncResolve, this,
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::iterator,
                 state_,
@@ -154,10 +154,10 @@ inline void Client::AutoConnect(
 }
 
 template<typename TRequest>
-inline void Client::SendAsyncRequest(
-  const Client::ErrorCodeType& error,
+inline void Connection::SendAsyncRequest(
+  const Connection::ErrorCodeType& error,
   const TRequest& request,
-  const typename Client::Handler<TRequest>::Type& handler)
+  const typename Connection::Handler<TRequest>::Type& handler)
 {
   StreambufType buffer(new StreambufType::element_type());
   std::ostream os(buffer.get());
@@ -166,7 +166,7 @@ inline void Client::SendAsyncRequest(
   bool response_expected = request.ResponseExpected();
   boost::asio::async_write(
     socket_, *buffer,
-    boost::bind(&Client::HandleAsyncRequestWrite<TRequest>, this, 
+    boost::bind(&Connection::HandleAsyncRequestWrite<TRequest>, this, 
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred,
                 buffer,
@@ -177,11 +177,11 @@ inline void Client::SendAsyncRequest(
   SetDeadline();
 }
 
-inline void Client::HandleAsyncResolve(
-  const Client::ErrorCodeType& error,
-  Client::ResolverType::iterator iter,
-  const Client::SharedClientState& state,
-  const Client::ConnectionHandlerType& handler)
+inline void Connection::HandleAsyncResolve(
+  const Connection::ErrorCodeType& error,
+  Connection::ResolverType::iterator iter,
+  const Connection::SharedConnectionState& state,
+  const Connection::ConnectionHandlerType& handler)
 {
   if (*state == kStateDestroyed)
   {
@@ -195,17 +195,17 @@ inline void Client::HandleAsyncResolve(
   }
   boost::asio::async_connect(
     socket_, iter,
-    boost::bind(&Client::HandleAsyncConnect, this,
+    boost::bind(&Connection::HandleAsyncConnect, this,
                 boost::asio::placeholders::error,
                 state_,
                 handler));
   SetDeadline();
 }
 
-inline void Client::HandleAsyncConnect(
-  const Client::ErrorCodeType& error,
-  const Client::SharedClientState& state,
-  const Client::ConnectionHandlerType& handler)
+inline void Connection::HandleAsyncConnect(
+  const Connection::ErrorCodeType& error,
+  const Connection::SharedConnectionState& state,
+  const Connection::ConnectionHandlerType& handler)
 {
   if (*state == kStateDestroyed)
   {
@@ -223,10 +223,10 @@ inline void Client::HandleAsyncConnect(
   io_service_.post(boost::bind(handler, error));
 }
 
-inline void Client::HandleAsyncAutoConnect(
-  const Client::ErrorCodeType& error,
-  const Client::ConnectionHandlerType& handler,
-  Client::Configuration::BrokerList::const_iterator& broker_iter)
+inline void Connection::HandleAsyncAutoConnect(
+  const Connection::ErrorCodeType& error,
+  const Connection::ConnectionHandlerType& handler,
+  Connection::Configuration::BrokerList::const_iterator& broker_iter)
 {
   if (error)
   {
@@ -241,12 +241,12 @@ inline void Client::HandleAsyncAutoConnect(
 }
 
 template<typename TRequest>
-void Client::HandleAsyncRequestWrite(
-  const Client::ErrorCodeType& error,
+void Connection::HandleAsyncRequestWrite(
+  const Connection::ErrorCodeType& error,
   size_t bytes_transferred,
-  Client::StreambufType buffer,
-  const Client::SharedClientState& state,
-  const typename Client::Handler<TRequest>::Type& handler,
+  Connection::StreambufType buffer,
+  const Connection::SharedConnectionState& state,
+  const typename Connection::Handler<TRequest>::Type& handler,
   bool response_expected)
 {
   if (*state == kStateDestroyed)
@@ -280,7 +280,7 @@ void Client::HandleAsyncRequestWrite(
     socket_,
     buffer->prepare(sizeof(Int32)),
     boost::asio::transfer_exactly(sizeof(Int32)),
-    boost::bind(&Client::HandleAsyncResponseSizeRead<TRequest>, this, 
+    boost::bind(&Connection::HandleAsyncResponseSizeRead<TRequest>, this, 
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred,
                 buffer,
@@ -291,12 +291,12 @@ void Client::HandleAsyncRequestWrite(
 }
 
 template<typename TRequest>
-void Client::HandleAsyncResponseSizeRead(
+void Connection::HandleAsyncResponseSizeRead(
   const ErrorCodeType& error,
   size_t bytes_transferred,
-  Client::StreambufType buffer,
-  const Client::SharedClientState& state,
-  const typename Client::Handler<TRequest>::Type& handler)
+  Connection::StreambufType buffer,
+  const Connection::SharedConnectionState& state,
+  const typename Connection::Handler<TRequest>::Type& handler)
 {
   if (*state == kStateDestroyed)
   {
@@ -333,7 +333,7 @@ void Client::HandleAsyncResponseSizeRead(
     socket_,
     buffer->prepare(size),
     boost::asio::transfer_exactly(size),
-    boost::bind(&Client::HandleAsyncResponseRead<TRequest>, this,
+    boost::bind(&Connection::HandleAsyncResponseRead<TRequest>, this,
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred,
                 buffer,
@@ -343,12 +343,12 @@ void Client::HandleAsyncResponseSizeRead(
 }
 
 template<typename TRequest>
-void Client::HandleAsyncResponseRead(
-  const Client::ErrorCodeType& error,
+void Connection::HandleAsyncResponseRead(
+  const Connection::ErrorCodeType& error,
   size_t bytes_transferred,
-  Client::StreambufType buffer,
-  const Client::SharedClientState& state,
-  const typename Client::Handler<TRequest>::Type& handler)
+  Connection::StreambufType buffer,
+  const Connection::SharedConnectionState& state,
+  const typename Connection::Handler<TRequest>::Type& handler)
 {
   if (*state == kStateDestroyed)
   {
@@ -382,7 +382,7 @@ void Client::HandleAsyncResponseRead(
   }
 }
 
-inline void Client::HandleDeadline(const Client::SharedClientState& state)
+inline void Connection::HandleDeadline(const Connection::SharedConnectionState& state)
 {
   if (*state == kStateDestroyed ||
       *state == kStateClosed || 
@@ -400,4 +400,4 @@ inline void Client::HandleDeadline(const Client::SharedClientState& state)
 
 }  // namespace libkafka_asio
 
-#endif  // CLIENT_H_ED1F1865_1B5B_4132_AA22_35A9C9AE433F
+#endif  // CONNECTION_H_ED1F1865_1B5B_4132_AA22_35A9C9AE433F

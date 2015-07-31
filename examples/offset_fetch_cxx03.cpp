@@ -22,7 +22,7 @@
 #include <boost/system/system_error.hpp>
 #include <libkafka_asio/libkafka_asio.h>
 
-using libkafka_asio::Client;
+using libkafka_asio::Connection;
 using libkafka_asio::String;
 using libkafka_asio::Int32;
 using libkafka_asio::ConsumerMetadataRequest;
@@ -35,12 +35,12 @@ using libkafka_asio::OffsetFetchResponse;
 // The promise will be bound to the handler function.
 template<typename T>
 boost::function<
-  void(const Client::ErrorCodeType&, const typename T::OptionalType&)>
+  void(const Connection::ErrorCodeType&, const typename T::OptionalType&)>
 PromiseHandler(boost::shared_ptr<boost::promise<T> > pr)
 {
   struct local
   {
-    static void Handle(const Client::ErrorCodeType& err,
+    static void Handle(const Connection::ErrorCodeType& err,
                        const typename T::OptionalType& response,
                        boost::shared_ptr<boost::promise<T> > result)
     {
@@ -58,12 +58,12 @@ PromiseHandler(boost::shared_ptr<boost::promise<T> > pr)
 
 // Overload of the above function for boolean promises.
 // We will use this as handler for the re-connect operation.
-boost::function<void(const Client::ErrorCodeType&)>
+boost::function<void(const Connection::ErrorCodeType&)>
 PromiseHandler(boost::shared_ptr<boost::promise<bool> > pr)
 {
   struct local
   {
-    static void Handle(const Client::ErrorCodeType& err,
+    static void Handle(const Connection::ErrorCodeType& err,
                        boost::shared_ptr<boost::promise<bool> > result)
     {
       if (err)
@@ -82,33 +82,33 @@ PromiseHandler(boost::shared_ptr<boost::promise<bool> > pr)
 // The function schedules a ConsumerMetadata request. The returned future
 // object is used to wait for the requested data to be available.
 boost::BOOST_THREAD_FUTURE<ConsumerMetadataResponse>
-DiscoverCoordinator(Client& client, const String& consumer_group)
+DiscoverCoordinator(Connection& connection, const String& consumer_group)
 {
   boost::shared_ptr<boost::promise<ConsumerMetadataResponse> >
     result(new boost::promise<ConsumerMetadataResponse>());
   ConsumerMetadataRequest request;
   request.set_consumer_group(consumer_group);
-  client.AsyncRequest(request, PromiseHandler(result));
+  connection.AsyncRequest(request, PromiseHandler(result));
   return result->get_future();
 }
 
-// Re-connects the given client to the provided hostname and port.
-// This also shows how the client can be connected without scheduling a request.
+// Re-connects the given connection to the provided hostname and port.
+// This also shows how the connection can be connected without scheduling a request.
 // Again, the returned future is used to wait until the operation completes
 // successfully.
 boost::BOOST_THREAD_FUTURE<bool>
-ReConnect(Client& client, const String& hostname, Int32 port)
+ReConnect(Connection& connection, const String& hostname, Int32 port)
 {
   boost::shared_ptr<boost::promise<bool> > result(new boost::promise<bool>());
-  client.Close();
-  client.AsyncConnect(hostname, port, PromiseHandler(result));
+  connection.Close();
+  connection.AsyncConnect(hostname, port, PromiseHandler(result));
   return result->get_future();
 }
 
 // Fetch offset data for the given consumer group and topic-partition.
 // Same as above: the function returns a future object.
 boost::BOOST_THREAD_FUTURE<OffsetFetchResponse>
-FetchOffset(Client& client,
+FetchOffset(Connection& connection,
             const String& consumer_group,
             const String& topic_name,
             Int32 partition)
@@ -118,7 +118,7 @@ FetchOffset(Client& client,
   OffsetFetchRequest request;
   request.set_consumer_group(consumer_group);
   request.FetchOffset(topic_name, partition);
-  client.AsyncRequest(request, PromiseHandler(result));
+  connection.AsyncRequest(request, PromiseHandler(result));
   return result->get_future();
 }
 
@@ -131,8 +131,8 @@ int main(int argc, char **argv)
   boost::asio::io_service::work work(ios);
   boost::thread worker(boost::bind(&boost::asio::io_service::run, &ios));
 
-  // Construct a `libkafka_asio` client object
-  Client::Configuration configuration;
+  // Construct a `libkafka_asio` connection object
+  Connection::Configuration configuration;
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 2000;
@@ -140,17 +140,17 @@ int main(int argc, char **argv)
   String consumer_group = "ExampleGroup";
   String topic_name = "example";
   Int32 partition = 0;
-  Client client(ios, configuration);
+  Connection connection(ios, configuration);
 
   try
   {
     // First get the broker that is currently coordinating the offset management
     ConsumerMetadataResponse coordinator =
-      DiscoverCoordinator(client, consumer_group).get();
+      DiscoverCoordinator(connection, consumer_group).get();
 
-    // Then re-connect the client to the coordinator
+    // Then re-connect the connection to the coordinator
     bool is_connected =
-      ReConnect(client,
+      ReConnect(connection,
                 coordinator.coordinator_host(),
                 coordinator.coordinator_port()).get();
 
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
     if (is_connected)
     {
       OffsetFetchResponse offset =
-        FetchOffset(client, consumer_group, topic_name, partition).get();
+        FetchOffset(connection, consumer_group, topic_name, partition).get();
       std::cout
         << "Offset: " << offset.topics()[0].partitions[0].offset
         << std::endl;

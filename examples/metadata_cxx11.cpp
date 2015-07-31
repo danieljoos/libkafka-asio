@@ -19,27 +19,27 @@
 #include <boost/asio.hpp>
 #include <libkafka_asio/libkafka_asio.h>
 
-using libkafka_asio::Client;
+using libkafka_asio::Connection;
 using libkafka_asio::MetadataRequest;
 using libkafka_asio::MetadataResponse;
 
 int main(int argc, char** argv)
 {
-  Client::Configuration configuration;
+  Connection::Configuration configuration;
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 2000;
   configuration.AddBrokerFromString("192.168.59.104:49156");
 
   boost::asio::io_service ios;
-  Client client(ios, configuration);
+  Connection connection(ios, configuration);
 
   MetadataRequest request;
   request.AddTopicName("mytopic");
 
-  client.AsyncRequest(
+  connection.AsyncRequest(
     request,
-    [&](const Client::ErrorCodeType& err,
+    [&](const Connection::ErrorCodeType& err,
         const MetadataResponse::OptionalType& response)
     {
       if (err || !response)

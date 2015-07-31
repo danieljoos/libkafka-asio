@@ -19,13 +19,13 @@
 #include <boost/asio.hpp>
 #include <libkafka_asio/libkafka_asio.h>
 
-using libkafka_asio::Client;
+using libkafka_asio::Connection;
 using libkafka_asio::ProduceRequest;
 using libkafka_asio::ProduceResponse;
 
 int main(int argc, char **argv)
 {
-  Client::Configuration configuration;
+  Connection::Configuration configuration;
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 10000;
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
   configuration.AddBrokerFromString("192.168.15.137:49166");
 
   boost::asio::io_service ios;
-  Client client(ios, configuration);
+  Connection connection(ios, configuration);
 
   // Create a 'Produce' request and add a single message to it. The value of
   // that message is set to "Hello World". The message is produced for topic
@@ -43,11 +43,11 @@ int main(int argc, char **argv)
   request.AddValue("Hello World", "mytopic", 0);
 
   // Send the prepared produce request.
-  // The client will attempt to automatically connect to one of the brokers,
+  // The connection will attempt to automatically connect to one of the brokers,
   // specified in the configuration.
-  client.AsyncRequest(
+  connection.AsyncRequest(
     request,
-    [&](const Client::ErrorCodeType& err,
+    [&](const Connection::ErrorCodeType& err,
         const ProduceResponse::OptionalType& response)
   {
     if (err)
