@@ -55,9 +55,9 @@ public:
           // Found a message to start with
           return;
         }
-        topic_partition_iter_++;
+        ++topic_partition_iter_;
       }
-      topic_iter_++;
+      ++topic_iter_;
     }
     // Found nothing...
     reset();
@@ -90,13 +90,13 @@ private:
     {
       return;
     }
-    message_iter_++;
+    ++message_iter_;
     while (message_iter_ == RecursiveMessageSetIterator())
     {
-      topic_partition_iter_++;
+      ++topic_partition_iter_;
       while (topic_partition_iter_ == topic_iter_->partitions.end())
       {
-        topic_iter_++;
+        ++topic_iter_;
         if (topic_iter_ == topics_->end())
         {
           reset();

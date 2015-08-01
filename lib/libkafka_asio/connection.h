@@ -76,8 +76,8 @@ public:
   // Create a new connection object.
   // Connection attempts and requests to the Kafka server will be scheduled
   // on the given io_service object.
-  Connection(boost::asio::io_service& io_service,
-             const Configuration& configuration = Configuration());
+  explicit Connection(boost::asio::io_service& io_service,
+                      const Configuration& configuration = Configuration());
 
   // A possibly open connection will be closed on destruction of connection
   // objects. All pending asynchronous operations will be cancelled.

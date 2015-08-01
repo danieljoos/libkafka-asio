@@ -259,7 +259,7 @@ inline void Connection::HandleAsyncAutoConnect(
 {
   if (error)
   {
-    broker_iter++;
+    ++broker_iter;
     if (broker_iter != configuration_.broker_list.end())
     {
       AutoConnect(handler, broker_iter);
