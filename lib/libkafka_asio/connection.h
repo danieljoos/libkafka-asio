@@ -23,9 +23,9 @@ namespace libkafka_asio
 {
 
 //
-// Kafka API client using the asio library. Connection objects are used to connect
-// to a Kafka server, send prepared requests and receive a response from the
-// server.
+// Kafka API client using the asio library. Connection objects are used to
+// connect to a Kafka server, send prepared requests and receive a response from
+// the server.
 // The class follows the asynchronous programming model of the asio library
 // and uses callback function objects. The actual action (e.g. 'establish a
 // connection' or 'send a request') requires a blocking call to the 
@@ -57,7 +57,7 @@ class Connection :
 public:
   // Configuration type
   typedef ConnectionConfiguration Configuration;
-  
+
   // Error Code Type
   typedef boost::system::error_code ErrorCodeType;
 
@@ -77,10 +77,10 @@ public:
   // Connection attempts and requests to the Kafka server will be scheduled
   // on the given io_service object.
   Connection(boost::asio::io_service& io_service,
-         const Configuration& configuration = Configuration());
+             const Configuration& configuration = Configuration());
 
-  // A possibly open connection will be closed on destruction of connection objects.
-  // All pending asynchronous operations will be cancelled.
+  // A possibly open connection will be closed on destruction of connection
+  // objects. All pending asynchronous operations will be cancelled.
   ~Connection();
 
   // Asynchronously connects to the Kafka server, identified by the given
@@ -117,8 +117,8 @@ public:
                     const ConnectionHandlerType& handler);
 
   // Tries to connect to the brokers, specified in the configuration given to
-  // this connection object. If no such broker address was configured, the handler
-  // function will be scheduled with ErrorNoBroker.
+  // this connection object. If no such broker address was configured, the
+  // handler function will be scheduled with ErrorNoBroker.
   // Connection attempts will be made in the sequence, the broker addresses
   // were added to the configuration.
   // The function always returns immediately.

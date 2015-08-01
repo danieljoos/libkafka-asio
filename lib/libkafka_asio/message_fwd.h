@@ -16,7 +16,9 @@ namespace libkafka_asio
 {
 
 class Message;
+
 class MessageAndOffset;
+
 typedef std::vector<MessageAndOffset> MessageSet;
 
 }  // namespace libkafka_asio

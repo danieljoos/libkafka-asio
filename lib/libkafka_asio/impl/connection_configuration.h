@@ -24,8 +24,8 @@ inline void ConnectionConfiguration::AddBrokerFromString(const std::string& str)
   BrokerAddress broker;
   std::string::size_type delimiter_position = str.find(':');
   if (delimiter_position != std::string::npos &&
-    delimiter_position > 0 &&
-    delimiter_position < str.size() - 1)
+      delimiter_position > 0 &&
+      delimiter_position < str.size() - 1)
   {
     broker.hostname = str.substr(0, delimiter_position);
     broker.service = str.substr(delimiter_position + 1);
@@ -42,7 +42,7 @@ inline void ConnectionConfiguration::AddBrokerFromString(const std::string& str)
   broker_list.push_back(broker);
 }
 
-template< typename T >
+template<typename T>
 inline void ConnectionConfiguration::AddBroker(const T& broker)
 {
   AddBroker(broker.host, broker.port);
@@ -50,7 +50,7 @@ inline void ConnectionConfiguration::AddBroker(const T& broker)
 
 template<typename Tx, typename Ty>
 inline void ConnectionConfiguration::AddBroker(const Tx& hostname,
-                                           const Ty& service)
+                                               const Ty& service)
 {
   BrokerAddress broker_address;
   broker_address.hostname = boost::lexical_cast<String>(hostname);

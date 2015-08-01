@@ -49,7 +49,7 @@ MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
   Topic::PartitionVector::const_iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
   if (partition_iter == topic_iter->partitions.end() ||
-    partition_iter->leader == constants::kMetadataLeaderUndecided)
+      partition_iter->leader == constants::kMetadataLeaderUndecided)
   {
     return Broker::OptionalType();
   }

@@ -50,8 +50,8 @@ int main(int argc, char **argv)
   };
 
   // Send the prepared fetch request.
-  // The connection will attempt to automatically connect to the broker, specified
-  // in the configuration.
+  // The connection will attempt to automatically connect to the broker,
+  // specified in the configuration.
   connection.AsyncRequest(
     request,
     [&](const Connection::ErrorCodeType& err,

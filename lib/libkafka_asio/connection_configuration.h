@@ -55,7 +55,7 @@ struct ConnectionConfiguration
   //     - host
   //     - port
   // A lexical cast is done on both fields.
-  template< typename T >
+  template<typename T>
   void AddBroker(const T& broker);
 
   // Add a broker using the given hostname and service parameter.

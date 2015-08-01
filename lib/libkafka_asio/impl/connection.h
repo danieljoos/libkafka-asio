@@ -23,7 +23,7 @@ namespace libkafka_asio
 {
 
 inline Connection::Connection(boost::asio::io_service& io_service,
-                      const Connection::Configuration& configuration) :
+                              const Connection::Configuration& configuration) :
   configuration_(configuration),
   state_(new Connection::ConnectionState(kStateClosed)),
   io_service_(io_service),
@@ -39,9 +39,10 @@ inline Connection::~Connection()
   *state_ = kStateDestroyed;
 }
 
-inline void Connection::AsyncConnect(const std::string& host,
-                                 const std::string& service,
-                                 const Connection::ConnectionHandlerType& handler)
+inline void Connection::AsyncConnect(
+  const std::string& host,
+  const std::string& service,
+  const Connection::ConnectionHandlerType& handler)
 {
   if (*state_ != kStateClosed)
   {
@@ -62,9 +63,10 @@ inline void Connection::AsyncConnect(const std::string& host,
 }
 
 template<typename Tx, typename Ty>
-inline void Connection::AsyncConnect(Tx host,
-                                 Ty service,
-                                 const Connection::ConnectionHandlerType& handler)
+inline void Connection::AsyncConnect(
+  Tx host,
+  Ty service,
+  const Connection::ConnectionHandlerType& handler)
 {
   using boost::lexical_cast;
   AsyncConnect(lexical_cast<std::string>(host),
@@ -72,7 +74,8 @@ inline void Connection::AsyncConnect(Tx host,
                handler);
 }
 
-inline void Connection::AsyncConnect(const Connection::ConnectionHandlerType& handler)
+inline void Connection::AsyncConnect(
+  const Connection::ConnectionHandlerType& handler)
 {
   if (*state_ != kStateClosed)
   {
@@ -136,7 +139,7 @@ inline void Connection::AutoConnect(
 {
   ResolverType::query query(broker_iter->hostname, broker_iter->service);
   ConnectionHandlerType wrapped_handler = boost::bind(
-      &Connection::HandleAsyncAutoConnect, this, ::_1, handler, broker_iter);
+    &Connection::HandleAsyncAutoConnect, this, ::_1, handler, broker_iter);
   resolver_.async_resolve(
     query,
     boost::bind(&Connection::HandleAsyncResolve, this,
@@ -192,8 +195,8 @@ inline void Connection::SerializeAndEnqueue(
   WriteQueueItem item;
   item.buffer = buffer;
   bool response_expected = request.ResponseExpected();
-  item.write_handler = 
-    boost::bind(&Connection::HandleAsyncRequestWrite<TRequest>, this, 
+  item.write_handler =
+    boost::bind(&Connection::HandleAsyncRequestWrite<TRequest>, this,
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred,
                 buffer,
@@ -307,7 +310,7 @@ void Connection::HandleAsyncRequestWrite(
     socket_,
     buffer->prepare(sizeof(Int32)),
     boost::asio::transfer_exactly(sizeof(Int32)),
-    boost::bind(&Connection::HandleAsyncResponseSizeRead<TRequest>, this, 
+    boost::bind(&Connection::HandleAsyncResponseSizeRead<TRequest>, this,
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred,
                 buffer,
@@ -410,10 +413,11 @@ void Connection::HandleAsyncResponseRead(
   }
 }
 
-inline void Connection::HandleDeadline(const Connection::SharedConnectionState& state)
+inline void Connection::HandleDeadline(
+  const Connection::SharedConnectionState& state)
 {
   if (*state == kStateDestroyed ||
-      *state == kStateClosed || 
+      *state == kStateClosed ||
       *state == kStateConnected)
   {
     return;

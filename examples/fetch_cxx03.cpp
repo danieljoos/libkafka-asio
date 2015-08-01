@@ -67,8 +67,8 @@ int main(int argc, char **argv)
   request.FetchTopic("mytopic", 0, 1);
 
   // Send the prepared fetch request.
-  // The connection will attempt to automatically connect to the broker, specified
-  // in the configuration.
+  // The connection will attempt to automatically connect to the broker,
+  // specified in the configuration.
   connection.AsyncRequest(request, &HandleFetch);
 
   // Let's go!
