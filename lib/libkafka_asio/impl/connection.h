@@ -159,6 +159,11 @@ inline void Connection::SendNextRequest(
   //lock scope
   {
     ScopedLockType scopedLock(write_queue_mtx_);
+    if (*state != kStateConnected ||
+        write_queue_.empty())
+    {
+      return;
+    }
     if (error)
     {
       while (!write_queue_.empty())
@@ -168,11 +173,6 @@ inline void Connection::SendNextRequest(
         write_queue_.pop_front();
       }
       Close();
-      return;
-    }
-    if (*state != kStateConnected ||
-        write_queue_.empty())
-    {
       return;
     }
     WriteQueueItem& item = write_queue_.front();
