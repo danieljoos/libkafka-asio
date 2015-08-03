@@ -156,25 +156,29 @@ inline void Connection::SendNextRequest(
   {
     return;
   }
-  if (error)
+  //lock scope
   {
-    while (!write_queue_.empty())
+    ScopedLockType scopedLock(write_queue_mtx_);
+    if (error)
     {
-      WriteQueueItem& item = write_queue_.front();
-      io_service_.post(boost::bind(item.write_handler, error, 0));
-      write_queue_.pop_front();
+      while (!write_queue_.empty())
+      {
+        WriteQueueItem& item = write_queue_.front();
+        io_service_.post(boost::bind(item.write_handler, error, 0));
+        write_queue_.pop_front();
+      }
+      Close();
+      return;
     }
-    Close();
-    return;
+    if (*state != kStateConnected ||
+        write_queue_.empty())
+    {
+      return;
+    }
+    WriteQueueItem& item = write_queue_.front();
+    boost::asio::async_write(socket_, *item.buffer, item.write_handler);
+    write_queue_.pop_front();
   }
-  if (*state != kStateConnected ||
-      write_queue_.empty())
-  {
-    return;
-  }
-  WriteQueueItem& item = write_queue_.front();
-  boost::asio::async_write(socket_, *item.buffer, item.write_handler);
-  write_queue_.pop_front();
   *state_ = kStateWriting;
   SetDeadline();
 }
@@ -200,6 +204,7 @@ inline void Connection::SerializeAndEnqueue(
                 state_,
                 handler,
                 response_expected);
+  ScopedLockType scopedLock(write_queue_mtx_);
   write_queue_.push_back(item);
 }
 

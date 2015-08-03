@@ -16,6 +16,8 @@
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/lock_guard.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/connection_configuration.h>
 
@@ -53,6 +55,8 @@ class Connection :
   typedef boost::asio::deadline_timer DeadlineTimerType;
   typedef boost::shared_ptr<boost::asio::streambuf> StreambufType;
   typedef boost::shared_ptr<ConnectionState> SharedConnectionState;
+  typedef boost::mutex MutexType;
+  typedef boost::lock_guard<MutexType> ScopedLockType;
 
 public:
   // Configuration type
@@ -253,6 +257,7 @@ private:
   SocketType socket_;
   DeadlineTimerType deadline_;
   WriteQueue write_queue_;
+  MutexType write_queue_mtx_;
 };
 
 }  // namespace libkafka_asio
