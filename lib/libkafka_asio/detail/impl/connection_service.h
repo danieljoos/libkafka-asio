@@ -220,7 +220,7 @@ inline void ConnectionServiceImpl::SendRequest(
   const ConnectionServiceImpl::QueueItem& item)
 {
   boost::asio::async_write(
-    socket_, *item.buffer, 
+    socket_, *item.buffer,
     WeakImpl<ConnectionServiceImpl>::WriteHandler(
       shared_from_this(),
       item.handler));
@@ -236,7 +236,7 @@ inline void ConnectionServiceImpl::ReceiveResponse(
     item.buffer->prepare(sizeof(Int32)),
     boost::asio::transfer_exactly(sizeof(Int32)),
     WeakImpl<ConnectionServiceImpl>::ReadHandler(
-      shared_from_this(), 
+      shared_from_this(),
       item.handler));
   read_state_ = kTxStateBusy;
   //SetDeadline();  // TODO: Need a second timer!

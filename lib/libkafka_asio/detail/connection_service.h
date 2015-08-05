@@ -144,7 +144,7 @@ public:
 
 // Internal helper functions:
 private:
-  
+
   // Resets the operation timeout
   void SetDeadline();
 
@@ -154,7 +154,7 @@ private:
 
 // Flow functions:
 private:
-  
+
   // Push the request + handler to the write queue
   template<typename TRequest>
   void EnqueueRequest(const TRequest& request,
