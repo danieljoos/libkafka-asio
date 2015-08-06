@@ -126,6 +126,9 @@ public:
   // Construct a new connection service object
   ConnectionServiceImpl(boost::asio::io_service& io_service);
 
+  // Gets the connection configuration
+  const ConnectionConfiguration& configuration() const;
+
   // Sets the connection configuration
   void set_configuration(const ConnectionConfiguration& configuration);
 

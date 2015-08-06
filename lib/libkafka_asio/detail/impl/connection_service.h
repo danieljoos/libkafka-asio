@@ -36,6 +36,12 @@ inline ConnectionServiceImpl::ConnectionServiceImpl(
 {
 }
 
+inline const ConnectionConfiguration&
+ConnectionServiceImpl::configuration() const
+{
+  return configuration_;
+}
+
 inline void ConnectionServiceImpl::set_configuration(
   const ConnectionConfiguration& configuration)
 {
@@ -171,6 +177,7 @@ inline void ConnectionServiceImpl::EnqueueResponse(
       io_service_.post(boost::bind(item.handler, kErrorNotConnected, 0));
       read_queue_.pop_front();
     }
+    NextRequest();
     return;
   }
   QueueItem item;
