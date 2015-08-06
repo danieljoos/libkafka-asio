@@ -13,12 +13,12 @@
 namespace libkafka_asio
 {
 
-inline const FetchResponse::TopicVector& FetchResponse::topics() const
+inline const FetchResponse::TopicMap& FetchResponse::topics() const
 {
   return topics_;
 }
 
-inline FetchResponse::TopicVector& MutableFetchResponse::mutable_topics()
+inline FetchResponse::TopicMap& MutableFetchResponse::mutable_topics()
 {
   return response_.topics_;
 }

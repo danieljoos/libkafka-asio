@@ -20,36 +20,36 @@ namespace detail
 {
 
 // Iterator over all messages received by a Fetch API request.
-template<typename TTopicVector>
+template<typename TTopicMap>
 class FetchResponseIterator :
   public boost::iterator_facade<
-    FetchResponseIterator<TTopicVector>,
+    FetchResponseIterator<TTopicMap>,
     const MessageAndOffset,
     boost::forward_traversal_tag
   >
 {
-  typedef FetchResponseIterator<TTopicVector> TMy;
+  typedef FetchResponseIterator<TTopicMap> TMy;
 public:
-  typedef typename TTopicVector::value_type Topic;
-  typedef typename Topic::PartitionVector TopicPartitionVector;
-  typedef typename TopicPartitionVector::value_type TopicPartition;
+  typedef typename TTopicMap::value_type Topic;
+  typedef typename TTopicMap::mapped_type::PartitionMap TopicPartitionMap;
+  typedef typename TopicPartitionMap::value_type TopicPartition;
 
   FetchResponseIterator() :
     topics_(NULL)
   {
   }
 
-  explicit FetchResponseIterator(const TTopicVector& topics) :
+  explicit FetchResponseIterator(const TTopicMap& topics) :
     topics_(&topics)
   {
     topic_iter_ = topics_->begin();
     while (topic_iter_ != topics_->end())
     {
-      topic_partition_iter_ = topic_iter_->partitions.begin();
-      while (topic_partition_iter_ != topic_iter_->partitions.end())
+      topic_partition_iter_ = topic_iter_->second.partitions.begin();
+      while (topic_partition_iter_ != topic_iter_->second.partitions.end())
       {
         message_iter_ =
-          RecursiveMessageSetIterator(topic_partition_iter_->messages);
+          RecursiveMessageSetIterator(topic_partition_iter_->second.messages);
         if (message_iter_ != RecursiveMessageSetIterator())
         {
           // Found a message to start with
@@ -76,8 +76,8 @@ public:
 private:
   friend class boost::iterator_core_access;
 
-  typedef typename TTopicVector::const_iterator TopicIterator;
-  typedef typename TopicPartitionVector::const_iterator TopicPartitionIterator;
+  typedef typename TTopicMap::const_iterator TopicIterator;
+  typedef typename TopicPartitionMap::const_iterator TopicPartitionIterator;
 
   void reset()
   {
@@ -94,7 +94,7 @@ private:
     while (message_iter_ == RecursiveMessageSetIterator())
     {
       topic_partition_iter_++;
-      while (topic_partition_iter_ == topic_iter_->partitions.end())
+      while (topic_partition_iter_ == topic_iter_->second.partitions.end())
       {
         topic_iter_++;
         if (topic_iter_ == topics_->end())
@@ -102,10 +102,10 @@ private:
           reset();
           return;
         }
-        topic_partition_iter_ = topic_iter_->partitions.begin();
+        topic_partition_iter_ = topic_iter_->second.partitions.begin();
       }
       message_iter_ =
-        RecursiveMessageSetIterator(topic_partition_iter_->messages);
+        RecursiveMessageSetIterator(topic_partition_iter_->second.messages);
     }
   }
 
@@ -124,7 +124,7 @@ private:
     return *message_iter_;
   }
 
-  const TTopicVector *topics_;
+  const TTopicMap *topics_;
   TopicIterator topic_iter_;
   TopicPartitionIterator topic_partition_iter_;
   RecursiveMessageSetIterator message_iter_;
