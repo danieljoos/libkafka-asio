@@ -30,9 +30,7 @@ class BasicConnectionService :
 public:
 
   // Service implementation type
-  typedef Service BaseType;
-  typedef boost::shared_ptr<Service> ImplementationType;
-  typedef ImplementationType implementation_type;
+  typedef boost::shared_ptr<Service> implementation_type;
 
   // Unique service identifier
   static boost::asio::io_service::id id;
