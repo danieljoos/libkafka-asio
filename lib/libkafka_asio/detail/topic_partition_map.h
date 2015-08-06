@@ -1,5 +1,5 @@
 //
-// detail/topic_partition_block.h
+// detail/topic_partition_map.h
 // ------------------------------
 //
 // Copyright (c) 2015 Daniel Joos
@@ -7,11 +7,10 @@
 // Distributed under MIT license. (See file LICENSE)
 //
 
-#ifndef TOPIC_PARTITION_BLOCK_H_6C26878D_A066_464C_AFAE_6C334E046EC8
-#define TOPIC_PARTITION_BLOCK_H_6C26878D_A066_464C_AFAE_6C334E046EC8
+#ifndef TOPIC_PARTITION_MAP_H_DD4432F2_3C40_11E5_A151_FEFF819CDC9F
+#define TOPIC_PARTITION_MAP_H_DD4432F2_3C40_11E5_A151_FEFF819CDC9F
 
 #include <vector>
-#include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/detail/empty_property.h>
 
@@ -26,30 +25,28 @@ namespace detail
 template<
   typename TPartitionProperties = EmptyProperties,
   typename TTopicProperties = EmptyProperties>
-struct TopicPartitionBlock :
+struct TopicPartitionMap :
   public TTopicProperties
 {
   struct Partition :
     public TPartitionProperties
   {
     typedef boost::optional<Partition> OptionalType;
-    Int32 partition;
   };
 
   typedef Partition PartitionType;
-  typedef TopicPartitionBlock<TPartitionProperties,
+  typedef TopicPartitionMap<TPartitionProperties,
                               TTopicProperties> TopicType;
-  typedef std::vector<TopicType> VectorType;
+  typedef std::map<String, TopicType> MapType;
   typedef boost::optional<
-    TopicPartitionBlock<TPartitionProperties, TTopicProperties>
+    TopicPartitionMap<TPartitionProperties, TTopicProperties>
   > OptionalType;
-  typedef std::vector<Partition> PartitionVector;
+  typedef std::map<Int32, Partition> PartitionMap;
 
-  String topic_name;
-  PartitionVector partitions;
+  PartitionMap partitions;
 };
 
 }  // namespace detail
 }  // namespace libkafka_asio
 
-#endif  // TOPIC_PARTITION_BLOCK_H_6C26878D_A066_464C_AFAE_6C334E046EC8
+#endif  // TOPIC_PARTITION_MAP_H_DD4432F2_3C40_11E5_A151_FEFF819CDC9F
