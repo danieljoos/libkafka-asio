@@ -146,7 +146,7 @@ public:
 private:
   
   // Resets the operation timeout
-  void SetDeadline();
+  void SetDeadline(DeadlineTimerType& timer);
 
   // Serialize the given request to the Kafka wire format
   template<typename TRequest>
@@ -216,7 +216,8 @@ private:
     const typename Handler<TRequest>::Type& handler);
 
   // Handle operation timeout
-  void HandleDeadline(const ErrorCodeType& error);
+  void HandleDeadline(const ErrorCodeType& error,
+                      DeadlineTimerType& timer);
 
 private:
   ConnectionConfiguration configuration_;
@@ -228,7 +229,9 @@ private:
 
   boost::asio::io_service& io_service_;
   SocketType socket_;
-  DeadlineTimerType deadline_;
+  DeadlineTimerType connect_deadline_;
+  DeadlineTimerType write_deadline_;
+  DeadlineTimerType read_deadline_;
   ResolverType resolver_;
 };
 
