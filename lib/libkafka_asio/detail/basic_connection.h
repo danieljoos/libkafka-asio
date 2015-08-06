@@ -54,7 +54,7 @@ public:
   // on the given io_service object.
   explicit BasicConnection(
     boost::asio::io_service& io_service,
-    const ConnectionConfiguration& configuration = ConnectionConfiguration()) :
+    const Configuration& configuration = Configuration()) :
     boost::asio::basic_io_object<Service>(io_service)
   {
     this->get_implementation()->set_configuration(configuration);
@@ -114,9 +114,6 @@ public:
   //
   // If this connection object is not in 'connected' state, the handler function
   // will be scheduled with ErrorNotConnected.
-  // If the 'auto-connect' option was enabled in the configuration, this
-  // function will try to connect to one the brokers, specified in the
-  // configuration (See function `AsyncConnect(handler)` above).
   //
   // The function always returns immediately.
   // The signature of the handler function must be:
