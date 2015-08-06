@@ -14,7 +14,7 @@
 #include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topic_partition_map.h>
 
 namespace libkafka_asio
 {
@@ -53,20 +53,20 @@ public:
   };
 
   typedef std::vector<Broker> BrokerVector;
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties,
+  typedef detail::TopicPartitionMap<TopicPartitionProperties,
                                       TopicProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef Topic::MapType TopicMap;
 
   const BrokerVector& brokers() const;
 
-  const TopicVector& topics() const;
+  const TopicMap& topics() const;
 
   Broker::OptionalType PartitionLeader(const String& topic,
                                        Int32 partition) const;
 
 private:
   BrokerVector brokers_;
-  TopicVector topics_;
+  TopicMap topics_;
 };
 
 class MutableMetadataResponse :
@@ -75,7 +75,7 @@ class MutableMetadataResponse :
 public:
   MetadataResponse::BrokerVector& mutable_brokers();
 
-  MetadataResponse::TopicVector& mutable_topics();
+  MetadataResponse::TopicMap& mutable_topics();
 };
 
 }  // namespace libkafka_asio

@@ -35,11 +35,10 @@ TEST_F(MetadataResponseTest, PartitionLeader)
   AddBroker("example.com", 456, 49152);
   ASSERT_EQ(2, response.response().brokers().size());
   MetadataResponse::Topic metadata;
-  metadata.topic_name = "foo";
-  metadata.partitions.resize(1);
-  metadata.partitions[0].partition = 1;
-  metadata.partitions[0].leader = 456;
-  response.mutable_topics().push_back(metadata);
+  MetadataResponse::Topic::Partition test_partition;
+  test_partition.leader = 456;
+  metadata.partitions.insert( std::make_pair(1, test_partition) );
+  response.mutable_topics().insert( std::make_pair("foo", metadata) );
   ASSERT_EQ(1, response.response().topics().size());
 
   MetadataResponse::Broker::OptionalType leader =
@@ -52,11 +51,10 @@ TEST_F(MetadataResponseTest, PartitionLeader)
 TEST_F(MetadataResponseTest, PartitionLeader_InElection)
 {
   MetadataResponse::Topic metadata;
-  metadata.topic_name = "foo";
-  metadata.partitions.resize(1);
-  metadata.partitions[0].partition = 1;
-  metadata.partitions[0].leader = -1;
-  response.mutable_topics().push_back(metadata);
+  MetadataResponse::Topic::Partition test_partition;
+  test_partition.leader = -1;
+  metadata.partitions.insert( std::make_pair(1, test_partition) );
+  response.mutable_topics().insert( std::make_pair("foo", metadata) );
   ASSERT_EQ(1, response.response().topics().size());
 
   MetadataResponse::Broker::OptionalType leader =
