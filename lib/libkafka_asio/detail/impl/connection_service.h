@@ -12,6 +12,10 @@
 
 #include <boost/bind.hpp>
 #include <boost/ref.hpp>
+#include <libkafka_asio/constants.h>
+#include <libkafka_asio/detail/request_write.h>
+#include <libkafka_asio/detail/response_read.h>
+#include <libkafka_asio/error.h>
 #include <libkafka_asio/detail/weak_impl_handler.h>
 
 namespace libkafka_asio
