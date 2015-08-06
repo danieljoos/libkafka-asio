@@ -11,6 +11,7 @@
 #define CONNECTION_SERVICE_H_5310FB3D_9D78_4C52_AE32_EB71E000F4ED
 
 #include <boost/bind.hpp>
+#include <boost/ref.hpp>
 #include <libkafka_asio/detail/weak_impl_handler.h>
 
 namespace libkafka_asio
@@ -28,7 +29,9 @@ inline ConnectionServiceImpl::ConnectionServiceImpl(
   read_state_(kTxStateIdle),
   io_service_(io_service),
   socket_(io_service),
-  deadline_(io_service),
+  connect_deadline_(io_service),
+  write_deadline_(io_service),
+  read_deadline_(io_service),
   resolver_(io_service)
 {
 }
@@ -46,7 +49,9 @@ inline void ConnectionServiceImpl::Close()
   resolver_.cancel();
   socket_.shutdown(SocketType::shutdown_both, ec);
   socket_.close(ec);
-  deadline_.cancel(ec);
+  connect_deadline_.cancel();
+  write_deadline_.cancel();
+  read_deadline_.cancel();
 }
 
 inline void ConnectionServiceImpl::AsyncConnect(
@@ -70,7 +75,7 @@ inline void ConnectionServiceImpl::AsyncConnect(
         boost::asio::placeholders::iterator,
         handler)));
   connection_state_ = kConnectionStateConnecting;
-  SetDeadline();
+  SetDeadline(connect_deadline_);
 }
 
 template<typename TRequest>
@@ -87,16 +92,18 @@ inline void ConnectionServiceImpl::AsyncRequest(
         handler)));
 }
 
-inline void ConnectionServiceImpl::SetDeadline()
+inline void ConnectionServiceImpl::SetDeadline(
+  ConnectionServiceImpl::DeadlineTimerType& timer)
 {
   using boost::posix_time::milliseconds;
-  deadline_.expires_from_now(milliseconds(configuration_.socket_timeout));
-  deadline_.async_wait(
+  timer.expires_from_now(milliseconds(configuration_.socket_timeout));
+  timer.async_wait(
     WeakImpl<ConnectionServiceImpl>::DeadlineHandler(
       shared_from_this(),
       boost::bind(
         &ConnectionServiceImpl::HandleDeadline, this,
-        boost::asio::placeholders::error)));
+        boost::asio::placeholders::error,
+        boost::ref(timer))));
 }
 
 template<typename TRequest>
@@ -225,7 +232,7 @@ inline void ConnectionServiceImpl::SendRequest(
       shared_from_this(),
       item.handler));
   write_state_ = kTxStateBusy;
-  //SetDeadline();  // TODO: Need a second timer!
+  SetDeadline(write_deadline_);
 }
 
 inline void ConnectionServiceImpl::ReceiveResponse(
@@ -239,7 +246,7 @@ inline void ConnectionServiceImpl::ReceiveResponse(
       shared_from_this(),
       item.handler));
   read_state_ = kTxStateBusy;
-  //SetDeadline();  // TODO: Need a second timer!
+  SetDeadline(read_deadline_);
 }
 
 inline void ConnectionServiceImpl::HandleAsyncResolve(
@@ -262,7 +269,7 @@ inline void ConnectionServiceImpl::HandleAsyncResolve(
         boost::asio::placeholders::error,
         boost::asio::placeholders::iterator,
         handler)));
-  SetDeadline();
+  SetDeadline(connect_deadline_);
 }
 
 inline void ConnectionServiceImpl::HandleAsyncConnect(
@@ -277,7 +284,7 @@ inline void ConnectionServiceImpl::HandleAsyncConnect(
   else
   {
     connection_state_ = kConnectionStateConnected;
-    deadline_.cancel();
+    connect_deadline_.cancel();
   }
   io_service_.post(boost::bind(handler, error));
 }
@@ -291,6 +298,7 @@ inline void ConnectionServiceImpl::HandleAsyncRequestWrite(
   bool response_expected)
 {
   write_state_ = kTxStateIdle;
+  write_deadline_.cancel();
   typedef typename TRequest::ResponseType::OptionalType OptionalResponse;
   if (error)
   {
@@ -303,7 +311,6 @@ inline void ConnectionServiceImpl::HandleAsyncRequestWrite(
   {
     OptionalResponse empty_response;
     io_service_.post(boost::bind(handler, error, empty_response));
-    deadline_.cancel();
     NextRequest();
     return;
   }
@@ -349,7 +356,7 @@ inline void ConnectionServiceImpl::HandleAsyncResponseSizeRead(
         boost::asio::placeholders::bytes_transferred,
         buffer,
         handler)));
-  //SetDeadline();  // TODO: Need a second timer!
+  SetDeadline(read_deadline_);
 }
 
 template<typename TRequest>
@@ -368,7 +375,7 @@ inline void ConnectionServiceImpl::HandleAsyncResponseRead(
     return;
   }
   read_state_ = kTxStateIdle;
-  deadline_.cancel();
+  read_deadline_.cancel();
   buffer->commit(bytes_transferred);
   std::istream is(buffer.get());
   typename TRequest::MutableResponseType response;
@@ -387,15 +394,18 @@ inline void ConnectionServiceImpl::HandleAsyncResponseRead(
 }
 
 inline void ConnectionServiceImpl::HandleDeadline(
-  const ConnectionServiceImpl::ErrorCodeType& error)
+  const ConnectionServiceImpl::ErrorCodeType& error,
+  ConnectionServiceImpl::DeadlineTimerType& timer)
 {
   if (error)
   {
     return;
   }
-  if (deadline_.expires_at() <= DeadlineTimerType::traits_type::now())
+  if (timer.expires_at() <= DeadlineTimerType::traits_type::now())
   {
-    deadline_.expires_at(boost::posix_time::pos_infin);
+    connect_deadline_.expires_at(boost::posix_time::pos_infin);
+    write_deadline_.expires_at(boost::posix_time::pos_infin);
+    read_deadline_.expires_at(boost::posix_time::pos_infin);
     Close();
   }
 }
