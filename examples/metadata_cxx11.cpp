@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 2000;
-  configuration.AddBrokerFromString("192.168.59.104:49156");
+  configuration.SetBrokerFromString("192.168.59.104:49156");
 
   boost::asio::io_service ios;
   Connection connection(ios, configuration);

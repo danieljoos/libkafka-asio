@@ -35,12 +35,12 @@ String client_id
 Client identification string. The default value is `libkafka_asio`.
 
 
-### broker_list
+### broker_address
 ```cpp
-BrokerList broker_list
+BrokerAddress::OptionalType broker_address
 ```
 
-List of known Kafka broker servers.
+The optional broker address, used in case `auto_connect` is enabled.
 
 
 ### auto_connect
@@ -55,14 +55,14 @@ known Kafka servers.
 Member Functions
 ----------------
 
-### AddBrokerFromString
+### SetBrokerFromString
 ```cpp
-void AddBrokerFromString(const std::string& string)
+void SetBrokerFromString(const std::string& string)
 ```
 
-Add a broker address from string. If the string contains a colon, the part
-before the colon is interpreted as hostname and the part after that character
-is interpreted as service name. Example: `localhost:9092`.
+Set the auto-connect broker address from string. If the string contains a 
+colon, the part before the colon is interpreted as hostname and the part 
+after that character is interpreted as service name. Example: `localhost:9092`.
 
 
 Types
@@ -79,9 +79,9 @@ struct BrokerAddress
    Broker service (e.g. the port number).
 
 
-### BrokerList
+### BrokerAddress::OptionalType
 ```cpp
-typedef std::vector<BrokerAddress> BrokerList
+typedef boost::optional<BrokerAddress> OptionalType
 ```
 
-Vector of `BrokerAddress` data structures.
+Optional broker address.

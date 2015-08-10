@@ -136,7 +136,7 @@ int main(int argc, char **argv)
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 2000;
-  configuration.AddBrokerFromString("192.168.59.104:49158");
+  configuration.SetBrokerFromString("192.168.59.104:49158");
   String consumer_group = "ExampleGroup";
   String topic_name = "example";
   Int32 partition = 0;
