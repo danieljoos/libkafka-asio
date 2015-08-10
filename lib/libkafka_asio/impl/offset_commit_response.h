@@ -13,13 +13,13 @@
 namespace libkafka_asio
 {
 
-inline const OffsetCommitResponse::TopicVector&
+inline const OffsetCommitResponse::TopicMap&
 OffsetCommitResponse::topics() const
 {
   return topics_;
 }
 
-inline OffsetCommitResponse::TopicVector&
+inline OffsetCommitResponse::TopicMap&
 MutableOffsetCommitResponse::mutable_topics()
 {
   return response_.topics_;

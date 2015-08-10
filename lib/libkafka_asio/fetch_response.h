@@ -10,11 +10,10 @@
 #ifndef FETCH_RESPONSE_H_AEAFD09F_2738_4548_B44B_0843DC1B9BB1
 #define FETCH_RESPONSE_H_AEAFD09F_2738_4548_B44B_0843DC1B9BB1
 
-#include <vector>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
 #include <libkafka_asio/detail/fetch_response_iterator.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topic_partition_map.h>
 
 namespace libkafka_asio
 {
@@ -35,11 +34,11 @@ class FetchResponse :
   };
 
 public:
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
-  typedef detail::FetchResponseIterator<TopicVector> const_iterator;
+  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
+  typedef Topic::MapType TopicMap;
+  typedef detail::FetchResponseIterator<TopicMap> const_iterator;
 
-  const TopicVector& topics() const;
+  const TopicMap& topics() const;
 
   // Start iterator, used for iterating over all received messages
   const_iterator begin() const;
@@ -48,14 +47,14 @@ public:
   const_iterator end() const;
 
 private:
-  TopicVector topics_;
+  TopicMap topics_;
 };
 
 class MutableFetchResponse :
   public MutableResponse<FetchResponse>
 {
 public:
-  FetchResponse::TopicVector& mutable_topics();
+  FetchResponse::TopicMap& mutable_topics();
 };
 
 }  // namespace libkafka_asio

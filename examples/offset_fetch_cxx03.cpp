@@ -160,7 +160,7 @@ int main(int argc, char **argv)
       OffsetFetchResponse offset =
         FetchOffset(connection, consumer_group, topic_name, partition).get();
       std::cout
-        << "Offset: " << offset.topics()[0].partitions[0].offset
+        << "Offset: " << offset.topics().at(topic_name).partitions.at(partition).offset
         << std::endl;
     }
   }

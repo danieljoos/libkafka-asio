@@ -12,7 +12,7 @@
 
 #include <vector>
 #include <libkafka_asio/response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topic_partition_map.h>
 
 namespace libkafka_asio
 {
@@ -34,20 +34,20 @@ class OffsetFetchResponse :
   };
 
 public:
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
+  typedef Topic::MapType TopicMap;
 
-  const TopicVector& topics() const;
+  const TopicMap& topics() const;
 
 private:
-  TopicVector topics_;
+  TopicMap topics_;
 };
 
 class MutableOffsetFetchResponse :
   public MutableResponse<OffsetFetchResponse>
 {
 public:
-  OffsetFetchResponse::TopicVector& mutable_topics();
+  OffsetFetchResponse::TopicMap& mutable_topics();
 };
 
 }  // namespace libkafka_asio

@@ -14,7 +14,7 @@
 #include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topic_partition_map.h>
 
 namespace libkafka_asio
 {
@@ -35,10 +35,10 @@ class OffsetResponse :
   };
 
 public:
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
+  typedef Topic::MapType TopicMap;
 
-  const TopicVector& topics() const;
+  const TopicMap& topics() const;
 
   // Search for offset data inside this response object for the given topic
   // and partition. If no such data can be found, the return value is empty.
@@ -46,14 +46,14 @@ public:
     const String& topic_name, Int32 partition) const;
 
 private:
-  TopicVector topics_;
+  TopicMap topics_;
 };
 
 class MutableOffsetResponse :
   public MutableResponse<OffsetResponse>
 {
 public:
-  OffsetResponse::TopicVector& mutable_topics();
+  OffsetResponse::TopicMap& mutable_topics();
 };
 
 }  // namespace libkafka_asio
