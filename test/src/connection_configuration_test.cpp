@@ -17,6 +17,13 @@ class ConnectionConfigurationTest :
   public ::testing::Test
 {
 protected:
+  struct TestBrokerStruct
+  {
+    std::string host;
+    unsigned int port;
+  };
+
+protected:
   virtual void SetUp()
   {
     ASSERT_FALSE(configuration.broker_address);
@@ -34,6 +41,7 @@ TEST_F(ConnectionConfigurationTest, SetBrokerFromString_Empty)
 TEST_F(ConnectionConfigurationTest, SetBrokerFromString)
 {
   configuration.SetBrokerFromString("localhost:1234");
+  ASSERT_TRUE(configuration.broker_address);
   ASSERT_STREQ("localhost", configuration.broker_address->hostname.c_str());
   ASSERT_STREQ("1234", configuration.broker_address->service.c_str());
 }
@@ -41,6 +49,7 @@ TEST_F(ConnectionConfigurationTest, SetBrokerFromString)
 TEST_F(ConnectionConfigurationTest, SetBrokerFromString_NoService)
 {
   configuration.SetBrokerFromString("localhost");
+  ASSERT_TRUE(configuration.broker_address);
   ASSERT_STREQ("localhost", configuration.broker_address->hostname.c_str());
   // Default Kafka Service:
   ASSERT_STREQ("9092", configuration.broker_address->service.c_str());
@@ -50,4 +59,23 @@ TEST_F(ConnectionConfigurationTest, SetBrokerFromString_Colon)
 {
   configuration.SetBrokerFromString(":");
   ASSERT_FALSE(configuration.broker_address);
+}
+
+TEST_F(ConnectionConfigurationTest, SetBroker_1)
+{
+  TestBrokerStruct t;
+  t.host = "example.org";
+  t.port = 8888;
+  configuration.SetBroker(t);
+  ASSERT_TRUE(configuration.broker_address);
+  ASSERT_STREQ("example.org", configuration.broker_address->hostname.c_str());
+  ASSERT_STREQ("8888", configuration.broker_address->service.c_str());
+}
+
+TEST_F(ConnectionConfigurationTest, SetBroker_2)
+{
+  configuration.SetBroker("example.org", 1234);
+  ASSERT_TRUE(configuration.broker_address);
+  ASSERT_STREQ("example.org", configuration.broker_address->hostname.c_str());
+  ASSERT_STREQ("1234", configuration.broker_address->service.c_str());
 }
