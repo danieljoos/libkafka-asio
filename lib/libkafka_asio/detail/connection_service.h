@@ -191,6 +191,9 @@ private:
                           const ResolverType::iterator& iter,
                           const ConnectionHandlerType& handler);
 
+  // Handle async auto-connect operations
+  void HandleAsyncAutoConnect(const ErrorCodeType& error);
+
   // Handle async request write operations
   template<typename TRequest>
   void HandleAsyncRequestWrite(

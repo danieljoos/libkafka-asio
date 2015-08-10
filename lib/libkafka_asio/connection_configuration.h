@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 
 namespace libkafka_asio
@@ -14,6 +15,7 @@ struct ConnectionConfiguration
   // Broker address configuration data structure
   struct BrokerAddress
   {
+    typedef boost::optional<BrokerAddress> OptionalType;
     std::string hostname;
     std::string service;
   };
@@ -39,8 +41,19 @@ struct ConnectionConfiguration
   // Automatically connect to one of the known Kafka servers
   bool auto_connect;
 
+  // The broker address, used for auto-connect
+  BrokerAddress::OptionalType broker_address;
+
   // Construct using default values
   ConnectionConfiguration();
+
+  // Sets the broker address using the given string.
+  // If the string contain a colon, the part before the colon is interpreted
+  // as hostname and the part after that character is interpreted as service
+  // name.
+  // Example: localhost:9092
+  //
+  void SetBrokerFromString(const std::string& str);
 
   // Add a broker address from string.
   // If the string contain a colon, the part before the colon is interpreted

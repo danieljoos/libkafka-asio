@@ -131,11 +131,22 @@ inline void ConnectionServiceImpl::EnqueueRequest(
   const TRequest& request,
   const typename ConnectionServiceImpl::Handler<TRequest>::Type& handler)
 {
-  if (connection_state_ != kConnectionStateConnected)
+  if (connection_state_ == kConnectionStateClosed)
   {
-    typename TRequest::ResponseType::OptionalType empty_response;
-    io_service_.post(boost::bind(handler, kErrorNotConnected, empty_response));
-    return;
+    if (!configuration_.auto_connect)
+    {
+      typename TRequest::ResponseType::OptionalType empty_response;
+      io_service_.post(
+        boost::bind(handler, kErrorNotConnected, empty_response));
+      return;
+    }
+    else if (!configuration_.broker_address)
+    {
+      typename TRequest::ResponseType::OptionalType empty_response;
+      io_service_.post(
+        boost::bind(handler, kErrorNoBroker, empty_response));
+      return;
+    }
   }
   QueueItem item;
   item.buffer = Serialize(request);
@@ -150,7 +161,8 @@ inline void ConnectionServiceImpl::EnqueueRequest(
       response_expected);
   if (write_state_ == kTxStateIdle)
   {
-    if (write_queue_.empty())
+    if (write_queue_.empty() &&
+        connection_state_ == kConnectionStateConnected)
     {
       SendRequest(item);
     }
@@ -217,10 +229,24 @@ inline void ConnectionServiceImpl::NextRequest()
   {
     return;
   }
-  QueueItem& item = write_queue_.front();
-  // TODO: Add auto-connect code here!
-  SendRequest(item);
-  write_queue_.pop_front();
+  if (connection_state_ == kConnectionStateClosed &&
+      configuration_.auto_connect && configuration_.broker_address)
+  {
+    AsyncConnect(
+      configuration_.broker_address->hostname,
+      configuration_.broker_address->service,
+      WeakImpl<ConnectionServiceImpl>::ErrorHandler(
+        shared_from_this(),
+        boost::bind(&ConnectionServiceImpl::HandleAsyncAutoConnect, this,
+                    boost::asio::placeholders::error)));
+    return;
+  }
+  if (connection_state_ == kConnectionStateConnected)
+  {
+    QueueItem& item = write_queue_.front();
+    SendRequest(item);
+    write_queue_.pop_front();
+  }
 }
 
 inline void ConnectionServiceImpl::NextResponse()
@@ -298,6 +324,28 @@ inline void ConnectionServiceImpl::HandleAsyncConnect(
     connect_deadline_.cancel();
   }
   io_service_.post(boost::bind(handler, error));
+}
+
+inline void ConnectionServiceImpl::HandleAsyncAutoConnect(
+  const ConnectionServiceImpl::ErrorCodeType& error)
+{
+  if (error)
+  {
+    while (!write_queue_.empty())
+    {
+      QueueItem& item = write_queue_.front();
+      io_service_.post(boost::bind(item.handler, error, 0));
+      write_queue_.pop_front();
+    }
+    return;
+  }
+  if (write_queue_.empty())
+  {
+    return;
+  }
+  QueueItem& item = write_queue_.front();
+  SendRequest(item);
+  write_queue_.pop_front();
 }
 
 template<typename TRequest>

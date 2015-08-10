@@ -15,6 +15,34 @@ inline ConnectionConfiguration::ConnectionConfiguration() :
 {
 }
 
+inline void ConnectionConfiguration::SetBrokerFromString(const std::string& str)
+{
+  if (str.empty())
+  {
+    broker_address.reset();
+    return;
+  }
+  BrokerAddress broker;
+  std::string::size_type delimiter_position = str.find(':');
+  if (delimiter_position != std::string::npos &&
+      delimiter_position > 0 &&
+      delimiter_position < str.size() - 1)
+  {
+    broker.hostname = str.substr(0, delimiter_position);
+    broker.service = str.substr(delimiter_position + 1);
+  }
+  else
+  {
+    broker.hostname = str.substr(0, delimiter_position);
+    broker.service = constants::DefaultKafkaService();
+  }
+  if (broker.hostname.empty() || broker.service.empty())
+  {
+    return;
+  }
+  broker_address = broker;
+}
+
 inline void ConnectionConfiguration::AddBrokerFromString(const std::string& str)
 {
   if (str.empty())
