@@ -24,7 +24,7 @@ inline void ReadResponseMessage(std::istream& is,
 {
   // Topic array
   int topic_count = ReadInt32(is);
-  for (int t=0; t<topic_count; t++)
+  for (int t = 0; t < topic_count; ++t)
   {
     FetchResponse::TopicMap::key_type key;
     FetchResponse::TopicMap::mapped_type topic;
@@ -32,7 +32,7 @@ inline void ReadResponseMessage(std::istream& is,
 
     // Partitions array
     int partition_count = ReadInt32(is);
-    for (int p=0; p<partition_count; p++)
+    for (int p = 0; p < partition_count; ++p)
     {
       FetchResponse::Topic::PartitionMap::key_type key;
       FetchResponse::Topic::PartitionMap::mapped_type partition;
@@ -53,9 +53,9 @@ inline void ReadResponseMessage(std::istream& is,
       {
         return;
       }
-      topic.partitions.insert( std::make_pair(key, partition) );
+      topic.partitions.insert(std::make_pair(key, partition));
     }
-    response.mutable_topics().insert( std::make_pair(key, topic) );
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 

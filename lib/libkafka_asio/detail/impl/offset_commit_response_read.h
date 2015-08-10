@@ -23,22 +23,22 @@ inline void ReadResponseMessage(std::istream& is,
                                 boost::system::error_code& ec)
 {
   int topic_count = ReadInt32(is);
-  for (int t=0; t<topic_count; t++)
+  for (int t = 0; t < topic_count; ++t)
   {
     OffsetCommitResponse::TopicMap::key_type key;
     OffsetCommitResponse::TopicMap::mapped_type topic;
     key = ReadString(is);
-    
+
     int partition_count = ReadInt32(is);
-    for (int p=0; p<partition_count; p++)
+    for (int p = 0; p < partition_count; ++p)
     {
       OffsetCommitResponse::Topic::PartitionMap::key_type key;
       OffsetCommitResponse::Topic::PartitionMap::mapped_type partition;
       key = ReadInt32(is);
       partition.error_code = ReadInt16(is);
-      topic.partitions.insert( std::make_pair(key, partition) );
+      topic.partitions.insert(std::make_pair(key, partition));
     }
-    response.mutable_topics().insert( std::make_pair(key, topic) );
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 

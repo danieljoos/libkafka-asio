@@ -53,8 +53,10 @@ public:
   };
 
   typedef std::vector<Broker> BrokerVector;
-  typedef detail::TopicPartitionMap<TopicPartitionProperties,
-                                      TopicProperties> Topic;
+  typedef detail::TopicPartitionMap<
+    TopicPartitionProperties,
+    TopicProperties
+  > Topic;
   typedef Topic::MapType TopicMap;
 
   const BrokerVector& brokers() const;

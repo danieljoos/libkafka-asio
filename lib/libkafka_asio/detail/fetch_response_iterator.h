@@ -114,7 +114,7 @@ private:
     if (topics_)
     {
       return other.topics_ == topics_ &&
-        other.message_iter_ == message_iter_;
+             other.message_iter_ == message_iter_;
     }
     return other.topics_ == topics_;
   }

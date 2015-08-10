@@ -18,19 +18,19 @@ namespace libkafka_asio
 namespace detail
 {
 
-inline void ReadResponseMessage(std::istream & is,
-                                MutableOffsetResponse & response,
-                                boost::system::error_code & ec)
+inline void ReadResponseMessage(std::istream& is,
+                                MutableOffsetResponse& response,
+                                boost::system::error_code& ec)
 {
   int topic_count = ReadInt32(is);
-  for (int t=0; t<topic_count; t++)
+  for (int t = 0; t < topic_count; ++t)
   {
     OffsetResponse::TopicMap::key_type key;
     OffsetResponse::TopicMap::mapped_type topic;
     key = ReadString(is);
-    
+
     int partition_count = ReadInt32(is);
-    for (int p=0; p<partition_count; p++)
+    for (int p = 0; p < partition_count; ++p)
     {
       OffsetResponse::Topic::PartitionMap::key_type key;
       OffsetResponse::Topic::PartitionMap::mapped_type partition;
@@ -46,9 +46,9 @@ inline void ReadResponseMessage(std::istream & is,
       {
         partition.offsets.push_back(ReadInt64(is));
       }
-      topic.partitions.insert( std::make_pair(key, partition) );
+      topic.partitions.insert(std::make_pair(key, partition));
     }
-    response.mutable_topics().insert( std::make_pair(key, topic) );
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 

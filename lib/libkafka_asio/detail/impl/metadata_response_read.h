@@ -34,15 +34,15 @@ inline void ReadResponseMessage(std::istream& is,
 
   // Topic Metadata
   int topic_count = ReadInt32(is);
-  for (int t=0; t<topic_count; t++)
+  for (int t = 0; t < topic_count; ++t)
   {
     MetadataResponse::TopicMap::key_type key;
     MetadataResponse::TopicMap::mapped_type topic;
     topic.error_code = ReadInt16(is);
     key = ReadString(is);
-    
+
     int partition_count = ReadInt32(is);
-    for (int p=0; p<partition_count; p++)
+    for (int p = 0; p < partition_count; ++p)
     {
       MetadataResponse::Topic::PartitionMap::key_type key;
       MetadataResponse::Topic::PartitionMap::mapped_type partition;
@@ -61,9 +61,9 @@ inline void ReadResponseMessage(std::istream& is,
       {
         partition.isr.push_back(ReadInt32(is));
       }
-      topic.partitions.insert( std::make_pair(key, partition) );
+      topic.partitions.insert(std::make_pair(key, partition));
     }
-    response.mutable_topics().insert( std::make_pair(key, topic) );
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 

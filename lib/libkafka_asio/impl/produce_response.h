@@ -33,7 +33,8 @@ ProduceResponse::FindTopicPartition(const String& topic_name,
   Topic::OptionalType topic = FindTopic(topic_name);
   if (topic)
   {
-    Topic::PartitionMap::const_iterator iter = topic->partitions.find(partition);
+    Topic::PartitionMap::const_iterator iter =
+      topic->partitions.find(partition);
     if (iter != topic->partitions.end())
     {
       return iter->second;

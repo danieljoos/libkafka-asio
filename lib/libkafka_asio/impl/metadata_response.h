@@ -45,9 +45,10 @@ MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
   {
     return Broker::OptionalType();
   }
-  Topic::PartitionMap::const_iterator partition_iter = topic_iter->second.partitions.find(partition);
+  Topic::PartitionMap::const_iterator partition_iter =
+    topic_iter->second.partitions.find(partition);
   if (partition_iter == topic_iter->second.partitions.end() ||
-    partition_iter->second.leader == constants::kMetadataLeaderUndecided)
+      partition_iter->second.leader == constants::kMetadataLeaderUndecided)
   {
     return Broker::OptionalType();
   }

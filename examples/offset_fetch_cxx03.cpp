@@ -93,9 +93,9 @@ DiscoverCoordinator(Connection& connection, const String& consumer_group)
 }
 
 // Re-connects the given connection to the provided hostname and port.
-// This also shows how the connection can be connected without scheduling a request.
-// Again, the returned future is used to wait until the operation completes
-// successfully.
+// This also shows how the connection can be connected without scheduling a
+// request. Again, the returned future is used to wait until the operation
+// completes successfully.
 boost::BOOST_THREAD_FUTURE<bool>
 ReConnect(Connection& connection, const String& hostname, Int32 port)
 {
@@ -160,8 +160,9 @@ int main(int argc, char **argv)
       OffsetFetchResponse offset =
         FetchOffset(connection, consumer_group, topic_name, partition).get();
       std::cout
-        << "Offset: " << offset.topics().at(topic_name).partitions.at(partition).offset
-        << std::endl;
+      << "Offset: "
+      << offset.topics().at(topic_name).partitions.at(partition).offset
+      << std::endl;
     }
   }
   catch (std::exception& e)

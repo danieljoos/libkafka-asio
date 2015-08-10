@@ -29,7 +29,8 @@ OffsetResponse::TopicPartitionOffset(const String& topic_name,
   {
     return Topic::Partition::OptionalType();
   }
-  Topic::PartitionMap::const_iterator partition_iter = topic_iter->second.partitions.find(partition);
+  Topic::PartitionMap::const_iterator partition_iter =
+    topic_iter->second.partitions.find(partition);
   if (partition_iter == topic_iter->second.partitions.end())
   {
     return Topic::Partition::OptionalType();
