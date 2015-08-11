@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   configuration.auto_connect = true;
   configuration.client_id = "libkafka_asio_example";
   configuration.socket_timeout = 10000;
-  configuration.AddBrokerFromString("192.168.15.137:49162");
+  configuration.SetBrokerFromString("192.168.15.137:49162");
 
   boost::asio::io_service ios;
   Connection connection(ios, configuration);
@@ -50,8 +50,8 @@ int main(int argc, char **argv)
   };
 
   // Send the prepared fetch request.
-  // The connection will attempt to automatically connect to the broker, specified
-  // in the configuration.
+  // The connection will attempt to automatically connect to the broker,
+  // specified in the configuration.
   connection.AsyncRequest(
     request,
     [&](const Connection::ErrorCodeType& err,

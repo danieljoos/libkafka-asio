@@ -27,7 +27,7 @@ inline Bytes GZIPCompressionAlgorithm::Compress(
   const Bytes& data, boost::system::error_code& ec)
 {
   static const size_t kBufferSize = 32 * 1024;
-  static const int kGZIPWindowBits = 15+16;
+  static const int kGZIPWindowBits = 15 + 16;
 
   if (!data || data->empty())
   {
@@ -37,7 +37,7 @@ inline Bytes GZIPCompressionAlgorithm::Compress(
   // Initialize a new zlib stream
   ::z_stream gz = {};
   ::gz_header header = {};
-  if (::deflateInit2(&gz, Z_DEFAULT_COMPRESSION, Z_DEFLATED, kGZIPWindowBits, 
+  if (::deflateInit2(&gz, Z_DEFAULT_COMPRESSION, Z_DEFLATED, kGZIPWindowBits,
                      8, Z_DEFAULT_STRATEGY) != Z_OK)
   {
     ec = kErrorCompressionFailed;
@@ -75,7 +75,7 @@ inline Bytes GZIPCompressionAlgorithm::Decompress(
   const Bytes& data, boost::system::error_code& ec)
 {
   static const size_t kBufferSize = 32 * 1024;
-  static const int kGZIPWindowBits = 15+32;
+  static const int kGZIPWindowBits = 15 + 32;
 
   if (!data || data->empty())
   {

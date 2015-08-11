@@ -35,21 +35,23 @@ inline const Bytes& SnappyCompressionAlgorithm::kSnappyStreamMagic()
 }
 
 inline Bytes SnappyCompressionAlgorithm::Compress(
-	const Bytes& data, boost::system::error_code& ec)
+  const Bytes& data, boost::system::error_code& ec)
 {
-	if (!data || data->empty())
-	{
-		ec = kErrorCompressionFailed;
-		return Bytes();
-	}
-	Bytes result(new Bytes::element_type(::snappy::MaxCompressedLength(data->size())));
-	const char *raw_input_ptr = reinterpret_cast<const char *>(&(*data)[0]);
-	char *raw_output_ptr = reinterpret_cast<char *>(&(*result)[0]);
-	size_t result_size = 0;
-	::snappy::RawCompress(raw_input_ptr, data->size(), raw_output_ptr, &result_size);
-	result->resize(result_size);
-	ec = kErrorSuccess;
-	return result;
+  if (!data || data->empty())
+  {
+    ec = kErrorCompressionFailed;
+    return Bytes();
+  }
+  Bytes result(
+    new Bytes::element_type(::snappy::MaxCompressedLength(data->size())));
+  const char *raw_input_ptr = reinterpret_cast<const char *>(&(*data)[0]);
+  char *raw_output_ptr = reinterpret_cast<char *>(&(*result)[0]);
+  size_t result_size = 0;
+  ::snappy::RawCompress(raw_input_ptr, data->size(), raw_output_ptr,
+                        &result_size);
+  result->resize(result_size);
+  ec = kErrorSuccess;
+  return result;
 }
 
 inline Bytes SnappyCompressionAlgorithm::Decompress(

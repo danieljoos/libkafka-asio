@@ -15,17 +15,18 @@ inline ConnectionConfiguration::ConnectionConfiguration() :
 {
 }
 
-inline void ConnectionConfiguration::AddBrokerFromString(const std::string& str)
+inline void ConnectionConfiguration::SetBrokerFromString(const std::string& str)
 {
   if (str.empty())
   {
+    broker_address.reset();
     return;
   }
   BrokerAddress broker;
   std::string::size_type delimiter_position = str.find(':');
   if (delimiter_position != std::string::npos &&
-    delimiter_position > 0 &&
-    delimiter_position < str.size() - 1)
+      delimiter_position > 0 &&
+      delimiter_position < str.size() - 1)
   {
     broker.hostname = str.substr(0, delimiter_position);
     broker.service = str.substr(delimiter_position + 1);
@@ -39,30 +40,24 @@ inline void ConnectionConfiguration::AddBrokerFromString(const std::string& str)
   {
     return;
   }
-  broker_list.push_back(broker);
+  broker_address = broker;
 }
 
-template< typename T >
-inline void ConnectionConfiguration::AddBroker(const T& broker)
+template<typename T>
+inline void ConnectionConfiguration::SetBroker(const T& broker)
 {
-  AddBroker(broker.host, broker.port);
+  SetBroker(broker.host, broker.port);
 }
 
 template<typename Tx, typename Ty>
-inline void ConnectionConfiguration::AddBroker(const Tx& hostname,
-                                           const Ty& service)
+inline void ConnectionConfiguration::SetBroker(const Tx& hostname,
+                                               const Ty& service)
 {
-  BrokerAddress broker_address;
-  broker_address.hostname = boost::lexical_cast<String>(hostname);
-  broker_address.service = boost::lexical_cast<String>(service);
-  AddBroker(broker_address);
-}
-
-inline void ConnectionConfiguration::AddBroker(
-  const ConnectionConfiguration::BrokerAddress& broker_address)
-{
-  broker_list.push_back(broker_address);
-}
+  BrokerAddress broker;
+  broker.hostname = boost::lexical_cast<String>(hostname);
+  broker.service = boost::lexical_cast<String>(service);
+  broker_address = broker;
+};
 
 }  // namespace libkafka_asio
 

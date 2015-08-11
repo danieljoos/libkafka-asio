@@ -17,39 +17,65 @@ class ConnectionConfigurationTest :
   public ::testing::Test
 {
 protected:
+  struct TestBrokerStruct
+  {
+    std::string host;
+    unsigned int port;
+  };
+
+protected:
   virtual void SetUp()
   {
-    ASSERT_EQ(0, configuration.broker_list.size());
+    ASSERT_FALSE(configuration.broker_address);
   }
 
   ConnectionConfiguration configuration;
 };
 
-TEST_F(ConnectionConfigurationTest, AddBrokerFromString_Empty)
+TEST_F(ConnectionConfigurationTest, SetBrokerFromString_Empty)
 {
-  configuration.AddBrokerFromString("");
-  ASSERT_EQ(0, configuration.broker_list.size());
+  configuration.SetBrokerFromString("");
+  ASSERT_FALSE(configuration.broker_address);
 }
 
-TEST_F(ConnectionConfigurationTest, AddBrokerFromString)
+TEST_F(ConnectionConfigurationTest, SetBrokerFromString)
 {
-  configuration.AddBrokerFromString("localhost:1234");
-  ASSERT_EQ(1, configuration.broker_list.size());
-  ASSERT_STREQ("localhost", configuration.broker_list[0].hostname.c_str());
-  ASSERT_STREQ("1234", configuration.broker_list[0].service.c_str());
+  configuration.SetBrokerFromString("localhost:1234");
+  ASSERT_TRUE(configuration.broker_address);
+  ASSERT_STREQ("localhost", configuration.broker_address->hostname.c_str());
+  ASSERT_STREQ("1234", configuration.broker_address->service.c_str());
 }
 
-TEST_F(ConnectionConfigurationTest, AddBrokerFromString_NoService)
+TEST_F(ConnectionConfigurationTest, SetBrokerFromString_NoService)
 {
-  configuration.AddBrokerFromString("localhost");
-  ASSERT_EQ(1, configuration.broker_list.size());
-  ASSERT_STREQ("localhost", configuration.broker_list[0].hostname.c_str());
+  configuration.SetBrokerFromString("localhost");
+  ASSERT_TRUE(configuration.broker_address);
+  ASSERT_STREQ("localhost", configuration.broker_address->hostname.c_str());
   // Default Kafka Service:
-  ASSERT_STREQ("9092", configuration.broker_list[0].service.c_str());
+  ASSERT_STREQ("9092", configuration.broker_address->service.c_str());
 }
 
-TEST_F(ConnectionConfigurationTest, AddBrokerFromString_Colon)
+TEST_F(ConnectionConfigurationTest, SetBrokerFromString_Colon)
 {
-  configuration.AddBrokerFromString(":");
-  ASSERT_EQ(0, configuration.broker_list.size());
+  configuration.SetBrokerFromString(":");
+  ASSERT_FALSE(configuration.broker_address);
+}
+
+TEST_F(ConnectionConfigurationTest, SetBroker_1)
+{
+  TestBrokerStruct t;
+  t.host = "example.org";
+  t.port = 8888;
+  configuration.SetBroker(t);
+  ASSERT_TRUE(configuration.broker_address);
+  ASSERT_STREQ("example.org", configuration.broker_address->hostname.c_str());
+  ASSERT_STREQ("8888", configuration.broker_address->service.c_str());
+}
+
+TEST_F(ConnectionConfigurationTest, SetBroker_2)
+{
+  configuration.SetBroker("example.org", 1234);
+  ASSERT_TRUE(configuration.broker_address);
+  ASSERT_STREQ("example.org", configuration.broker_address->hostname.c_str());
+  ASSERT_STREQ("1234", configuration.broker_address->service.c_str());
 }

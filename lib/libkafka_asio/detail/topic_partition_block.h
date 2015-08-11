@@ -37,8 +37,9 @@ struct TopicPartitionBlock :
   };
 
   typedef Partition PartitionType;
-  typedef TopicPartitionBlock<TPartitionProperties,
-                              TTopicProperties> TopicType;
+  typedef TopicPartitionBlock<
+    TPartitionProperties, TTopicProperties
+  > TopicType;
   typedef std::vector<TopicType> VectorType;
   typedef boost::optional<
     TopicPartitionBlock<TPartitionProperties, TTopicProperties>

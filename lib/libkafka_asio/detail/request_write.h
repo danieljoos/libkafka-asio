@@ -91,7 +91,7 @@ void WriteRequestMessage(const FetchRequest& request, std::ostream& os);
 
 void WriteRequestMessage(const OffsetRequest& request, std::ostream& os);
 
-void WriteRequestMessage(const ConsumerMetadataRequest& request, 
+void WriteRequestMessage(const ConsumerMetadataRequest& request,
                          std::ostream& os);
 
 void WriteRequestMessage(const OffsetCommitRequest& request, std::ostream& os);

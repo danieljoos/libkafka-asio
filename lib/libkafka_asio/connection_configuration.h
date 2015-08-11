@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 
 namespace libkafka_asio
@@ -14,6 +15,7 @@ struct ConnectionConfiguration
   // Broker address configuration data structure
   struct BrokerAddress
   {
+    typedef boost::optional<BrokerAddress> OptionalType;
     std::string hostname;
     std::string service;
   };
@@ -33,39 +35,36 @@ struct ConnectionConfiguration
   // Default value is 'libkafka_asio'.
   String client_id;
 
-  // List of known Kafka servers
-  BrokerList broker_list;
-
   // Automatically connect to one of the known Kafka servers
   bool auto_connect;
+
+  // The broker address, used for auto-connect
+  BrokerAddress::OptionalType broker_address;
 
   // Construct using default values
   ConnectionConfiguration();
 
-  // Add a broker address from string.
+  // Set the broker address using the given string.
   // If the string contain a colon, the part before the colon is interpreted
   // as hostname and the part after that character is interpreted as service
   // name.
   // Example: localhost:9092
   //
-  void AddBrokerFromString(const std::string& str);
+  void SetBrokerFromString(const std::string& str);
 
-  // Add a broker from using the given data structure.
+  // Set the broker address using the given data structure.
   // The broker's address is determined by the fields:
   //     - host
   //     - port
   // A lexical cast is done on both fields.
-  template< typename T >
-  void AddBroker(const T& broker);
+  template<typename T>
+  void SetBroker(const T& broker);
 
-  // Add a broker using the given hostname and service parameter.
+  // Set the broker address using the given hostname and service parameter.
   // Both will be casted to string using a lexical_cast.
   template<typename Tx, typename Ty>
-  void AddBroker(const Tx& hostname, const Ty& service);
+  void SetBroker(const Tx& hostname, const Ty& service);
 
-  // Add an existing BrokerAddress data structure.
-  // This is the same as simply pushing the given object to the broker_list.
-  void AddBroker(const BrokerAddress& broker_address);
 };
 
 }  // namespace libkafka_asio

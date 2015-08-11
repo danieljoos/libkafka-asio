@@ -23,6 +23,7 @@ class BytesStreambuf :
 {
 public:
   explicit BytesStreambuf(Bytes data);
+
   Bytes data() const;
 
 private:
