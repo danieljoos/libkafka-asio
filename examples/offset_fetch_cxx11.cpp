@@ -72,7 +72,8 @@ int main(int argc, char **argv)
   // All request handlers are invoked from inside that thread as well.
   boost::asio::io_service ios;
   boost::asio::io_service::work work(ios);
-  std::thread worker([&ios]() { ios.run(); });
+  std::thread worker([&ios]()
+                     { ios.run(); });
 
   // Construct a `libkafka_asio` connection object
   Connection::Configuration configuration;
@@ -89,26 +90,26 @@ int main(int argc, char **argv)
   // It uses a promise, which will be set inside the handler function of the
   // request. This function returns the associated future object.
   auto discover_coordinator = [&]() -> std::future<ConsumerMetadataResponse>
-    {
-      std::promise<ConsumerMetadataResponse> result;
-      auto ret = result.get_future();
-      ConsumerMetadataRequest request;
-      request.set_consumer_group(consumer_group);
-      connection.AsyncRequest(request, PromiseHandler(std::move(result)));
-      return ret;
-    };
+  {
+    std::promise<ConsumerMetadataResponse> result;
+    auto ret = result.get_future();
+    ConsumerMetadataRequest request;
+    request.set_consumer_group(consumer_group);
+    connection.AsyncRequest(request, PromiseHandler(std::move(result)));
+    return ret;
+  };
 
   // Fetch offset data for the above consumer group. Again using a promise.
   auto fetch_offset = [&]() -> std::future<OffsetFetchResponse>
-    {
-      std::promise<OffsetFetchResponse> result;
-      auto ret = result.get_future();
-      OffsetFetchRequest request;
-      request.set_consumer_group(consumer_group);
-      request.FetchOffset(topic_name, partition);
-      connection.AsyncRequest(request, PromiseHandler(std::move(result)));
-      return ret;
-    };
+  {
+    std::promise<OffsetFetchResponse> result;
+    auto ret = result.get_future();
+    OffsetFetchRequest request;
+    request.set_consumer_group(consumer_group);
+    request.FetchOffset(topic_name, partition);
+    connection.AsyncRequest(request, PromiseHandler(std::move(result)));
+    return ret;
+  };
 
   try
   {
@@ -137,8 +138,9 @@ int main(int argc, char **argv)
     {
       auto offset = fetch_offset().get();
       std::cout
-        << "Offset: " << offset.topics()[0].partitions[0].offset
-        << std::endl;
+      << "Offset: "
+      << offset.topics().at(topic_name).partitions.at(partition).offset
+      << std::endl;
     }
   }
   catch (std::exception& e)

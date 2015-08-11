@@ -20,7 +20,7 @@ inline const MetadataResponse::BrokerVector& MetadataResponse::brokers() const
   return brokers_;
 }
 
-inline const MetadataResponse::TopicVector&
+inline const MetadataResponse::TopicMap&
 MetadataResponse::topics() const
 {
   return topics_;
@@ -32,7 +32,7 @@ MutableMetadataResponse::mutable_brokers()
   return response_.brokers_;
 }
 
-inline MetadataResponse::TopicVector& MutableMetadataResponse::mutable_topics()
+inline MetadataResponse::TopicMap& MutableMetadataResponse::mutable_topics()
 {
   return response_.topics_;
 }
@@ -40,21 +40,20 @@ inline MetadataResponse::TopicVector& MutableMetadataResponse::mutable_topics()
 inline MetadataResponse::Broker::OptionalType
 MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
 {
-  TopicVector::const_iterator topic_iter =
-    detail::FindTopicByName(topic, topics_);
+  TopicMap::const_iterator topic_iter = topics_.find(topic);
   if (topic_iter == topics_.end())
   {
     return Broker::OptionalType();
   }
-  Topic::PartitionVector::const_iterator partition_iter =
-    detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
-  if (partition_iter == topic_iter->partitions.end() ||
-      partition_iter->leader == constants::kMetadataLeaderUndecided)
+  Topic::PartitionMap::const_iterator partition_iter =
+    topic_iter->second.partitions.find(partition);
+  if (partition_iter == topic_iter->second.partitions.end() ||
+      partition_iter->second.leader == constants::kMetadataLeaderUndecided)
   {
     return Broker::OptionalType();
   }
   BrokerVector::const_iterator broker_iter =
-    detail::FindBrokerById(partition_iter->leader, brokers_);
+    detail::FindBrokerById(partition_iter->second.leader, brokers_);
   if (broker_iter != brokers_.end())
   {
     return *broker_iter;

@@ -15,7 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
 #include <libkafka_asio/detail/functional.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topic_partition_map.h>
 
 namespace libkafka_asio
 {
@@ -35,10 +35,10 @@ class ProduceResponse :
   };
 
 public:
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
+  typedef Topic::MapType TopicMap;
 
-  const TopicVector& topics() const
+  const TopicMap& topics() const
   {
     return topics_;
   }
@@ -52,14 +52,14 @@ private:
   typedef detail::IsTopicWithName<Topic> IsTopicWithName;
   typedef detail::IsTopicPartition<Topic::Partition> IsTopicPartition;
 
-  TopicVector topics_;
+  TopicMap topics_;
 };
 
 class MutableProduceResponse :
   public MutableResponse<ProduceResponse>
 {
 public:
-  ProduceResponse::TopicVector& mutable_topics()
+  ProduceResponse::TopicMap& mutable_topics()
   {
     return response_.topics_;
   }

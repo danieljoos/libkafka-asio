@@ -22,19 +22,25 @@ inline void ReadResponseMessage(std::istream& is,
                                 MutableOffsetFetchResponse& response,
                                 boost::system::error_code& ec)
 {
-  response.mutable_topics().resize(ReadInt32(is));
-  BOOST_FOREACH(OffsetFetchResponse::Topic& topic, response.mutable_topics())
+  int topic_count = ReadInt32(is);
+  for (int t = 0; t < topic_count; ++t)
   {
-    topic.topic_name = ReadString(is);
-    topic.partitions.resize(ReadInt32(is));
-    BOOST_FOREACH(OffsetFetchResponse::Topic::Partition& partition,
-                  topic.partitions)
+    OffsetFetchResponse::TopicMap::key_type key;
+    OffsetFetchResponse::TopicMap::mapped_type topic;
+    key = ReadString(is);
+
+    int partition_count = ReadInt32(is);
+    for (int p = 0; p < partition_count; ++p)
     {
-      partition.partition = ReadInt32(is);
+      OffsetFetchResponse::Topic::PartitionMap::key_type key;
+      OffsetFetchResponse::Topic::PartitionMap::mapped_type partition;
+      key = ReadInt32(is);
       partition.offset = ReadInt64(is);
       partition.metadata = ReadString(is);
       partition.error_code = ReadInt16(is);
+      topic.partitions.insert(std::make_pair(key, partition));
     }
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 

@@ -23,16 +23,20 @@ inline void ReadResponseMessage(std::istream& is,
                                 boost::system::error_code& ec)
 {
   // Topic array
-  response.mutable_topics().resize(ReadInt32(is));
-  BOOST_FOREACH(FetchResponse::Topic& topic, response.mutable_topics())
+  int topic_count = ReadInt32(is);
+  for (int t = 0; t < topic_count; ++t)
   {
-    topic.topic_name = ReadString(is);
+    FetchResponse::TopicMap::key_type key;
+    FetchResponse::TopicMap::mapped_type topic;
+    key = ReadString(is);
 
     // Partitions array
-    topic.partitions.resize(ReadInt32(is));
-    BOOST_FOREACH(FetchResponse::Topic::Partition& partition, topic.partitions)
+    int partition_count = ReadInt32(is);
+    for (int p = 0; p < partition_count; ++p)
     {
-      partition.partition = ReadInt32(is);
+      FetchResponse::Topic::PartitionMap::key_type key;
+      FetchResponse::Topic::PartitionMap::mapped_type partition;
+      key = ReadInt32(is);
       partition.error_code = ReadInt16(is);
       partition.highwater_mark_offset = ReadInt64(is);
 
@@ -49,7 +53,9 @@ inline void ReadResponseMessage(std::istream& is,
       {
         return;
       }
+      topic.partitions.insert(std::make_pair(key, partition));
     }
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 

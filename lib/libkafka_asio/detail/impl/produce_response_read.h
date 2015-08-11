@@ -24,15 +24,19 @@ inline void ReadResponseMessage(std::istream& is,
                                 MutableProduceResponse& response,
                                 boost::system::error_code& ec)
 {
-  response.mutable_topics().resize(ReadInt32(is));
-  BOOST_FOREACH(ProduceResponse::Topic& topic, response.mutable_topics())
+  int topic_count = ReadInt32(is);
+  for (int t = 0; t < topic_count; ++t)
   {
-    topic.topic_name = ReadString(is);
-    topic.partitions.resize(ReadInt32(is));
-    BOOST_FOREACH(ProduceResponse::Topic::Partition& partition,
-                  topic.partitions)
+    ProduceResponse::TopicMap::key_type key;
+    ProduceResponse::TopicMap::mapped_type topic;
+    key = ReadString(is);
+
+    int partition_count = ReadInt32(is);
+    for (int p = 0; p < partition_count; ++p)
     {
-      partition.partition = ReadInt32(is);
+      ProduceResponse::Topic::PartitionMap::key_type key;
+      ProduceResponse::Topic::PartitionMap::mapped_type partition;
+      key = ReadInt32(is);
       partition.error_code = ReadInt16(is);
       partition.offset = ReadInt64(is);
 
@@ -41,7 +45,9 @@ inline void ReadResponseMessage(std::istream& is,
         ec = (KafkaError) partition.error_code;
         return;
       }
+      topic.partitions.insert(std::make_pair(key, partition));
     }
+    response.mutable_topics().insert(std::make_pair(key, topic));
   }
 }
 
