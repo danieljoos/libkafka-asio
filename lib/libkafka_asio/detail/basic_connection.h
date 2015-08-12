@@ -108,6 +108,22 @@ public:
                        handler);
   };
 
+  // Tries to connect to the broker, specified in the configuration given to
+  // this client object. If no such broker address was configured, the handler
+  // function will be scheduled with ErrorNoBroker.
+  // The function always returns immediately.
+  // The signature of the handler function must be:
+  // ```
+  // void handler(
+  //   const boost::system::error_code& error  // Success status
+  // );
+  // ```
+  //
+  void AsyncConnect(const ConnectionHandlerType& handler)
+  {
+    this->get_implementation()->AsyncConnect(handler);
+  }
+
   // Asynchronously sends the given request to the connected Kafka server.
   // The given handler function object will be called on success as well as on
   // error condition.

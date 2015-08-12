@@ -138,6 +138,9 @@ public:
                     const std::string& service,
                     const ConnectionHandlerType& handler);
 
+  // Asynchronous connection to the Kafka server, specified in the configuration
+  void AsyncConnect(const ConnectionHandlerType& handler);
+
   // Asynchronously sends the given request to the connected Kafka server.
   template<typename TRequest>
   void AsyncRequest(const TRequest& request,

@@ -88,6 +88,20 @@ inline void ConnectionServiceImpl::AsyncConnect(
   SetDeadline(connect_deadline_);
 }
 
+inline void ConnectionServiceImpl::AsyncConnect(
+  const ConnectionServiceImpl::ConnectionHandlerType& handler)
+{
+  if (!configuration_.broker_address)
+  {
+    io_service_.post(boost::bind(handler, kErrorNoBroker));
+    return;
+  }
+  AsyncConnect(
+      configuration_.broker_address->hostname,
+      configuration_.broker_address->service,
+      handler);
+}
+
 template<typename TRequest>
 inline void ConnectionServiceImpl::AsyncRequest(
   const TRequest& request,
@@ -230,11 +244,9 @@ inline void ConnectionServiceImpl::NextRequest()
     return;
   }
   if (connection_state_ == kConnectionStateClosed &&
-      configuration_.auto_connect && configuration_.broker_address)
+      configuration_.auto_connect)
   {
     AsyncConnect(
-      configuration_.broker_address->hostname,
-      configuration_.broker_address->service,
       WeakImpl<ConnectionServiceImpl>::ErrorHandler(
         shared_from_this(),
         boost::bind(&ConnectionServiceImpl::HandleAsyncAutoConnect, this,
