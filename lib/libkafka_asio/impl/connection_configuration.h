@@ -57,7 +57,7 @@ inline void ConnectionConfiguration::SetBroker(const Tx& hostname,
   broker.hostname = boost::lexical_cast<String>(hostname);
   broker.service = boost::lexical_cast<String>(service);
   broker_address = broker;
-};
+}
 
 }  // namespace libkafka_asio
 
