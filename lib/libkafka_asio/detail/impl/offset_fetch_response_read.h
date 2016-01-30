@@ -22,6 +22,8 @@ inline void ReadResponseMessage(std::istream& is,
                                 MutableOffsetFetchResponse& response,
                                 boost::system::error_code& ec)
 {
+  // error code not used    
+  (void)ec;
   int topic_count = ReadInt32(is);
   for (int t = 0; t < topic_count; ++t)
   {
