@@ -10,7 +10,7 @@ install:
   - sudo apt-get install g++-4.9 boost1.55 libgtest-dev libsnappy-dev
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
-  - "cd /usr/src/gtest && sudo cmake . -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
+  - "cd /usr/src/gtest && sudo cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
 before_script:
   - mkdir build
   - cd build
