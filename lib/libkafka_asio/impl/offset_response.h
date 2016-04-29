@@ -15,30 +15,30 @@
 namespace libkafka_asio
 {
 
-inline const OffsetResponse::TopicMap& OffsetResponse::topics() const
+inline const OffsetResponse::Topics& OffsetResponse::topics() const
 {
   return topics_;
 }
 
-inline OffsetResponse::Topic::Partition::OptionalType
+inline OffsetResponse::Partition::OptionalType
 OffsetResponse::TopicPartitionOffset(const String& topic_name,
                                      Int32 partition) const
 {
-  TopicMap::const_iterator topic_iter = topics_.find(topic_name);
+  Topics::const_iterator topic_iter = topics_.find(topic_name);
   if (topic_iter == topics_.end())
   {
-    return Topic::Partition::OptionalType();
+    return Partition::OptionalType();
   }
-  Topic::PartitionMap::const_iterator partition_iter =
+  Partitions::const_iterator partition_iter =
     topic_iter->second.partitions.find(partition);
   if (partition_iter == topic_iter->second.partitions.end())
   {
-    return Topic::Partition::OptionalType();
+    return Partition::OptionalType();
   }
   return partition_iter->second;
 }
 
-inline OffsetResponse::TopicMap& MutableOffsetResponse::mutable_topics()
+inline OffsetResponse::Topics& MutableOffsetResponse::mutable_topics()
 {
   return response_.topics_;
 }

@@ -16,7 +16,7 @@
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/produce_response.h>
 #include <libkafka_asio/detail/functional.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -29,7 +29,7 @@ class ProduceRequest :
 
   static Int16 ApiKey();
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     MessageSet messages;
   };
@@ -37,8 +37,14 @@ class ProduceRequest :
 public:
   typedef ProduceResponse ResponseType;
   typedef MutableProduceResponse MutableResponseType;
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef detail::TopicsPartitionsVector<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
   ProduceRequest();
 
@@ -46,7 +52,7 @@ public:
 
   Int32 timeout() const;
 
-  const TopicVector& topics() const;
+  const Topics& topics() const;
 
   // Number of acknowledgments that need to be received by the server before
   // the response for this request is sent.
@@ -94,11 +100,11 @@ public:
 
 private:
   typedef detail::IsTopicWithName<Topic> IsTopicWithName;
-  typedef detail::IsTopicPartition<Topic::Partition> IsTopicPartition;
+  typedef detail::IsTopicPartition<Partition> IsTopicPartition;
 
   Int16 required_acks_;
   Int32 timeout_;
-  TopicVector topics_;
+  Topics topics_;
 };
 
 }  // namespace libkafka_asio

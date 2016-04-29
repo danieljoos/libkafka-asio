@@ -25,15 +25,15 @@ inline void ReadResponseMessage(std::istream& is,
   int topic_count = ReadInt32(is);
   for (int t = 0; t < topic_count; ++t)
   {
-    OffsetFetchResponse::TopicMap::key_type key;
-    OffsetFetchResponse::TopicMap::mapped_type topic;
+    OffsetFetchResponse::Topics::key_type key;
+    OffsetFetchResponse::Topics::mapped_type topic;
     key = ReadString(is);
 
     int partition_count = ReadInt32(is);
     for (int p = 0; p < partition_count; ++p)
     {
-      OffsetFetchResponse::Topic::PartitionMap::key_type key;
-      OffsetFetchResponse::Topic::PartitionMap::mapped_type partition;
+      OffsetFetchResponse::Partitions::key_type key;
+      OffsetFetchResponse::Partitions::mapped_type partition;
       key = ReadInt32(is);
       partition.offset = ReadInt64(is);
       partition.metadata = ReadString(is);

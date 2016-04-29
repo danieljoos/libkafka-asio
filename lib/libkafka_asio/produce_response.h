@@ -2,7 +2,7 @@
 // produce_response.h
 // ------------------
 //
-// Copyright (c) 2015 Daniel Joos
+// Copyright (c) 2015-2016 Daniel Joos
 //
 // Distributed under MIT license. (See file LICENSE)
 //
@@ -15,7 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
 #include <libkafka_asio/detail/functional.h>
-#include <libkafka_asio/detail/topic_partition_map.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -28,38 +28,41 @@ class ProduceResponse :
 {
   friend class MutableProduceResponse;
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     Int16 error_code;
     Int64 offset;
   };
 
 public:
-  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
-  typedef Topic::MapType TopicMap;
+  typedef detail::TopicsPartitionsMap<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
-  const TopicMap& topics() const
+  const Topics& topics() const
   {
     return topics_;
   }
 
   Topic::OptionalType FindTopic(const String& topic_name) const;
 
-  Topic::Partition::OptionalType FindTopicPartition(const String& topic_name,
-                                                    Int32 partition) const;
+  Partition::OptionalType FindTopicPartition(const String& topic_name,
+                                             Int32 partition) const;
 
 private:
-  typedef detail::IsTopicWithName<Topic> IsTopicWithName;
-  typedef detail::IsTopicPartition<Topic::Partition> IsTopicPartition;
-
-  TopicMap topics_;
+  Topics topics_;
 };
 
 class MutableProduceResponse :
   public MutableResponse<ProduceResponse>
 {
 public:
-  ProduceResponse::TopicMap& mutable_topics()
+  ProduceResponse::Topics& mutable_topics()
   {
     return response_.topics_;
   }

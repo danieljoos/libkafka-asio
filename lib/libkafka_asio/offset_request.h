@@ -15,7 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/offset_response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -28,7 +28,7 @@ class OffsetRequest :
 
   static Int16 ApiKey();
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     Int64 time;
     Int32 max_number_of_offsets;
@@ -37,12 +37,18 @@ class OffsetRequest :
 public:
   typedef OffsetResponse ResponseType;
   typedef MutableOffsetResponse MutableResponseType;
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef detail::TopicsPartitionsVector<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
   Int32 replica_id() const;
 
-  const TopicVector& topics() const;
+  const Topics& topics() const;
 
   // Fetch offset information for the given topic-partition.
   // The (optional) `time` parameter can be used to ask for messages before
@@ -61,7 +67,7 @@ public:
   void Clear();
 
 private:
-  TopicVector topics_;
+  Topics topics_;
 };
 
 }  // namespace libkafka_asio

@@ -44,7 +44,7 @@ inline void WriteRequestMessage(const OffsetFetchRequest& request,
     WriteString(topic.topic_name, os);
     // Partitions Array
     WriteInt32(static_cast<Int32>(topic.partitions.size()), os);
-    BOOST_FOREACH(const OffsetFetchRequest::Topic::Partition partition,
+    BOOST_FOREACH(const OffsetFetchRequest::Partition partition,
                   topic.partitions)
     {
       WriteInt32(partition.partition, os);

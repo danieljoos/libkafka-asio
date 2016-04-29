@@ -26,8 +26,7 @@ inline const String& OffsetCommitRequest::consumer_group() const
   return consumer_group_;
 }
 
-inline const OffsetCommitRequest::TopicVector&
-OffsetCommitRequest::topics() const
+inline const OffsetCommitRequest::Topics& OffsetCommitRequest::topics() const
 {
   return topics_;
 }
@@ -44,9 +43,8 @@ inline void OffsetCommitRequest::CommitOffset(const String& topic_name,
                                               Int64 timestamp,
                                               const String& metadata)
 {
-  TopicVector::iterator topic_iter =
-    detail::FindTopicByName(topic_name, topics_);
-  Topic::PartitionVector::iterator partition_iter =
+  Topics::iterator topic_iter = detail::FindTopicByName(topic_name, topics_);
+  Partitions::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
   partition_iter->offset = offset;
   partition_iter->timestamp = timestamp;

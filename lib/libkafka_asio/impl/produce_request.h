@@ -39,7 +39,7 @@ inline Int32 ProduceRequest::timeout() const
   return timeout_;
 }
 
-inline const ProduceRequest::TopicVector& ProduceRequest::topics() const
+inline const ProduceRequest::Topics& ProduceRequest::topics() const
 {
   return topics_;
 }
@@ -77,12 +77,9 @@ inline void ProduceRequest::AddMessage(const Message& message,
                                        const String& topic_name,
                                        Int32 partition)
 {
-  TopicVector::iterator topic_iter =
-    detail::FindTopicByName(topic_name, topics_);
-
-  Topic::PartitionVector::iterator partition_iter =
+  Topics::iterator topic_iter = detail::FindTopicByName(topic_name, topics_);
+  Partitions::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
-
   MessageAndOffset message_and_offset(message, 0);
   partition_iter->messages.push_back(message_and_offset);
 }
@@ -103,25 +100,24 @@ inline void ProduceRequest::Clear()
 
 inline void ProduceRequest::ClearTopic(const String& topic_name)
 {
-  topics_.erase(
-    std::remove_if(topics_.begin(), topics_.end(),
-                   IsTopicWithName(topic_name)),
-    topics_.end());
+  topics_.erase(std::remove_if(topics_.begin(),
+                               topics_.end(),
+                               IsTopicWithName(topic_name)),
+                topics_.end());
 }
 
-inline void ProduceRequest::ClearTopicPartition(const String&
-topic_name,
+inline void ProduceRequest::ClearTopicPartition(const String& topic_name,
                                                 Int32 partition)
 {
-  TopicVector::iterator topic_iter =
-    std::find_if(topics_.begin(), topics_.end(), IsTopicWithName(topic_name));
+  Topics::iterator topic_iter = std::find_if(topics_.begin(),
+                                             topics_.end(),
+                                             IsTopicWithName(topic_name));
   if (topic_iter != topics_.end())
   {
-    topic_iter->partitions.erase(
-      std::remove_if(topic_iter->partitions.begin(),
-                     topic_iter->partitions.end(),
-                     IsTopicPartition(partition)),
-      topic_iter->partitions.end());
+    topic_iter->partitions.erase(std::remove_if(topic_iter->partitions.begin(),
+                                                topic_iter->partitions.end(),
+                                                IsTopicPartition(partition)),
+                                 topic_iter->partitions.end());
   }
 }
 

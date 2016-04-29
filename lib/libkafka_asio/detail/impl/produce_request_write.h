@@ -33,7 +33,7 @@ inline Int32 RequestMessageWireSize(const ProduceRequest& request)
 
     // Partition array
     size += sizeof(Int32);
-    BOOST_FOREACH(const ProduceRequest::Topic::Partition& partition,
+    BOOST_FOREACH(const ProduceRequest::Partition& partition,
                   topic.partitions)
     {
       size +=
@@ -58,7 +58,7 @@ inline void WriteRequestMessage(const ProduceRequest& request, std::ostream& os)
 
     // Partition Array
     WriteInt32(static_cast<Int32>(topic.partitions.size()), os);
-    BOOST_FOREACH(const ProduceRequest::Topic::Partition& partition,
+    BOOST_FOREACH(const ProduceRequest::Partition& partition,
                   topic.partitions)
     {
       WriteInt32(partition.partition, os);
