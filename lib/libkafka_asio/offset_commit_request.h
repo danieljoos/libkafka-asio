@@ -35,13 +35,14 @@ class OffsetCommitRequest :
     String metadata;
   };
 
-public:
-  typedef OffsetCommitResponse ResponseType;
-  typedef MutableOffsetCommitResponse MutableResponseType;
   typedef detail::TopicsPartitionsVector<
     detail::EmptyProperties,
     PartitionProperties
   > TopicsPartitions;
+
+public:
+  typedef OffsetCommitResponse ResponseType;
+  typedef MutableOffsetCommitResponse MutableResponseType;
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;

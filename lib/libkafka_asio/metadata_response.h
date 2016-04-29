@@ -42,6 +42,11 @@ class MetadataResponse :
     Int16 error_code;
   };
 
+  typedef detail::TopicsPartitionsMap<
+    TopicProperties,
+    PartitionProperties
+  > TopicsPartitions;
+
 public:
   struct Broker
   {
@@ -51,16 +56,10 @@ public:
     Int32 port;
   };
   typedef std::vector<Broker> BrokerVector;
-
-  typedef detail::TopicsPartitionsMap<
-    TopicProperties,
-    PartitionProperties
-  > TopicsPartitions;
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;
   typedef TopicsPartitions::PartitionsType Partitions;
-  
 
   const BrokerVector& brokers() const;
 

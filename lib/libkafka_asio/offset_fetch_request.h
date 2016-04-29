@@ -28,13 +28,14 @@ class OffsetFetchRequest :
 
   static Int16 ApiKey();
 
-public:
-  typedef OffsetFetchResponse ResponseType;
-  typedef MutableOffsetFetchResponse MutableResponseType;
   typedef detail::TopicsPartitionsVector<
     detail::EmptyProperties,
     detail::EmptyProperties
   > TopicsPartitions;
+
+public:
+  typedef OffsetFetchResponse ResponseType;
+  typedef MutableOffsetFetchResponse MutableResponseType;
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;

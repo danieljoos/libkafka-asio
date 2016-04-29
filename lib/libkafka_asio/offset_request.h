@@ -34,13 +34,14 @@ class OffsetRequest :
     Int32 max_number_of_offsets;
   };
 
-public:
-  typedef OffsetResponse ResponseType;
-  typedef MutableOffsetResponse MutableResponseType;
   typedef detail::TopicsPartitionsVector<
     detail::EmptyProperties,
     PartitionProperties
   > TopicsPartitions;
+
+public:
+  typedef OffsetResponse ResponseType;
+  typedef MutableOffsetResponse MutableResponseType;
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;

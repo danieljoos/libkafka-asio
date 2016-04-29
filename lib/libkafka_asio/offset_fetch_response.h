@@ -33,11 +33,12 @@ class OffsetFetchResponse :
     Int16 error_code;
   };
 
-public:
   typedef detail::TopicsPartitionsMap<
     detail::EmptyProperties,
     PartitionProperties
   > TopicsPartitions;
+
+public:
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;

@@ -34,13 +34,14 @@ class FetchRequest :
     Int32 max_bytes;
   };
 
-public:
-  typedef FetchResponse ResponseType;
-  typedef MutableFetchResponse MutableResponseType;
   typedef detail::TopicsPartitionsVector<
     detail::EmptyProperties,
     PartitionProperties
   > TopicsPartitions;
+
+public:
+  typedef FetchResponse ResponseType;
+  typedef MutableFetchResponse MutableResponseType;
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;

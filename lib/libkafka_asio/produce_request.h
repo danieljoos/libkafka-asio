@@ -34,13 +34,14 @@ class ProduceRequest :
     MessageSet messages;
   };
 
-public:
-  typedef ProduceResponse ResponseType;
-  typedef MutableProduceResponse MutableResponseType;
   typedef detail::TopicsPartitionsVector<
     detail::EmptyProperties,
     PartitionProperties
   > TopicsPartitions;
+
+public:
+  typedef ProduceResponse ResponseType;
+  typedef MutableProduceResponse MutableResponseType;
   typedef TopicsPartitions::TopicType Topic;
   typedef TopicsPartitions::PartitionType Partition;
   typedef TopicsPartitions::TopicsType Topics;
