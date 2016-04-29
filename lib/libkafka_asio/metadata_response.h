@@ -50,7 +50,7 @@ public:
     String host;
     Int32 port;
   };
-  typedef std::vector<Broker> Brokers;
+  typedef std::vector<Broker> BrokerVector;
 
   typedef detail::TopicsPartitionsMap<
     TopicProperties,
@@ -62,7 +62,7 @@ public:
   typedef TopicsPartitions::PartitionsType Partitions;
   
 
-  const Brokers& brokers() const;
+  const BrokerVector& brokers() const;
 
   const Topics& topics() const;
 
@@ -70,7 +70,7 @@ public:
                                        Int32 partition) const;
 
 private:
-  Brokers brokers_;
+  BrokerVector brokers_;
   Topics topics_;
 };
 
@@ -78,7 +78,7 @@ class MutableMetadataResponse :
   public MutableResponse<MetadataResponse>
 {
 public:
-  MetadataResponse::Brokers& mutable_brokers();
+  MetadataResponse::BrokerVector& mutable_brokers();
 
   MetadataResponse::Topics& mutable_topics();
 };

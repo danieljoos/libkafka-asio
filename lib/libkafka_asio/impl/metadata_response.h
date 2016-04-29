@@ -15,7 +15,7 @@
 namespace libkafka_asio
 {
 
-inline const MetadataResponse::Brokers& MetadataResponse::brokers() const
+inline const MetadataResponse::BrokerVector& MetadataResponse::brokers() const
 {
   return brokers_;
 }
@@ -25,7 +25,8 @@ inline const MetadataResponse::Topics& MetadataResponse::topics() const
   return topics_;
 }
 
-inline MetadataResponse::Brokers& MutableMetadataResponse::mutable_brokers()
+inline MetadataResponse::BrokerVector&
+MutableMetadataResponse::mutable_brokers()
 {
   return response_.brokers_;
 }
@@ -50,7 +51,7 @@ MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
   {
     return Broker::OptionalType();
   }
-  Brokers::const_iterator broker_iter =
+  BrokerVector::const_iterator broker_iter =
     detail::FindBrokerById(partition_iter->second.leader, brokers_);
   if (broker_iter != brokers_.end())
   {
