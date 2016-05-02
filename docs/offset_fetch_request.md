@@ -6,17 +6,17 @@ class `OffsetFetchRequest`
 
 **Namespace:** `libkafka_asio`
 
-Implementation of the Kafka OffsetFetchRequest as described on the 
+Implementation of the Kafka OffsetFetchRequest as described on the
 [Kafka wiki](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-OffsetFetchRequest).
 Offset fetch requests are used to retrieve an offset value for one or more topic
 partitions of a Kafka consumer group. These kinds of requests require Kafka
 version 0.8.1.1 or above. Offset fetch requests must be sent to the current
-offset coordinator broker, which can be discovered using a ConsumerMetadata 
+offset coordinator broker, which can be discovered using a ConsumerMetadata
 request.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
-[OffsetFetchRequest]++-*[Topic], 
-[Topic]++-*[Topic::Partition]" 
+[OffsetFetchRequest]++-*[OffsetFetchRequest::Topic],
+[OffsetFetchRequest::Topic]++-*[OffsetFetchRequest::Partition]"
 />
 
 Member Functions
@@ -41,7 +41,7 @@ Set the consumer group to fetch the offset data for.
 
 ### topics
 ```cpp
-const TopicVector& topics() const
+const Topics& topics() const
 ```
 
 Returns a reference to the list of topics of this offset fetch request. This
@@ -62,7 +62,10 @@ Types
 
 ### Topic
 ```cpp
-struct Topic
+struct Topic {
+    String      topic_name;
+    Partitions  partitions;
+}
 ```
 
 + `topic_name`:
@@ -71,19 +74,31 @@ struct Topic
    Set of partitions of this topic.
 
 
-### Topic::Partition
+### Partition
 ```cpp
-struct Topic::Partition
+struct Partition {
+    Int32 partition;
+}
 ```
 
 + `partition`:
    Number, identifying this topic partition.
-+ `offset`:
-   Offset that should be committed.
-+ `timestamp`:
-   Timestamp used for the commit.
-+ `metadata`:
-   Additional metadata.
+
+
+### Topics
+```cpp
+typedef std::vector<Topic> Topics
+```
+
+Vector of `Topic` objects.
+
+
+### Partitions
+```cpp
+typedef std::vector<Partition> Partitions
+```
+
+Vector of `Partition` objects.
 
 
 ### ResponseType
@@ -101,11 +116,3 @@ typedef MutableOffsetFetchResponse MutableResponseType
 
 Type of a mutable response object for a offset fetch request. This type is used
 by the library at when reading-in the response from a Kafka server.
-
-
-### TopicVector
-```cpp
-typedef std::vector<Topic> TopicVector
-```
-
-Vector of topics.

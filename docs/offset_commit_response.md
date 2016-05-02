@@ -6,14 +6,14 @@ class `OffsetCommitResponse`
 
 **Namespace:** `libkafka_asio`
 
-Implementation of the Kafka OffsetCommitResponse as described on the 
+Implementation of the Kafka OffsetCommitResponse as described on the
 [Kafka wiki](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-OffsetCommitResponse).
 An object of this type will be given as response object to the handler function
 when invoking an offset commit request.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
-[OffsetCommitResponse]++-*[Topic], 
-[Topic]++-*[Topic::Partition]" 
+[OffsetCommitResponse]++-*[OffsetCommitResponse::Topic],
+[OffsetCommitResponse::Topic]++-*[OffsetCommitResponse::Partition]"
 />
 
 
@@ -22,10 +22,10 @@ Member Functions
 
 ### topics
 ```cpp
-const TopicVector& topics() const
+const Topics& topics() const
 ```
 
-Returns a list of topics of this response
+Returns the data of this API response object, sorted by topic.
 
 
 Types
@@ -33,32 +33,40 @@ Types
 
 ### Topic
 ```cpp
-struct Topic
+struct Topic {
+    Partitions partitions;
+}
 ```
 
-+ `topic_name`:
-   Name of the topic to fetch data for.
-+ `partition_offsets`:
-   Set of partitions of this topic for which offset data has been received.
++ `partitions`:
+   The partition objects contained in this topic object.
 
 
-### Topic::Partition
+### Partition
 ```cpp
-struct Topic::Partition
+struct Partition {
+    Int16 error_code;
+}
 ```
 
-+ `partition`:
-   Number, identifying this topic partition.
 + `error_code`:
    Kafka error for this topic partition.
 
 
-### TopicVector
+### Topics
 ```cpp
-typedef std::vector<Topic> TopicVector
+typedef std::map<String, Topic> Topics
 ```
 
-Vector of `Topic` structures.
+Map that associates the offset commit response part of topics to their topic names.
+
+
+### Partitions
+```cpp
+typedef std::map<Int32, Partition> Partitions
+```
+
+Map that associates a `Partition` object to the partition id.
 
 
 ### OptionalType
@@ -66,5 +74,5 @@ Vector of `Topic` structures.
 typedef boost::optional<OffsetCommitResponse> OptionalType
 ```
 
-A offset-commit response object wrapped using _Boost optional_. Such an object 
+A offset-commit response object wrapped using _Boost optional_. Such an object
 will be used for offset-commit request handler functions.

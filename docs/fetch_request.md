@@ -6,14 +6,14 @@ class `FetchRequest`
 
 **Namespace:** `libkafka_asio`
 
-Implementation of the Kafka FetchRequest as described on the 
+Implementation of the Kafka FetchRequest as described on the
 [Kafka wiki](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-FetchRequest).
 Fetch requests are used to get chunks of data for one or more topic partitions
 from a Kafka server.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
-[FetchRequest]++-*[Topic], 
-[Topic]++-*[TopicPartition]" 
+[FetchRequest]++-*[FetchRequest::Topic],
+[FetchRequest::Topic]++-*[FetchRequest::Partition]"
 />
 
 Member Functions
@@ -21,9 +21,9 @@ Member Functions
 
 ### FetchTopic
 ```cpp
-void FetchTopic(const String& topic_name, 
-                Int32 partition, 
-                Int64 fetch_offset, 
+void FetchTopic(const String& topic_name,
+                Int32 partition,
+                Int64 fetch_offset,
                 Int32 max_bytes)
 ```
 
@@ -68,7 +68,7 @@ void set_min_bytes(Int32 min_bytes)
 
 Sets the minimum number of bytes to wait for on the server side. If this is set
 to `0`, the server won't wait at all. If set to `1`, the server waits until
-at least 1 byte of the requested topic partition data is available or the 
+at least 1 byte of the requested topic partition data is available or the
 specified timeout occurs.
 
 ```cpp
@@ -80,7 +80,7 @@ request.set_min_bytes(1);
 
 ### topics
 ```cpp
-const TopicVector& topics() const
+const Topics& topics() const
 ```
 
 Returns a reference to the list of topics of this fetch request. This
@@ -102,7 +102,7 @@ struct Topic
    Set of partitions of this topic to fetch data for.
 
 
-### Topic::Partition
+### Partition
 ```cpp
 struct Topic::Partition
 ```
@@ -114,6 +114,22 @@ struct Topic::Partition
 + `max_bytes`:
    Maximum amount of bytes to include in the message set for this topic
    partition.
+
+
+### Topics
+```cpp
+typedef std::vector<Topic> Topics
+```
+
+Vector of topics to fetch data for.
+
+
+### Partitions
+```cpp
+typedef std::vector<Partition> Partitions
+```
+
+Vector of topic-partitions to fetch data for.
 
 
 ### ResponseType
@@ -129,13 +145,5 @@ Type of the response object of a fetch request.
 typedef MutableFetchResponse MutableResponseType
 ```
 
-Type of a mutable response object for a fetch request. This type is used by 
+Type of a mutable response object for a fetch request. This type is used by
 the library at when reading-in the response from a Kafka server.
-
-
-### TopicVector
-```cpp
-typedef std::vector<Topic> TopicVector
-```
-
-Vector of topics to fetch data for.

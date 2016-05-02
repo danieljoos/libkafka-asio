@@ -6,14 +6,14 @@ class `FetchResponse`
 
 **Namespace:** `libkafka_asio`
 
-Implementation of the Kafka FetchResponse as described on the 
+Implementation of the Kafka FetchResponse as described on the
 [Kafka wiki](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-FetchResponse).
 An object of this type will be given as response object to the handler function
 when invoking a fetch request.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
-[FetchResponse]++-*[Topic], 
-[Topic]++-*[TopicPartition]" 
+[FetchResponse]++-*[FetchResponse::Topic],
+[FetchResponse::Topic]++-*[FetchResponse::Partition]"
 />
 
 
@@ -37,16 +37,20 @@ for (auto message : *response)
 {
     // Do something with the message...
 }
+```
 
-// STL for_each
+```cpp
+// STL for_each: Call a function for each received Message
 std::for_each(response->begin(), response->end(), &PrintMessage);
+```
 
+```cpp
 // 'traditional' iteration
 FetchResponse::const_iterator iter = response->begin();
 FetchResponse::const_iterator end_iter = response->end();
 for (; iter != end_iter; ++iter)
 {
-    // Again do something...
+    // Again, do something...
 }
 ```
 
@@ -62,7 +66,7 @@ construction of the `const_iterator` type.
 
 ### topics
 ```cpp
-const TopicVector& topics() const
+const Topics& topics() const
 ```
 
 Returns a reference to the set of topics, messages have been received for.
@@ -76,31 +80,34 @@ Types
 struct Topic
 ```
 
-+ `topic_name`:
-   Name of this topic.
 + `partitions`:
-   Set of partitions of this topic for which message data has been received.
+   Map of partitions of this topic for which message data has been received.
 
 
-### Topic::Partition
+### Partition
 ```cpp
-struct Topic::Partition
+struct Partition
 ```
 
-+ `partition`:
-   Number, identifying this topic partition.
 + `error_code`:
    Kafka error for this topic partition.
 + `highwater_mark_offset`:
    Offset at the end of the log for this partition on the server.
 
 
-### TopicVector
+### Topics
 ```cpp
-typedef std::vector<Topic> TopicVector
+typedef std::map<String, Topic> Topics
 ```
 
-Vector of `Topic` structures.
+Map that associates a `Topic` object to the topic name.
+
+### Partitions
+```cpp
+typedef std::map<Int32, Partition> Partitions
+```
+
+Map that associates a `Partition` object to the partition id.
 
 
 ### const_iterator

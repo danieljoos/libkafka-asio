@@ -6,14 +6,14 @@ class `ProduceRequest`
 
 **Namespace:** `libkafka_asio`
 
-Implementation of the Kafka ProduceRequest as described on the 
+Implementation of the Kafka ProduceRequest as described on the
 [Kafka wiki](https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-ProduceRequest).
 Produce requests are used to send data for one or more topic partitions to a
 remote Kafka server.
 
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
-[ProduceRequest]++-*[Topic], 
-[Topic]++-*[Topic::Partition]" 
+[ProduceRequest]++-*[ProduceRequest::Topic],
+[ProduceRequest::Topic]++-*[ProduceRequest::Partition]"
 />
 
 Member Functions
@@ -21,7 +21,7 @@ Member Functions
 
 ### AddValue (overload 1 of 2)
 ```cpp
-void AddValue(const Bytes& value, 
+void AddValue(const Bytes& value,
               const String& topic_name,
               Int32 partition)
 ```
@@ -119,25 +119,45 @@ Types
 
 ### Topic
 ```cpp
-struct Topic
+struct Topic {
+    String      topic_name;
+    Partitions  partitions;
+}
 ```
 
 + `topic_name`:
-   Name of the topic to produce messages for.
+  Name of the topic to produce messages for.
 + `partitions`:
    Vector of `TopicPartition` objects.   
-   
 
-### Topic::Partition
+### Partition
 ```cpp
-struct Topic::Partition
+struct Partition {
+    MessageSet messages;
+}
 ```
 
-+ `partition`:
-   Number, identifying this topic partition.
 + `messages`:
    Set of messages to produce for this topic partition
++ `partition`:
+ Number, identifying this topic partition.
 
+
+ ### Topics
+ ```cpp
+ typedef std::vector<Topic> Topics
+ ```
+
+ Vector of `Topic` objects.
+
+
+ ### Partitions
+ ```cpp
+ typedef std::vector<Partition> Partitions
+ ```
+
+ Vector of `Partition` objects.
+ 
 
 ### ResponseType
 ```cpp
@@ -152,14 +172,5 @@ Type of the response object of a produce request.
 typedef MutableProduceResponse MutableResponseType
 ```
 
-Type of a mutable response object for a produce request. This type is used by 
+Type of a mutable response object for a produce request. This type is used by
 the library at when reading-in the response from a Kafka server.
-
-
-### TopicVector
-```cpp
-typedef std::vector<Topic> TopicVector
-```
-
-Vector of `Topic` objects. Produce requests can produce message for multiple
-topics and partitions.
