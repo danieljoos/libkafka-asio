@@ -1,6 +1,5 @@
 
-class `OffsetFetchResponse`
-============================
+# class `OffsetFetchResponse`
 
 **Header File:** `<libkafka_asio/offset_fetch_response.h>`
 
@@ -16,33 +15,32 @@ when invoking an offset fetch request.
 [OffsetFetchResponse::Topic]++-*[OffsetFetchResponse::Partition]"
 />
 
-
-Member Functions
-----------------
+## Member Functions
 
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
 
 Returns a list of topics of this response
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
 struct Topic {
     Partitions partitions;
 }
 ```
 
-+ `partitions`:
-   Set of partitions of this topic for which consumer group offset data has been received.
-
+* `partitions`:
+   Set of partitions of this topic for which consumer group offset data has been
+   received.
 
 ### Partition
+
 ```cpp
 struct Partition {
     Int64   offset;
@@ -51,31 +49,31 @@ struct Partition {
 }
 ```
 
-+ `offset`:
+* `offset`:
    The offset data, stored for this topic partition
-+ `metadata`:
+* `metadata`:
    The metadata string, stored for this topic partition
-+ `error_code`:
+* `error_code`:
    Kafka error for this topic partition.
 
-
 ### Topics
+
 ```cpp
 typedef std::map<String, Topic> Topics
 ```
 
 Map that associates the offset fetch response part of topics to their topic names.
 
-
 ### Partitions
+
 ```cpp
 typedef std::map<Int32, Partition> Partitions
 ```
 
 Map that associates a `Partition` object to the partition id.
 
-
 ### OptionalType
+
 ```cpp
 typedef boost::optional<OffsetFetchResponse> OptionalType
 ```

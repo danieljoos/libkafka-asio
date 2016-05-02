@@ -1,6 +1,5 @@
 
-class `FetchRequest`
-======================
+# class `FetchRequest`
 
 **Header File:** `<libkafka_asio/fetch_request.h>`
 
@@ -16,10 +15,10 @@ from a Kafka server.
 [FetchRequest::Topic]++-*[FetchRequest::Partition]"
 />
 
-Member Functions
-----------------
+## Member Functions
 
 ### FetchTopic
+
 ```cpp
 void FetchTopic(const String& topic_name,
                 Int32 partition,
@@ -42,16 +41,16 @@ request.FetchTopic("foo", 0, 1337);
 request.FetchTopic("bar", 1);
 ```
 
-
 ### Clear
+
 ```cpp
 void Clear()
 ```
 
 Clears this fetch request by removing all topic partition entries.
 
-
 ### set_max_wait_time
+
 ```cpp
 void set_max_wait_time(Int32 max_wait_time)
 ```
@@ -60,8 +59,8 @@ Sets the maximum time to wait for message data to become available on the
 server. This option can be used in combination with the `min_bytes` parameter.
 The timeout must be specified in milliseconds.
 
-
 ### set_min_bytes
+
 ```cpp
 void set_min_bytes(Int32 min_bytes)
 ```
@@ -77,8 +76,8 @@ request.set_max_wait_time(100);
 request.set_min_bytes(1);
 ```
 
-
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
@@ -87,60 +86,66 @@ Returns a reference to the list of topics of this fetch request. This
 method is mainly used internally for getting the request data during the
 conversion to the Kafka wire format.
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
-struct Topic
+struct Topic {
+    String      topic_name;
+    Partitions  partitions;
+}
 ```
 
-+ `topic_name`:
+* `topic_name`:
    Name of the topic to fetch data for.
-+ `partitions`:
+* `partitions`:
    Set of partitions of this topic to fetch data for.
 
-
 ### Partition
+
 ```cpp
-struct Topic::Partition
+struct Partition {
+    Int64   fetch_offset;
+    Int32   max_bytes;
+    Int32   partition;
+}
 ```
 
-+ `partition`:
+* `partition`:
    Number, identifying this topic partition.
-+ `fetch_offset`:
+* `fetch_offset`:
    Offset to begin this fetch from.
-+ `max_bytes`:
+* `max_bytes`:
    Maximum amount of bytes to include in the message set for this topic
    partition.
 
-
 ### Topics
+
 ```cpp
 typedef std::vector<Topic> Topics
 ```
 
 Vector of topics to fetch data for.
 
-
 ### Partitions
+
 ```cpp
 typedef std::vector<Partition> Partitions
 ```
 
 Vector of topic-partitions to fetch data for.
 
-
 ### ResponseType
+
 ```cpp
 typedef FetchResponse ResponseType
 ```
 
 Type of the response object of a fetch request.
 
-
 ### MutableResponseType
+
 ```cpp
 typedef MutableFetchResponse MutableResponseType
 ```

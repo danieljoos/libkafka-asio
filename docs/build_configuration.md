@@ -1,13 +1,11 @@
 
-Build Configuration Options
-===========================
+# Build Configuration Options
 
-Compression Options
--------------------
+## Compression Options
 
 For handling compressed messages, _libkafka-asio_ relies on common compression
-libraries: 
-[zlib](http://www.zlib.net/) and 
+libraries:
+[zlib](http://www.zlib.net/) and
 [snappy](https://code.google.com/p/snappy/).
 Of course, this means that an application that uses _libkafka-asio_ must link
 against those compression libraries. If, for some reason, you do not

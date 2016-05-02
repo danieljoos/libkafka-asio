@@ -1,6 +1,5 @@
 
-class `OffsetRequest`
-=====================
+# class `OffsetRequest`
 
 **Header File:** `<libkafka_asio/offset_request.h>`
 
@@ -17,10 +16,10 @@ acting as leader for that topic partition.
 [OffsetRequest::Topic]++-*[OffsetRequest::Partition]"
 />
 
-Member Functions
-----------------
+## Member Functions
 
 ### FetchTopicOffset
+
 ```cpp
 void FetchTopicOffset(const String& topic_name,
                       Int32 partition,
@@ -45,24 +44,24 @@ OffsetRequest request;
 request.FetchOffset("foo", 0);
 ```
 
-
 ### Clear
+
 ```cpp
 void Clear()
 ```
 
 Clears all entries of this request for fetching offsets of topic partitions.
 
-
 ### replica_id
+
 ```cpp
 Int32 replica_id() const
 ```
 
 Always returns `-1`.
 
-
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
@@ -71,11 +70,10 @@ Returns a reference to the list of topics of this offset request. This
 method is mainly used internally for getting the request data during the
 conversion to the Kafka wire format.
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
 struct Topic {
     String      topic_name;
@@ -83,13 +81,13 @@ struct Topic {
 }
 ```
 
-+ `topic_name`:
+* `topic_name`:
    Name of the topic to fetch data for.
-+ `partitions`:
+* `partitions`:
    Set of partitions of this topic to fetch offset data for.
 
-
 ### Partition
+
 ```cpp
 struct Partition {
     Int32   partition;
@@ -98,39 +96,39 @@ struct Partition {
 }
 ```
 
-+ `partition`:
+* `partition`:
    Number, identifying this topic partition.
-+ `time`:
+* `time`:
    Time in milliseconds before current timestamp (see explanation above).
-+ `max_number_of_offsets`:
+* `max_number_of_offsets`:
    The maximum number of offsets to fetch for this topic partition.
 
-
 ### Topics
+
 ```cpp
 typedef std::vector<Topic> Topics
 ```
 
 Vector of `Topic` objects.
 
-
 ### Partitions
+
 ```cpp
 typedef std::vector<Partition> Partitions
 ```
 
 Vector of `Partition` objects.
 
-
 ### ResponseType
+
 ```cpp
 typedef OffsetResponse ResponseType
 ```
 
 Type of the response object of an offset request.
 
-
 ### MutableResponseType
+
 ```cpp
 typedef MutableOffsetResponse MutableResponseType
 ```

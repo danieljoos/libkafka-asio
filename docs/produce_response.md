@@ -1,6 +1,5 @@
 
-class `ProduceResponse`
-=======================
+# class `ProduceResponse`
 
 **Header File:** `<libkafka_asio/produce_response.h>`
 
@@ -17,10 +16,10 @@ response (which is not always the case for a ProduceRequest).
 [ProduceResponse::Topic]++-*[ProduceResponse::Partition]"
 />
 
-Member Functions
-----------------
+## Member Functions
 
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
@@ -28,22 +27,21 @@ const Topics& topics() const
 Returns a reference to the list of topics, for which messages have been
 produced for. See the description of `Topic` type below.
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
 struct Topic {
     Partitions partitions;
 }
 ```
 
-+ `partitions`:
+* `partitions`:
    Map of `Partition` objects, for which messages have been produced.
 
-
 ### Partition
+
 ```cpp
 struct Partition {
     Int16   error_code;
@@ -51,30 +49,30 @@ struct Partition {
 }
 ```
 
-+ `error_code`:
+* `error_code`:
    Kafka error code for this partition, if any.
-+ `offset`:
+* `offset`:
    Offset assigned to the first message in the set of messages produced for this
    partition.
 
-
 ### Topics
+
 ```cpp
 typedef std::map<String, Topic> Topics
 ```
 
 Map that associates the offset response part of topics to their topic names.
 
-
 ### Partitions
+
 ```cpp
 typedef std::map<Int32, Partition> Partitions
 ```
 
 Map that associates a `Partition` object to the partition id.
 
-
 ### OptionalType
+
 ```cpp
 typedef boost::optional<ProduceResponse> OptionalType
 ```

@@ -1,6 +1,5 @@
 
-class `FetchResponse`
-=====================
+# class `FetchResponse`
 
 **Header File:** `<libkafka_asio/fetch_response.h>`
 
@@ -16,11 +15,10 @@ when invoking a fetch request.
 [FetchResponse::Topic]++-*[FetchResponse::Partition]"
 />
 
-
-Member Functions
-----------------
+## Member Functions
 
 ### begin
+
 ```cpp
 const_iterator begin() const
 ```
@@ -54,8 +52,8 @@ for (; iter != end_iter; ++iter)
 }
 ```
 
-
 ### end
+
 ```cpp
 const_iterator end() const
 ```
@@ -63,39 +61,46 @@ const_iterator end() const
 End iterator (see start iterator description above). Similar to default
 construction of the `const_iterator` type.
 
-
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
 
 Returns a reference to the set of topics, messages have been received for.
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
-struct Topic
+struct Topic {
+    Partitions partitions;
+}
 ```
 
-+ `partitions`:
+* `partitions`:
    Map of partitions of this topic for which message data has been received.
 
-
 ### Partition
+
 ```cpp
-struct Partition
+struct Partition {
+    Int16       error_code;
+    Int64       highwater_mark_offset;
+    MessageSet  messages;
+}
 ```
 
-+ `error_code`:
+* `error_code`:
    Kafka error for this topic partition.
-+ `highwater_mark_offset`:
+* `highwater_mark_offset`:
    Offset at the end of the log for this partition on the server.
-
+* `messages`:
+   The fetched messages.
 
 ### Topics
+
 ```cpp
 typedef std::map<String, Topic> Topics
 ```
@@ -103,14 +108,15 @@ typedef std::map<String, Topic> Topics
 Map that associates a `Topic` object to the topic name.
 
 ### Partitions
+
 ```cpp
 typedef std::map<Int32, Partition> Partitions
 ```
 
 Map that associates a `Partition` object to the partition id.
 
-
 ### const_iterator
+
 ```cpp
 typedef defail::FetchResponseIterator<TopicVector> const_iterator
 ```
@@ -118,8 +124,8 @@ typedef defail::FetchResponseIterator<TopicVector> const_iterator
 Constant iterator type, used for iterating over all messages of a fetch
 response object. See `FetchResponseIterator` class template for details.
 
-
 ### OptionalType
+
 ```cpp
 typedef boost::optional<FetchResponse> OptionalType
 ```

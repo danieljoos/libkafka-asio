@@ -1,6 +1,5 @@
 
-class `OffsetCommitResponse`
-============================
+# class `OffsetCommitResponse`
 
 **Header File:** `<libkafka_asio/offset_commit_response.h>`
 
@@ -16,60 +15,58 @@ when invoking an offset commit request.
 [OffsetCommitResponse::Topic]++-*[OffsetCommitResponse::Partition]"
 />
 
-
-Member Functions
-----------------
+## Member Functions
 
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
 
 Returns the data of this API response object, sorted by topic.
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
 struct Topic {
     Partitions partitions;
 }
 ```
 
-+ `partitions`:
+* `partitions`:
    The partition objects contained in this topic object.
 
-
 ### Partition
+
 ```cpp
 struct Partition {
     Int16 error_code;
 }
 ```
 
-+ `error_code`:
+* `error_code`:
    Kafka error for this topic partition.
 
-
 ### Topics
+
 ```cpp
 typedef std::map<String, Topic> Topics
 ```
 
 Map that associates the offset commit response part of topics to their topic names.
 
-
 ### Partitions
+
 ```cpp
 typedef std::map<Int32, Partition> Partitions
 ```
 
 Map that associates a `Partition` object to the partition id.
 
-
 ### OptionalType
+
 ```cpp
 typedef boost::optional<OffsetCommitResponse> OptionalType
 ```

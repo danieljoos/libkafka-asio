@@ -1,6 +1,5 @@
 
-class `OffsetFetchRequest`
-===========================
+# class `OffsetFetchRequest`
 
 **Header File:** `<libkafka_asio/offset_fetch_request.h>`
 
@@ -19,10 +18,10 @@ request.
 [OffsetFetchRequest::Topic]++-*[OffsetFetchRequest::Partition]"
 />
 
-Member Functions
-----------------
+## Member Functions
 
 ### FetchOffset
+
 ```cpp
 void FetchOffset(const String& topic_name,
                  Int32 partition)
@@ -30,16 +29,16 @@ void FetchOffset(const String& topic_name,
 
 Fetch offset data for the given topic partition
 
-
 ### set_consumer_group
+
 ```cpp
 void set_consumer_group(const String& consumer_group)
 ```
 
 Set the consumer group to fetch the offset data for.
 
-
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
@@ -48,19 +47,18 @@ Returns a reference to the list of topics of this offset fetch request. This
 method is mainly used internally for getting the request data during the
 conversion to the Kafka wire format.
 
-
 ### consumer_group
+
 ```cpp
 const String& consumer_group() const
 ```
 
 Returns the consumer group string of this offset-fetch request.
 
-
-Types
------
+## Types
 
 ### Topic
+
 ```cpp
 struct Topic {
     String      topic_name;
@@ -68,48 +66,48 @@ struct Topic {
 }
 ```
 
-+ `topic_name`:
+* `topic_name`:
    Name of the topic to fetch data for.
-+ `partitions`:
+* `partitions`:
    Set of partitions of this topic.
 
-
 ### Partition
+
 ```cpp
 struct Partition {
     Int32 partition;
 }
 ```
 
-+ `partition`:
+* `partition`:
    Number, identifying this topic partition.
 
-
 ### Topics
+
 ```cpp
 typedef std::vector<Topic> Topics
 ```
 
 Vector of `Topic` objects.
 
-
 ### Partitions
+
 ```cpp
 typedef std::vector<Partition> Partitions
 ```
 
 Vector of `Partition` objects.
 
-
 ### ResponseType
+
 ```cpp
 typedef OffsetFetchResponse ResponseType
 ```
 
 Type of the response object of an offset fetch request.
 
-
 ### MutableResponseType
+
 ```cpp
 typedef MutableOffsetFetchResponse MutableResponseType
 ```

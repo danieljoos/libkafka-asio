@@ -1,6 +1,5 @@
 
-class `MetadataResponse`
-========================
+# class `MetadataResponse`
 
 **Header File:** `<libkafka_asio/metadata_response.h>`
 
@@ -17,10 +16,10 @@ when invoking a metadata request.
 [MetadataResponse::Topic]++-*[MetadataResponse::Partition]"
 />
 
-Member Functions
-----------------
+## Member Functions
 
 ### PartitionLeader
+
 ```cpp
 Broker::OptionalType PartitionLeader(const String& topic,
                                      Int32 partition) const
@@ -48,8 +47,8 @@ if (leader)
 }
 ```
 
-
 ### brokers
+
 ```cpp
 const BrokerVector& brokers() const
 ```
@@ -57,8 +56,8 @@ const BrokerVector& brokers() const
 Returns a reference to the set of received broker metadata. See the `Broker`
 data structure below.
 
-
 ### topics
+
 ```cpp
 const Topics& topics() const
 ```
@@ -66,70 +65,77 @@ const Topics& topics() const
 Returns a reference to the received topic partition metadata. See the
 description for `Topic` and `Topic::Partition` types below.
 
-
-Types
------
+## Types
 
 ### Broker
+
 ```cpp
 struct Broker
 ```
 
-+ `node_id`:
+* `node_id`:
    ID of the Kafka broker
-+ `host`:
+* `host`:
    Kafka broker hostname
-+ `port`:
+* `port`:
    Kafka broker port
 
-
 ### Topic
+
 ```cpp
-struct Topic
+struct Topic {
+    Int16       error_code;
+    Partitions  partitions;
+}
 ```
 
-+ `error_code`:
+* `error_code`:
    Kafka error code for this topic.
-+ `partitions`:
+* `partitions`:
    Metadata for each requested partition of this topic. This can be empty in
    case of an error for this topic (e.g. in case the topic cannot be found on
    the connected broker).
 
-
 ### Partition
+
 ```cpp
-struct Partition
+struct Partition {
+    Int16               error_code;
+    Int32               leader;
+    std::vector<Int32>  replicas;
+    std::vector<Int32>  isr;
+}
 ```
 
-+ `error_code`:
+* `error_code`:
    Kafka error code for this partition.
-+ `leader`:
+* `leader`:
    Node ID of the Kafka broker, which is currently acting as leader for this
    partition.
-+ `replicas`:
+* `replicas`:
    Set of Kafka broker node IDs that are currently acting as slaves for the
    leader for this partition.
-+ `isr`:
+* `isr`:
    Set of Kafka broker node IDs that are "caught up" to the leader broker.
 
-
 ### Topics
+
 ```cpp
 typedef std::map<String, Topic> Topics
 ```
 
 Map that associates topic metadata objects to the topic names.
 
-
 ### Partitions
+
 ```cpp
 typedef std::map<Int32, Partition> Partitions
 ```
 
 Map that associates a `Partition` object to the partition id.
 
-
 ### OptionalType
+
 ```cpp
 typedef boost::optional<MetadataResponse> OptionalType
 ```
@@ -137,16 +143,16 @@ typedef boost::optional<MetadataResponse> OptionalType
 A metadata response object wrapped using _Boost optional_. Such an object will
 be used for metadata request handler functions.
 
-
 ### BrokerVector
+
 ```cpp
 typedef std::vector<Broker> BrokerVector
 ```
 
 Set of brokers.
 
-
 ### Broker::OptionalType
+
 ```cpp
 typedef boost::optional<Broker> Broker::OptionalType
 ```
