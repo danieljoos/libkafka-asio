@@ -1,0 +1,14 @@
+.rst-content h2 {
+    padding-top: 10px;
+    border-top: 1px solid #e1e4e5;
+}
+
+.rst-content h3 {
+    margin-top: 40px;
+    margin-bottom: 5px;
+}
+
+.rst-content h3+pre {
+    margin-top: 2px;
+    margin-bottom: 5px;
+}

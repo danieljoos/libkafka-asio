@@ -26,16 +26,16 @@ inline void ReadResponseMessage(std::istream& is,
   int topic_count = ReadInt32(is);
   for (int t = 0; t < topic_count; ++t)
   {
-    FetchResponse::TopicMap::key_type key;
-    FetchResponse::TopicMap::mapped_type topic;
+    FetchResponse::Topics::key_type key;
+    FetchResponse::Topics::mapped_type topic;
     key = ReadString(is);
 
     // Partitions array
     int partition_count = ReadInt32(is);
     for (int p = 0; p < partition_count; ++p)
     {
-      FetchResponse::Topic::PartitionMap::key_type key;
-      FetchResponse::Topic::PartitionMap::mapped_type partition;
+      FetchResponse::Partitions::key_type key;
+      FetchResponse::Partitions::mapped_type partition;
       key = ReadInt32(is);
       partition.error_code = ReadInt16(is);
       partition.highwater_mark_offset = ReadInt64(is);

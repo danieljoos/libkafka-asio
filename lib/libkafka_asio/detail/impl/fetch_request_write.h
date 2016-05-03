@@ -56,8 +56,7 @@ inline void WriteRequestMessage(const FetchRequest& request, std::ostream& os)
 
     // Partitions Array
     WriteInt32(static_cast<Int32>(topic.partitions.size()), os);
-    BOOST_FOREACH(const FetchRequest::Topic::Partition& partition,
-                  topic.partitions)
+    BOOST_FOREACH(const FetchRequest::Partition& partition, topic.partitions)
     {
       WriteInt32(partition.partition, os);
       WriteInt64(partition.fetch_offset, os);

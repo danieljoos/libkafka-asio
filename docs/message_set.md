@@ -1,6 +1,5 @@
 
-Type `MessageSet`
-=================
+# Type `MessageSet`
 
 **Header File:** `<libkafka_asio/message.h>`
 
@@ -14,6 +13,6 @@ typedef std::vector<MessageAndOffset> MessageSet;
 <img src="http://yuml.me/diagram/nofunky;scale:80/class/
 [Message|+attributes;+key:Bytes;+value:Bytes]^-[MessageAndOffset|+offset],
 [Message]+- 0..1[MessageSet{bg:orange}],
-[MessageSet]++-*[MessageAndOffset]" 
+[MessageSet]++-*[MessageAndOffset]"
 />
 </center>

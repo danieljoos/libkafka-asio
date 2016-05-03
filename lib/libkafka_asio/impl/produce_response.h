@@ -18,7 +18,7 @@ namespace libkafka_asio
 inline ProduceResponse::Topic::OptionalType ProduceResponse::FindTopic(
   const String& topic_name) const
 {
-  TopicMap::const_iterator iter = topics_.find(topic_name);
+  Topics::const_iterator iter = topics_.find(topic_name);
   if (iter != topics_.end())
   {
     return iter->second;
@@ -26,21 +26,20 @@ inline ProduceResponse::Topic::OptionalType ProduceResponse::FindTopic(
   return Topic::OptionalType();
 }
 
-inline ProduceResponse::Topic::Partition::OptionalType
+inline ProduceResponse::Partition::OptionalType
 ProduceResponse::FindTopicPartition(const String& topic_name,
                                     Int32 partition) const
 {
   Topic::OptionalType topic = FindTopic(topic_name);
   if (topic)
   {
-    Topic::PartitionMap::const_iterator iter =
-      topic->partitions.find(partition);
+    Partitions::const_iterator iter = topic->partitions.find(partition);
     if (iter != topic->partitions.end())
     {
       return iter->second;
     }
   }
-  return Topic::Partition::OptionalType();
+  return Partition::OptionalType();
 }
 
 }  // namespace libkafka_asio

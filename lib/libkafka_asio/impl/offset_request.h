@@ -26,7 +26,7 @@ inline Int32 OffsetRequest::replica_id() const
   return -1;
 }
 
-inline const OffsetRequest::TopicVector& OffsetRequest::topics() const
+inline const OffsetRequest::Topics& OffsetRequest::topics() const
 {
   return topics_;
 }
@@ -36,9 +36,8 @@ inline void OffsetRequest::FetchTopicOffset(const String& topic_name,
                                             Int64 time,
                                             Int32 max_number_of_offsets)
 {
-  TopicVector::iterator topic_iter =
-    detail::FindTopicByName(topic_name, topics_);
-  Topic::PartitionVector::iterator partition_iter =
+  Topics::iterator topic_iter = detail::FindTopicByName(topic_name, topics_);
+  Partitions::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
   partition_iter->time = time;
   partition_iter->max_number_of_offsets = max_number_of_offsets;

@@ -2,7 +2,7 @@
 // metadata_response.h
 // -------------------
 //
-// Copyright (c) 2015 Daniel Joos
+// Copyright (c) 2015-2016 Daniel Joos
 //
 // Distributed under MIT license. (See file LICENSE)
 //
@@ -14,7 +14,7 @@
 #include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
-#include <libkafka_asio/detail/topic_partition_map.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -27,7 +27,7 @@ class MetadataResponse :
 {
   friend class MutableMetadataResponse;
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     typedef std::vector<Int32> ReplicasVector;
     typedef std::vector<Int32> IsrVector;
@@ -42,8 +42,12 @@ class MetadataResponse :
     Int16 error_code;
   };
 
-public:
+  typedef detail::TopicsPartitionsMap<
+    TopicProperties,
+    PartitionProperties
+  > TopicsPartitions;
 
+public:
   struct Broker
   {
     typedef boost::optional<Broker> OptionalType;
@@ -51,24 +55,22 @@ public:
     String host;
     Int32 port;
   };
-
   typedef std::vector<Broker> BrokerVector;
-  typedef detail::TopicPartitionMap<
-    TopicPartitionProperties,
-    TopicProperties
-  > Topic;
-  typedef Topic::MapType TopicMap;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
   const BrokerVector& brokers() const;
 
-  const TopicMap& topics() const;
+  const Topics& topics() const;
 
   Broker::OptionalType PartitionLeader(const String& topic,
                                        Int32 partition) const;
 
 private:
   BrokerVector brokers_;
-  TopicMap topics_;
+  Topics topics_;
 };
 
 class MutableMetadataResponse :
@@ -77,7 +79,7 @@ class MutableMetadataResponse :
 public:
   MetadataResponse::BrokerVector& mutable_brokers();
 
-  MetadataResponse::TopicMap& mutable_topics();
+  MetadataResponse::Topics& mutable_topics();
 };
 
 }  // namespace libkafka_asio

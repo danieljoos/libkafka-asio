@@ -32,15 +32,15 @@ void HandleRequest(const Connection::ErrorCodeType& err,
       << std::endl;
     return;
   }
-  OffsetResponse::Topic::Partition::OptionalType offset =
+  OffsetResponse::Partition::OptionalType partition =
     response->TopicPartitionOffset("mytopic", 1);
-  if (!offset || offset->offsets.empty())
+  if (!partition || partition->offsets.empty())
   {
     std::cerr << "Failed to fetch offset!" << std::endl;
     return;
   }
   std::cout
-    << "Received latest offset: " << offset->offsets[0]
+    << "Received latest offset: " << partition->offsets[0]
     << std::endl;
 }
 

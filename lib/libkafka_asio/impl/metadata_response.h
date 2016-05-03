@@ -2,7 +2,7 @@
 // impl/metadata_response.h
 // ------------------------
 //
-// Copyright (c) 2015 Daniel Joos
+// Copyright (c) 2015-2016 Daniel Joos
 //
 // Distributed under MIT license. (See file LICENSE)
 //
@@ -20,8 +20,7 @@ inline const MetadataResponse::BrokerVector& MetadataResponse::brokers() const
   return brokers_;
 }
 
-inline const MetadataResponse::TopicMap&
-MetadataResponse::topics() const
+inline const MetadataResponse::Topics& MetadataResponse::topics() const
 {
   return topics_;
 }
@@ -32,7 +31,7 @@ MutableMetadataResponse::mutable_brokers()
   return response_.brokers_;
 }
 
-inline MetadataResponse::TopicMap& MutableMetadataResponse::mutable_topics()
+inline MetadataResponse::Topics& MutableMetadataResponse::mutable_topics()
 {
   return response_.topics_;
 }
@@ -40,12 +39,12 @@ inline MetadataResponse::TopicMap& MutableMetadataResponse::mutable_topics()
 inline MetadataResponse::Broker::OptionalType
 MetadataResponse::PartitionLeader(const String& topic, Int32 partition) const
 {
-  TopicMap::const_iterator topic_iter = topics_.find(topic);
+  Topics::const_iterator topic_iter = topics_.find(topic);
   if (topic_iter == topics_.end())
   {
     return Broker::OptionalType();
   }
-  Topic::PartitionMap::const_iterator partition_iter =
+  Partitions::const_iterator partition_iter =
     topic_iter->second.partitions.find(partition);
   if (partition_iter == topic_iter->second.partitions.end() ||
       partition_iter->second.leader == constants::kMetadataLeaderUndecided)

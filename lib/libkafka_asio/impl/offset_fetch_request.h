@@ -26,7 +26,7 @@ inline const String& OffsetFetchRequest::consumer_group() const
   return consumer_group_;
 }
 
-inline const OffsetFetchRequest::TopicVector& OffsetFetchRequest::topics() const
+inline const OffsetFetchRequest::Topics& OffsetFetchRequest::topics() const
 {
   return topics_;
 }
@@ -39,9 +39,8 @@ inline void OffsetFetchRequest::set_consumer_group(const String& consumer_group)
 inline void OffsetFetchRequest::FetchOffset(const String& topic_name,
                                             Int32 partition)
 {
-  TopicVector::iterator topic_iter =
-    detail::FindTopicByName(topic_name, topics_);
-  Topic::PartitionVector::iterator partition_iter =
+  Topics::iterator topic_iter = detail::FindTopicByName(topic_name, topics_);
+  Partitions::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
 }
 

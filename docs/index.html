@@ -40,86 +40,97 @@
 </table>
 
 <!-- APIs -->
-<table class="ref_table" cell-spacing="1">
+<table class="ref_table ref_table_container">
     <thead>
-    <tr>
-        <th>
-            <h3>Metadata API</h3>
-        </th>
-        <th>
-            <h3>Produce API</h3>
-        </th>
-        <th>
-            <h3>Fetch API</h3>
-        </th>
-    <tr>
+        <tr>
+            <th>
+                <h3>Kafka Wire Protocol APIs</h3>
+            </th>
+        </tr>
     </thead>
-    <tbody>
-    <tr>
-        <td>
-            <h4>Classes</h4>
-            <ul>
-                <li><a href="metadata_request">MetadataRequest</a></li>
-                <li><a href="metadata_response">MetadataResponse</a></li>
-            </ul>
-        </td>
-        <td>
-            <h4>Classes</h4>
-            <ul>
-                <li><a href="produce_request">ProduceRequest</a></li>
-                <li><a href="produce_response">ProduceResponse</a></li>
-            </ul>
-        </td>
-        <td>
-            <h4>Classes</h4>
-            <ul>
-                <li><a href="fetch_request">FetchRequest</a></li>
-                <li><a href="fetch_response">FetchResponse</a></li>
-            </ul>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <tbody><tr><td>
+        <table class="ref_table" cell-spacing="1">
+            <thead>
+            <tr>
+                <th>
+                    <h3>Metadata API</h3>
+                </th>
+                <th>
+                    <h3>Produce API</h3>
+                </th>
+                <th>
+                    <h3>Fetch API</h3>
+                </th>
+            <tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <h4>Classes</h4>
+                    <ul>
+                        <li><a href="metadata_request">MetadataRequest</a></li>
+                        <li><a href="metadata_response">MetadataResponse</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <h4>Classes</h4>
+                    <ul>
+                        <li><a href="produce_request">ProduceRequest</a></li>
+                        <li><a href="produce_response">ProduceResponse</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <h4>Classes</h4>
+                    <ul>
+                        <li><a href="fetch_request">FetchRequest</a></li>
+                        <li><a href="fetch_response">FetchResponse</a></li>
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-<!-- APIs -->
-<table class="ref_table" cell-spacing="1">
-    <thead>
-    <tr>
-        <th>
-            <h3>Offset API</h3>
-        </th>
-        <th>
-            <h3>Offset Commit/Fetch API</h3>
-        </th>
-    <tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>
-            <h4>Classes</h4>
-            <ul>
-                <li><a href="offset_request">OffsetRequest</a></li>
-                <li><a href="offset_response">OffsetResponse</a></li>
-            </ul>
-        </td>
-        <td>
-            <h4>Classes</h4>
-            <ul>
-                <li>
-                    <a href="consumer_metadata_request">ConsumerMetadataRequest</a>
-                </li>
-                <li>
-                    <a href="consumer_metadata_response">ConsumerMetadataResponse</a>
-                </li>
-                <li><a href="offset_commit_request">OffsetCommitRequest</a></li>
-                <li><a href="offset_commit_response">OffsetCommitResponse</a>
-                </li>
-                <li><a href="offset_fetch_request">OffsetFetchRequest</a></li>
-                <li><a href="offset_fetch_response">OffsetFetchResponse</a></li>
-            </ul>
-        </td>
-    </tr>
-    </tbody>
+        <!-- APIs -->
+        <table class="ref_table" cell-spacing="1">
+            <thead>
+            <tr>
+                <th>
+                    <h3>Offset API</h3>
+                </th>
+                <th>
+                    <h3>Offset Commit/Fetch API</h3>
+                </th>
+            <tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <h4>Classes</h4>
+                    <ul>
+                        <li><a href="offset_request">OffsetRequest</a></li>
+                        <li><a href="offset_response">OffsetResponse</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <h4>Classes</h4>
+                    <ul>
+                        <li>
+                            <a href="consumer_metadata_request">ConsumerMetadataRequest</a>
+                        </li>
+                        <li>
+                            <a href="consumer_metadata_response">ConsumerMetadataResponse</a>
+                        </li>
+                        <li><a href="offset_commit_request">OffsetCommitRequest</a></li>
+                        <li><a href="offset_commit_response">OffsetCommitResponse</a>
+                        </li>
+                        <li><a href="offset_fetch_request">OffsetFetchRequest</a></li>
+                        <li><a href="offset_fetch_response">OffsetFetchResponse</a></li>
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </td></tr></tbody>
 </table>
 
 <style type="text/css">
@@ -127,20 +138,20 @@
         width: 100%;
         border-collapse: separate;
         border-spacing: 2px;
-        border-color: gray;
+        border-color: darkgray;
         margin-bottom: 10px;
         margin-top: 10px;
     }
 
     table.ref_table th {
-        background-color: whitesmoke;
+        background-color: lightgray;
         padding: 5px;
-        border: 1px solid #DCDCDC;
+        border: 1px solid darkgray;
     }
 
     table.ref_table td {
         padding: 5px;
-        border: 1px solid #DCDCDC;
+        border: 1px solid darkgray;
     }
 
     table.ref_table h3, table.ref_table h4 {
@@ -149,8 +160,20 @@
     }
 
     /* Theme Overrides */
-    
-    .rst-content table.ref_table td {
+
+    .rst-content table.docutils.ref_table {
+        border-color: darkgray;
+    }
+
+    .rst-content table.docutils.ref_table thead th {
+        border-bottom-color: darkgray;
+    }
+
+    .rst-content table.docutils.ref_table td {
         vertical-align: top;
+    }
+
+    .rst-content table.docutils:not(.field-list).ref_table tr:nth-child(2n-1) td {
+        background-color: whitesmoke;
     }
 </style>

@@ -14,7 +14,7 @@
 #include <libkafka_asio/constants.h>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/offset_commit_response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -28,22 +28,29 @@ class OffsetCommitRequest :
 
   static Int16 ApiKey();
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     Int64 offset;
     Int64 timestamp;
     String metadata;
   };
 
+  typedef detail::TopicsPartitionsVector<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
+
 public:
   typedef OffsetCommitResponse ResponseType;
   typedef MutableOffsetCommitResponse MutableResponseType;
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
   const String& consumer_group() const;
 
-  const TopicVector& topics() const;
+  const Topics& topics() const;
 
   void set_consumer_group(const String& consumer_group);
 
@@ -58,7 +65,7 @@ public:
 
 private:
   String consumer_group_;
-  TopicVector topics_;
+  Topics topics_;
 };
 
 }  // namespace libkafka_asio

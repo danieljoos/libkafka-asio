@@ -20,26 +20,27 @@ namespace detail
 {
 
 // Iterator over all messages received by a Fetch API request.
-template<typename TTopicMap>
+template<typename TTopicsPartitions>
 class FetchResponseIterator :
   public boost::iterator_facade<
-    FetchResponseIterator<TTopicMap>,
+    FetchResponseIterator<TTopicsPartitions>,
     const MessageAndOffset,
     boost::forward_traversal_tag
   >
 {
-  typedef FetchResponseIterator<TTopicMap> TMy;
+  typedef FetchResponseIterator<TTopicsPartitions> TMy;
 public:
-  typedef typename TTopicMap::value_type Topic;
-  typedef typename TTopicMap::mapped_type::PartitionMap TopicPartitionMap;
-  typedef typename TopicPartitionMap::value_type TopicPartition;
+  typedef typename TTopicsPartitions::TopicType Topic;
+  typedef typename TTopicsPartitions::PartitionType Partition;
+  typedef typename TTopicsPartitions::TopicsType Topics;
+  typedef typename TTopicsPartitions::PartitionsType Partitions;
 
   FetchResponseIterator() :
     topics_(NULL)
   {
   }
 
-  explicit FetchResponseIterator(const TTopicMap& topics) :
+  explicit FetchResponseIterator(const Topics& topics) :
     topics_(&topics)
   {
     topic_iter_ = topics_->begin();
@@ -63,21 +64,31 @@ public:
     reset();
   }
 
-  const Topic& topic() const
+  const String& topic_name() const
   {
-    return *topic_iter_;
+    return topic_iter_->first;
   }
 
-  const TopicPartition& topic_partition() const
+  const Topic& topic() const
   {
-    return *topic_partition_iter_;
+    return topic_iter_->second;
+  }
+
+  Int32 topic_partition_id() const
+  {
+    return topic_partition_iter_->first;
+  }
+
+  const Partition& topic_partition() const
+  {
+    return topic_partition_iter_->second;
   }
 
 private:
   friend class boost::iterator_core_access;
 
-  typedef typename TTopicMap::const_iterator TopicIterator;
-  typedef typename TopicPartitionMap::const_iterator TopicPartitionIterator;
+  typedef typename Topics::const_iterator TopicIterator;
+  typedef typename Partitions::const_iterator TopicPartitionIterator;
 
   void reset()
   {
@@ -124,7 +135,7 @@ private:
     return *message_iter_;
   }
 
-  const TTopicMap *topics_;
+  const Topics *topics_;
   TopicIterator topic_iter_;
   TopicPartitionIterator topic_partition_iter_;
   RecursiveMessageSetIterator message_iter_;

@@ -1,6 +1,7 @@
 ---
 site_name: libkafka-asio
 theme: readthedocs
+extra_css: [extra.css]
 pages:
     - ['index.html', 'Reference']
     - ['build_configuration.md', 'Core', 'Build Configuration']

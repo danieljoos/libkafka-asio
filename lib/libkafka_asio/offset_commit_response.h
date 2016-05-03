@@ -11,7 +11,7 @@
 #define OFFSET_COMMIT_RESPONSE_H_96791A91_0B01_4306_BB23_70B03D36B8F3
 
 #include <libkafka_asio/response.h>
-#include <libkafka_asio/detail/topic_partition_map.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -25,26 +25,33 @@ class OffsetCommitResponse :
 {
   friend class MutableOffsetCommitResponse;
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     Int16 error_code;
   };
 
-public:
-  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
-  typedef Topic::MapType TopicMap;
+  typedef detail::TopicsPartitionsMap<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
 
-  const TopicMap& topics() const;
+public:
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
+
+  const Topics& topics() const;
 
 private:
-  TopicMap topics_;
+  Topics topics_;
 };
 
 class MutableOffsetCommitResponse :
   public MutableResponse<OffsetCommitResponse>
 {
 public:
-  OffsetCommitResponse::TopicMap& mutable_topics();
+  OffsetCommitResponse::Topics& mutable_topics();
 };
 
 }  // namespace libkafka_asio

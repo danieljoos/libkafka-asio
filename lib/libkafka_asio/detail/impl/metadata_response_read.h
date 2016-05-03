@@ -2,7 +2,7 @@
 // detail/impl/metadata_response_read.h
 // ------------------------------------
 //
-// Copyright (c) 2015 Daniel Joos
+// Copyright (c) 2015-2016 Daniel Joos
 //
 // Distributed under MIT license. (See file LICENSE)
 //
@@ -36,16 +36,16 @@ inline void ReadResponseMessage(std::istream& is,
   int topic_count = ReadInt32(is);
   for (int t = 0; t < topic_count; ++t)
   {
-    MetadataResponse::TopicMap::key_type key;
-    MetadataResponse::TopicMap::mapped_type topic;
+    MetadataResponse::Topics::key_type key;
+    MetadataResponse::Topics::mapped_type topic;
     topic.error_code = ReadInt16(is);
     key = ReadString(is);
 
     int partition_count = ReadInt32(is);
     for (int p = 0; p < partition_count; ++p)
     {
-      MetadataResponse::Topic::PartitionMap::key_type key;
-      MetadataResponse::Topic::PartitionMap::mapped_type partition;
+      MetadataResponse::Partitions::key_type key;
+      MetadataResponse::Partitions::mapped_type partition;
       partition.error_code = ReadInt16(is);
       key = ReadInt32(is);
       partition.leader = ReadInt32(is);

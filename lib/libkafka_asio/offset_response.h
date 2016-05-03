@@ -14,7 +14,7 @@
 #include <boost/optional.hpp>
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/response.h>
-#include <libkafka_asio/detail/topic_partition_map.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -27,33 +27,40 @@ class OffsetResponse :
 {
   friend class MutableOffsetResponse;
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     typedef std::vector<Int64> OffsetVector;
     Int16 error_code;
     OffsetVector offsets;
   };
 
-public:
-  typedef detail::TopicPartitionMap<TopicPartitionProperties> Topic;
-  typedef Topic::MapType TopicMap;
+  typedef detail::TopicsPartitionsMap<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
 
-  const TopicMap& topics() const;
+public:
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
+
+  const Topics& topics() const;
 
   // Search for offset data inside this response object for the given topic
   // and partition. If no such data can be found, the return value is empty.
-  Topic::Partition::OptionalType TopicPartitionOffset(
-    const String& topic_name, Int32 partition) const;
+  Partition::OptionalType TopicPartitionOffset(const String& topic_name,
+                                               Int32 partition) const;
 
 private:
-  TopicMap topics_;
+  Topics topics_;
 };
 
 class MutableOffsetResponse :
   public MutableResponse<OffsetResponse>
 {
 public:
-  OffsetResponse::TopicMap& mutable_topics();
+  OffsetResponse::Topics& mutable_topics();
 };
 
 }  // namespace libkafka_asio

@@ -15,7 +15,7 @@
 #include <libkafka_asio/primitives.h>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/fetch_response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -28,17 +28,24 @@ class FetchRequest :
 
   static Int16 ApiKey();
 
-  struct TopicPartitionProperties
+  struct PartitionProperties
   {
     Int64 fetch_offset;
     Int32 max_bytes;
   };
 
+  typedef detail::TopicsPartitionsVector<
+    detail::EmptyProperties,
+    PartitionProperties
+  > TopicsPartitions;
+
 public:
   typedef FetchResponse ResponseType;
   typedef MutableFetchResponse MutableResponseType;
-  typedef detail::TopicPartitionBlock<TopicPartitionProperties> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
   FetchRequest();
 
@@ -48,7 +55,7 @@ public:
 
   Int32 min_bytes() const;
 
-  const TopicVector& topics() const;
+  const Topics& topics() const;
 
   // Maximum time to wait for message data to become available on the server.
   // This option can be used in combination with the `min_bytes` parameter.
@@ -75,7 +82,7 @@ public:
 private:
   Int32 max_wait_time_;
   Int32 min_bytes_;
-  TopicVector topics_;
+  Topics topics_;
 };
 
 }  // namespace libkafka_asio

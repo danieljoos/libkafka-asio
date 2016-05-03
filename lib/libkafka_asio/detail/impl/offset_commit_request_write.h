@@ -28,7 +28,7 @@ inline Int32 RequestMessageWireSize(const OffsetCommitRequest& request)
   {
     // Partitions Array
     size += sizeof(Int32);
-    BOOST_FOREACH(const OffsetCommitRequest::Topic::Partition& partition,
+    BOOST_FOREACH(const OffsetCommitRequest::Partition& partition,
                   topic.partitions)
     {
       size += 
@@ -54,7 +54,7 @@ inline void WriteRequestMessage(const OffsetCommitRequest& request,
 
     // Partitions Array
     WriteInt32(static_cast<Int32>(topic.partitions.size()), os);
-    BOOST_FOREACH(const OffsetCommitRequest::Topic::Partition& partition,
+    BOOST_FOREACH(const OffsetCommitRequest::Partition& partition,
                   topic.partitions)
     {
       WriteInt32(partition.partition, os);

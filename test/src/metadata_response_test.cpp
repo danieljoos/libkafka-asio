@@ -35,7 +35,7 @@ TEST_F(MetadataResponseTest, PartitionLeader)
   AddBroker("example.com", 456, 49152);
   ASSERT_EQ(2, response.response().brokers().size());
   MetadataResponse::Topic metadata;
-  MetadataResponse::Topic::Partition test_partition;
+  MetadataResponse::Partition test_partition;
   test_partition.leader = 456;
   metadata.partitions.insert(std::make_pair(1, test_partition));
   response.mutable_topics().insert(std::make_pair("foo", metadata));
@@ -51,7 +51,7 @@ TEST_F(MetadataResponseTest, PartitionLeader)
 TEST_F(MetadataResponseTest, PartitionLeader_InElection)
 {
   MetadataResponse::Topic metadata;
-  MetadataResponse::Topic::Partition test_partition;
+  MetadataResponse::Partition test_partition;
   test_partition.leader = -1;
   metadata.partitions.insert(std::make_pair(1, test_partition));
   response.mutable_topics().insert(std::make_pair("foo", metadata));

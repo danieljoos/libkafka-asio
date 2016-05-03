@@ -14,7 +14,7 @@
 #include <vector>
 #include <libkafka_asio/request.h>
 #include <libkafka_asio/offset_fetch_response.h>
-#include <libkafka_asio/detail/topic_partition_block.h>
+#include <libkafka_asio/detail/topics_partitions.h>
 
 namespace libkafka_asio
 {
@@ -28,15 +28,22 @@ class OffsetFetchRequest :
 
   static Int16 ApiKey();
 
+  typedef detail::TopicsPartitionsVector<
+    detail::EmptyProperties,
+    detail::EmptyProperties
+  > TopicsPartitions;
+
 public:
   typedef OffsetFetchResponse ResponseType;
   typedef MutableOffsetFetchResponse MutableResponseType;
-  typedef detail::TopicPartitionBlock<> Topic;
-  typedef Topic::VectorType TopicVector;
+  typedef TopicsPartitions::TopicType Topic;
+  typedef TopicsPartitions::PartitionType Partition;
+  typedef TopicsPartitions::TopicsType Topics;
+  typedef TopicsPartitions::PartitionsType Partitions;
 
   const String& consumer_group() const;
 
-  const TopicVector& topics() const;
+  const Topics& topics() const;
 
   void set_consumer_group(const String& consumer_group);
 
@@ -44,7 +51,7 @@ public:
 
 private:
   String consumer_group_;
-  TopicVector topics_;
+  Topics topics_;
 };
 
 }  // namespace libkafka_asio

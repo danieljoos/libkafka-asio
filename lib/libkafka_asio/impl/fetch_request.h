@@ -42,7 +42,7 @@ inline Int32 FetchRequest::min_bytes() const
   return min_bytes_;
 }
 
-inline const FetchRequest::TopicVector& FetchRequest::topics() const
+inline const FetchRequest::Topics& FetchRequest::topics() const
 {
   return topics_;
 }
@@ -57,17 +57,14 @@ inline void FetchRequest::set_min_bytes(Int32 min_bytes)
   min_bytes_ = min_bytes;
 }
 
-inline void FetchRequest::FetchTopic(
-  const String& topic_name,
-  Int32 partition,
-  Int64 fetch_offset,
-  Int32 max_bytes)
+inline void FetchRequest::FetchTopic(const String& topic_name,
+                                     Int32 partition,
+                                     Int64 fetch_offset,
+                                     Int32 max_bytes)
 {
-  TopicVector::iterator topic_iter =
-    detail::FindTopicByName(topic_name, topics_);
-  Topic::PartitionVector::iterator partition_iter =
+  Topics::iterator topic_iter = detail::FindTopicByName(topic_name, topics_);
+  Partitions::iterator partition_iter =
     detail::FindTopicPartitionByNumber(partition, topic_iter->partitions);
-
   partition_iter->fetch_offset = fetch_offset;
   partition_iter->max_bytes = max_bytes;
 }
