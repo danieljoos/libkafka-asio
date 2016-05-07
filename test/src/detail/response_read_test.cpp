@@ -97,7 +97,7 @@ TEST_F(ResponseReadTest, ReadBytes)
   stream->write((const char *) &(*bytes)[0], bytes->size());
   Bytes read_bytes;
   ReadBytes(*stream, read_bytes);
-  ASSERT_TRUE((bool)read_bytes);
+  ASSERT_TRUE(static_cast<bool>(read_bytes));
   ASSERT_EQ(2, read_bytes->size());
   ASSERT_EQ(0x01, read_bytes->at(0));
   ASSERT_EQ(0x02, read_bytes->at(1));
@@ -118,8 +118,8 @@ TEST_F(ResponseReadTest, ReadMessage)
   boost::system::error_code ec;
   ReadMessage(*stream, message, ec);
   ASSERT_EQ(kErrorSuccess, ec);
-  ASSERT_FALSE((bool)message.key());
-  ASSERT_TRUE((bool)message.value());
+  ASSERT_FALSE(static_cast<bool>(message.key()));
+  ASSERT_TRUE(static_cast<bool>(message.value()));
   std::string message_value((const char*)&(*message.value())[0],
                             message.value()->size());
   ASSERT_STREQ("helloworld", message_value.c_str());
@@ -145,8 +145,8 @@ TEST_F(ResponseReadTest, ReadMessageSet)
   ReadMessageSet(*stream, message_set, sizeof(test_data), ec);
   ASSERT_EQ(kErrorSuccess, ec);
   ASSERT_EQ(2, message_set.size());
-  ASSERT_TRUE((bool)message_set[0].value());
-  ASSERT_TRUE((bool)message_set[1].value());
+  ASSERT_TRUE(static_cast<bool>(message_set[0].value()));
+  ASSERT_TRUE(static_cast<bool>(message_set[1].value()));
   std::string message_value_0((const char*) &(*message_set[0].value())[0],
                               message_set[0].value()->size());
   std::string message_value_1((const char*) &(*message_set[1].value())[0],
