@@ -142,7 +142,7 @@ TEST_F(RequestWriteTest, WriteInt8)
     ResetStream();
     WriteInt8(0, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(1, bytes->size());
     ASSERT_EQ(0x00, bytes->front());
   }
@@ -150,7 +150,7 @@ TEST_F(RequestWriteTest, WriteInt8)
     ResetStream();
     WriteInt8(-1, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(1, bytes->size());
     ASSERT_EQ(0xff, bytes->front());
   }
@@ -162,7 +162,7 @@ TEST_F(RequestWriteTest, WriteInt16)
     ResetStream();
     WriteInt16(0, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(2, bytes->size());
     ASSERT_EQ(0x00, bytes->at(0));
     ASSERT_EQ(0x00, bytes->at(1));
@@ -171,7 +171,7 @@ TEST_F(RequestWriteTest, WriteInt16)
     ResetStream();
     WriteInt16(-1, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(2, bytes->size());
     ASSERT_EQ(0xff, bytes->at(0));
     ASSERT_EQ(0xff, bytes->at(1));
@@ -180,7 +180,7 @@ TEST_F(RequestWriteTest, WriteInt16)
     ResetStream();
     WriteInt16(256, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(2, bytes->size());
     ASSERT_EQ(0x01, bytes->at(0));
     ASSERT_EQ(0x00, bytes->at(1));
@@ -193,7 +193,7 @@ TEST_F(RequestWriteTest, WriteInt32)
     ResetStream();
     WriteInt32(0, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(4, bytes->size());
     ASSERT_EQ(0x00, bytes->at(0));
     ASSERT_EQ(0x00, bytes->at(1));
@@ -204,7 +204,7 @@ TEST_F(RequestWriteTest, WriteInt32)
     ResetStream();
     WriteInt32(-1, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(4, bytes->size());
     ASSERT_EQ(0xff, bytes->at(0));
     ASSERT_EQ(0xff, bytes->at(1));
@@ -215,7 +215,7 @@ TEST_F(RequestWriteTest, WriteInt32)
     ResetStream();
     WriteInt32(65536, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(4, bytes->size());
     ASSERT_EQ(0x00, bytes->at(0));
     ASSERT_EQ(0x01, bytes->at(1));
@@ -230,7 +230,7 @@ TEST_F(RequestWriteTest, WriteInt64)
     ResetStream();
     WriteInt64(0, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(8, bytes->size());
     ASSERT_EQ(0x00, bytes->at(0));
     ASSERT_EQ(0x00, bytes->at(1));
@@ -245,7 +245,7 @@ TEST_F(RequestWriteTest, WriteInt64)
     ResetStream();
     WriteInt64(-1, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(8, bytes->size());
     ASSERT_EQ(0xff, bytes->at(0));
     ASSERT_EQ(0xff, bytes->at(1));
@@ -260,7 +260,7 @@ TEST_F(RequestWriteTest, WriteInt64)
     ResetStream();
     WriteInt64(4294967296, *stream);
     Bytes bytes = ReadEverything();
-    ASSERT_TRUE(bytes);
+    ASSERT_TRUE((bool)bytes);
     ASSERT_EQ(8, bytes->size());
     ASSERT_EQ(0x00, bytes->at(0));
     ASSERT_EQ(0x00, bytes->at(1));
@@ -278,7 +278,7 @@ TEST_F(RequestWriteTest, WriteString)
   String test_string = "foo";
   WriteString(test_string, *stream);
   Bytes bytes = ReadEverything();
-  ASSERT_TRUE(bytes);
+  ASSERT_TRUE((bool)bytes);
   ASSERT_EQ(2 + 3, bytes->size());
   ASSERT_EQ(0, bytes->at(0));
   ASSERT_EQ(3, bytes->at(1));
@@ -292,7 +292,7 @@ TEST_F(RequestWriteTest, WriteBytes)
   Bytes test_bytes(new Bytes::element_type(3, 0xfe));
   WriteBytes(test_bytes, *stream);
   Bytes bytes = ReadEverything();
-  ASSERT_TRUE(bytes);
+  ASSERT_TRUE((bool)bytes);
   ASSERT_EQ(4 + 3, bytes->size());
   ASSERT_EQ(0, bytes->at(0));
   ASSERT_EQ(0, bytes->at(1));

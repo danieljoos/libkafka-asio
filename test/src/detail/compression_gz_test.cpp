@@ -39,8 +39,8 @@ protected:
 
   void AssertBytesEq(const Bytes& expected, const Bytes& actual)
   {
-    ASSERT_TRUE(expected);
-    ASSERT_TRUE(actual);
+    ASSERT_TRUE((bool)expected);
+    ASSERT_TRUE((bool)actual);
     ASSERT_EQ(expected->size(), actual->size());
     for (size_t i = 0; i < actual->size(); ++i)
     {

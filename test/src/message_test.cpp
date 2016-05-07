@@ -24,8 +24,8 @@ TEST(MessageTest, FlatCopy)
   orig.mutable_value().reset(
     new Bytes::element_type(test_value.begin(), test_value.end()));
   Message copy(orig, false);
-  ASSERT_TRUE(orig.value());
-  ASSERT_TRUE(copy.value());
+  ASSERT_TRUE((bool)orig.value());
+  ASSERT_TRUE((bool)copy.value());
   // Both messages should point to the same value buffer
   ASSERT_EQ(orig.value().get(), copy.value().get());
 }
@@ -38,8 +38,8 @@ TEST(MessageTest, AssignmentOperator)
     new Bytes::element_type(test_value.begin(), test_value.end()));
   Message copy;
   copy = orig;
-  ASSERT_TRUE(orig.value());
-  ASSERT_TRUE(copy.value());
+  ASSERT_TRUE((bool)orig.value());
+  ASSERT_TRUE((bool)copy.value());
   // Both messages should point to the same value buffer
   ASSERT_EQ(orig.value().get(), copy.value().get());
 }
@@ -53,8 +53,8 @@ TEST(MessageTest, DeepCopy)
       new Bytes::element_type(test_value.begin(), test_value.end()));
   }
   Message copy(orig, true);
-  ASSERT_TRUE(orig.value());
-  ASSERT_TRUE(copy.value());
+  ASSERT_TRUE((bool)orig.value());
+  ASSERT_TRUE((bool)copy.value());
   // Each message should now have it's own value buffer
   ASSERT_NE(orig.value().get(), copy.value().get());
   // But the actual value should be the same (a copy)
@@ -76,7 +76,7 @@ TEST(MessageTest, CompressMessageSet)
   using namespace libkafka_asio::constants;
   Message msg = CompressMessageSet(message_set, kCompressionGZIP, ec);
   ASSERT_EQ(libkafka_asio::kErrorSuccess, ec);
-  ASSERT_TRUE(msg.value());
+  ASSERT_TRUE((bool)msg.value());
   ASSERT_FALSE(msg.value()->empty());
   ASSERT_EQ(kCompressionGZIP, msg.compression());
 }
