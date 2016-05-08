@@ -106,7 +106,7 @@ public:
     this->AsyncConnect(lexical_cast<std::string>(host),
                        lexical_cast<std::string>(service),
                        handler);
-  };
+  }
 
   // Tries to connect to the broker, specified in the configuration given to
   // this client object. If no such broker address was configured, the handler

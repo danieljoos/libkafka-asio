@@ -368,6 +368,8 @@ inline void ConnectionServiceImpl::HandleAsyncRequestWrite(
   const typename ConnectionServiceImpl::Handler<TRequest>::Type& handler,
   bool response_expected)
 {
+  // parameter not used
+  (void)bytes_transferred;
   write_state_ = kTxStateIdle;
   write_deadline_.cancel();
   typedef typename TRequest::ResponseType::OptionalType OptionalResponse;
