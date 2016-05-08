@@ -43,7 +43,7 @@ TEST_F(MetadataResponseTest, PartitionLeader)
 
   MetadataResponse::Broker::OptionalType leader =
     response.response().PartitionLeader("foo", 1);
-  ASSERT_TRUE(leader);
+  ASSERT_TRUE(static_cast<bool>(leader));
   ASSERT_EQ(456, leader->node_id);
   ASSERT_STREQ("example.com", leader->host.c_str());
 }
@@ -59,5 +59,5 @@ TEST_F(MetadataResponseTest, PartitionLeader_InElection)
 
   MetadataResponse::Broker::OptionalType leader =
     response.response().PartitionLeader("foo", 1);
-  ASSERT_FALSE(leader);
+  ASSERT_FALSE(static_cast<bool>(leader));
 }

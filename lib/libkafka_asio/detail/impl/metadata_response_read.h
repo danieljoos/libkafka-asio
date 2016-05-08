@@ -23,6 +23,8 @@ inline void ReadResponseMessage(std::istream& is,
                                 MutableMetadataResponse& response,
                                 boost::system::error_code& ec)
 {
+  // error code not used
+  (void)ec;
   // Brokers
   response.mutable_brokers().resize(ReadInt32(is));
   BOOST_FOREACH(MetadataResponse::Broker& broker, response.mutable_brokers())
