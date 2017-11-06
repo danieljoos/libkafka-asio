@@ -80,7 +80,10 @@ inline void WriteBytes(const Bytes& value, std::ostream& os)
     return;
   }
   WriteInt32(static_cast<Int32>(value->size()), os);
-  os.write( reinterpret_cast<const char*>( value->data() ), value->size() );
+  if (!value->empty())
+  {
+    os.write(reinterpret_cast<const char*>(&(*value)[0]), value->size());
+  }
 }
 
 template< typename TRequest >
