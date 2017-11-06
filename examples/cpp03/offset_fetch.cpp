@@ -161,7 +161,7 @@ int main(int argc, char **argv)
         FetchOffset(connection, consumer_group, topic_name, partition).get();
       std::cout
       << "Offset: "
-      << offset.topics().at(topic_name).partitions.at(partition).offset
+      << offset.topics().find(topic_name)->second.partitions.find(partition)->second.offset
       << std::endl;
     }
   }
